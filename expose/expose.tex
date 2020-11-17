@@ -1,0 +1,56 @@
+\documentclass[a4paper, 12pt]{scrartcl}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage{acronym}
+\newacro{SIL}{Safety Integrity Level}
+\acrodefplural{SIL}{Safety Integrity Levels}
+\newacro{ETCS}{European Train Control System}
+\newacro{SPS}[PLC]{Programmable Logic Controller}
+\acrodefplural{SPS}[PLCs]{Programmable Logic Controllers}
+\newacro{DDS}{Data Distribution Service}
+\newacro{OS}{Operating System}
+
+\begin{document}
+
+
+% Titel
+\begin{center}
+  \Huge{Expos\'{e} Master's Thesis}\\
+\Large{Hendrik Tjabben}
+\end{center}
+
+% Einleitung
+% \section*{Abstract}
+
+\section*{Introduction and Aim of the project}
+Embedded systems, which are deployed in safety-critical environments such as the railway, must comply with suitable \acp{SIL} to ensure the system's functionality.
+In order to verify the system's safety, its correspondance with the specified \ac{SIL} is ensured during an approval process.
+This approval process requires a lot of time and money for large systems with a high \ac{SIL}.
+In addition, the approval process needs to be repeated every time the system is updated.
+One way of reducing costs is to minimize the system's parts with high \acp{SIL}.
+Other approaches consider distributed designs, consisting of modular parts with different safety-demands, to build safety-critical systems.
+The individual parts of this system are interconnected through a protocol that must not violate the system's safety requirements.
+In the course of this master thesis, such a distributed system is build and validated using an example of on-board balise protocol evaluation based on the \ac{ETCS}.
+Therefore, the system's parts exchange data following the \ac{DDS} standard's publish-subscribe pattern.
+Upon the test system, characteristics such as licenseability, reliability, maintainablity and performance are examined.
+Further, it is evaluated which parts of the system can run on a low safety-level of \ac{SIL}2 and what subset of \ac{DDS} is required to still guarantee an overall system safety-level of \ac{SIL}4.
+
+\subsection*{Experimental Setup}
+The experimental setup will comprise of a PC, four \acp{SPS}, an interconnect, a middleware layer running the \ac{DDS} standard and a simulation software.
+The PC functions as the main computation unit but has a low \ac{SIL} of \ac{SIL}2.
+However, the \acp{SPS} feature a secure \ac{SIL}4 \ac{OS} and are used for redundancy computing to safeguard the main PC's computations.
+All \acp{SPS} are connected via an interconnect to the main PC.
+By swapping out safety critical computations to the redundant working \acp{SPS} and sending data between individual components using the dependable real-time data exchange standard \ac{DDS}, the entire system can be raised to a \ac{SIL}4.
+
+The simulation software imitates trackside balise components and their corresponding data telegrams, which are received and evaluated by the PC and the four \acp{SPS}.
+In order to facilitate a realistic test environment, the balise telegrams as well as the telegram evaluations are based upon \ac{ETCS}.
+Different balise telegrams are triggered on predefined positions along the track.
+Therefore, the train's position is monitored using a digital rail network plan, as well as position sensoring such as GPS, traveled distance and further technology.
+
+
+\section{Roadmap}
+
+
+\end{document}
