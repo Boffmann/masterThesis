@@ -1,7 +1,7 @@
 \documentclass[a4paper, 12pt]{scrartcl}
 
 \usepackage{setspace}
-\onehalfspacing
+% \onehalfspacing
 
 \usepackage{acronym}
 \newacro{SIL}{Safety Integrity Level}
@@ -24,16 +24,28 @@
 % Einleitung
 % \section*{Abstract}
 
-\section*{Introduction and Aim of the project}
-Embedded systems, which are deployed in safety-critical environments such as the railway, must comply with suitable \acp{SIL} to ensure the system's functionality.
+\section*{Introduction}
+% Context CHECK
+% Status Quo CHECK
+% Problem and Challenges CHECK
+
+% HALF PAGE
+Embedded systems, which are deployed in safety-critical environments, must comply with suitable \acp{SIL} to ensure the system's functionality.
+Nowadays, such safety-critical systems are demanded within various industries, including aero, medical and automotive applications.
 In order to verify the system's safety, its correspondance with the specified \ac{SIL} is ensured during an approval process.
 This approval process requires a lot of time and money for large systems with a high \ac{SIL}.
-In addition, the approval process needs to be repeated every time the system is updated.
-One way of reducing costs is to minimize the system's parts with high \acp{SIL}.
-Other approaches consider distributed designs, consisting of modular parts with different safety-demands, to build safety-critical systems.
+In addition, the approval process needs to be repeated every time the system is updated.  One way of reducing costs is to minimize the system's parts with high \acp{SIL}.
+Other approaches to build safety-critical systems consider distributed designs, consisting of modular parts with different safety-demands.
 The individual parts of this system are interconnected through a protocol that must not violate the system's safety requirements.
-In the course of this master thesis, such a distributed system is build and validated using an example of on-board balise protocol evaluation based on the \ac{ETCS}.
-Therefore, the system's parts exchange data following the \ac{DDS} standard's publish-subscribe pattern.
+Such distributed systems reduce costs for approval by reducing the size of components to check and allow individual modules to be replaced with other approved modules.
+
+\section*{Aim of the project}
+% Proposed Solution CHECK
+% Academic view
+
+% HALF A PAGE
+In the course of this master thesis, such a distributed system is build and validated against a subset of \ac{ETCS}, namely balise-group-to-train communication.
+Therefore, the system's modules exchange data following the \ac{DDS} standard's publish-subscribe pattern.
 Upon the test system, characteristics such as licenseability, reliability, maintainablity and performance are examined.
 Further, it is evaluated which parts of the system can run on a low safety-level of \ac{SIL}2 and what subset of \ac{DDS} is required to still guarantee an overall system safety-level of \ac{SIL}4.
 
@@ -49,8 +61,25 @@ In order to facilitate a realistic test environment, the balise telegrams as wel
 Different balise telegrams are triggered on predefined positions along the track.
 Therefore, the train's position is monitored using a digital rail network plan, as well as position sensoring such as GPS, traveled distance and further technology.
 
+\section*{Related Work}
+%HALF A PAGE
+TODO
 
-\section{Roadmap}
+% DDS
 
+% ETCS Balisen
+
+\section*{Work and Risk Analysis}
+% HALF A PAGE
+
+The project can be subdevided into four parts, namely a train and track simulator, a hardware setup, an on-board processing system as well as a testing and evaluation phase.
+This work's main part is made up by the testing and evaluation phase, since this thesis' aim it to experiment and evaluate the system's configuration and characteristics.
+The on-board processing system comprises of data exchange with \ac{DDS}, decision making and redundancy computation.
+It lays the foundation for the evaluation phase and is expected to take up the most time in this project.
+Connecting the hardware is an essential part in this project but is unlikely to consume much time.
+Simulating a train and track-side balises is choosen to be the show-case of this work.
+Because of \ac{ETCS}'s complexity, building such a simulator from scratch is likely to take much resources.
+It's preferred to either use existing simulators that provide the required packages or limit to very basic and time-periodic messages at first and postpone the implementation of a train simulation to the end of this project.
+For evaluating the system, it is not mandatory that the analyzed messages conform to the \ac{ETCS} specification, so that correspondig to \ac{ETCS} should not considered to be a main requirement of this project.
 
 \end{document}
