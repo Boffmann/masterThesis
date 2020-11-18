@@ -1,27 +1,33 @@
 \documentclass[a4paper, 12pt]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
 
-\usepackage[left=2cm, right=2cm, top=1.5cm]{geometry}
+\usepackage{hyperref}
+
+\usepackage[left=2.5cm, right=2.5cm, top=2.0cm]{geometry}
 
 \usepackage{setspace}
 % \onehalfspacing
 
 \usepackage{acronym}
-\newacro{SIL}{Safety Integrity Level}
-\acrodefplural{SIL}{Safety Integrity Levels}
-\newacro{ETCS}{European Train Control System}
-\newacro{ETCS OBU}{European Train Control System Onboard Unit}
-\newacro{SPS}[PLC]{Programmable Logic Controller}
-\acrodefplural{SPS}[PLCs]{Programmable Logic Controllers}
 \newacro{DDS}{Data Distribution Service}
-\newacro{OS}{Operating System}
-\newacro{RBC}{Radio Block Center}
+\newacro{ETCS}{European Train Control System}
+\newacro{ERTMS}{European Rail Traffic Management System}
+\newacro{ETCS OBU}{European Train Control System Onboard Unit}
+\newacro{GNSS}{Global Navigation Satellite System}
+\newacro{GNSSINS}[GNSS/INS]{Global Navigaion Satellite System/Inertial Navigation System}
+\newacro{INS}{Inertial Navigation System}
+\newacro{IOT}[IoT]{Internet of Things}
 \acrodefplural{RBC}{Radio Block Centers}
 \newacro{MA}{Movement Authority}
-\newacro{SSP}{Static Speed Profile}
 \newacro{OMG}{Object Management Group}
-\newacro{GNSS}{Global Navigation Satellite System}
-\newacro{INS}{Inertial Navigation System}
-\newacro{GNSSINS}[GNSS/INS]{Global Navigaion Satellite System/Inertial Navigation System}
+\newacro{OS}{Operating System}
+\newacro{RBC}{Radio Block Center}
+\newacro{SIL}{Safety Integrity Level}
+\acrodefplural{SIL}{Safety Integrity Levels}
+\newacro{SPS}[PLC]{Programmable Logic Controller}
+\acrodefplural{SPS}[PLCs]{Programmable Logic Controllers}
+\newacro{SSP}{Static Speed Profile}
 
 \begin{document}
 
@@ -32,36 +38,17 @@
   \large{\textsc{Hendrik Tjabben}}
 \end{center}
 
-% Einleitung
-% \section*{Abstract}
-
 \section*{Introduction}
-% Context CHECK
-% Status Quo CHECK
-% Problem and Challenges CHECK
-
-% HALF PAGE
 Embedded systems, which are deployed in safety-critical environments, must comply with certification requirements to demonstrate the system's functional safety and integrity.
 Nowadays, such safety-critical systems are demanded within various industries, including aero, medical, transportation and automotive applications.
 In order to verify the system's safety, its compliance with the required assurance level is ensured during an approval process.
-Verification, validation and certification are very time- and cost-intensive.
+The conducted verification, validation and certification steps are very time- and cost-intensive.
 Moreover, the approval process needs to be repeated every time the system is updated.
 
-% This approval process requires a lot of time and money for large systems with a high \ac{SIL}.
-% In addition, the approval process needs to be repeated every time the system is updated.
-% One way of reducing costs is to minimize the system's parts with high \acp{SIL}.
-% Other approaches to build safety-critical systems consider distributed designs, consisting of modular parts with different safety-demands.
-% The individual parts of this system are interconnected through a protocol that must not violate the system's safety requirements.
-% Such distributed systems reduce costs for approval by reducing the size of components to check and allow individual modules to be replaced with other approved modules.
-
 \section*{Aim of the project}
-% Proposed Solution CHECK
-% Academic view
-
-% HALF A PAGE
-In the course of this master thesis, a distributed system architecture is assessed and domonstrated that combines quality characteristics, such as simplicity, modularity, controller-level partitioning and distributed processing, with dynamic reconfiguration and data-driven designs.
+In the course of this master thesis, a distributed system architecture that combines quality characteristics, such as simplicity, modularity, control\-ler-level partitioning, and distributed processing, with dynamic reconfiguration and data-driven designs, is assessed and domonstrated.
 This architecture allows applications to be broken down in modules with distinct safety and integrity requirements.
-In order to prove the architecture, such as distributed system is build and validated against a core functionality of \ac{ETCS OBU}.
+In order to prove the approach, such a distributed system is build and validated against a core functionality of the \ac{ETCS OBU}.
 Therefore, essential track-to-train messages from balises and \acp{RBC} are decoded, \ac{MA} and \ac{SSP} are calculated and a the vehicles speed is supervised.
 The functional modules will be distributed across a modular system which is interconnected using the \ac{OMG} \ac{DDS} standard's publish-subscribe pattern.
 Upon the test system, characteristics such as certifiability - with a focus on the application software's modular certification and the identification of a sufficient \ac{DDS} subset - maintainability and performance are examined.
@@ -69,27 +56,33 @@ Further, a high-level safety case analysis will be provided in order to identify
 
 \section*{Experimental Setup}
 The experimental setup will comprise of a PC, four \acp{SPS}, an interconnect, a middleware layer running the \ac{DDS} standard and a simulation software.
-The PC functions as the main computation unit but has a low \ac{SIL} of \ac{SIL}2.
-However, the \acp{SPS} feature a secure \ac{SIL}4 \ac{OS} and are used for redundancy computing to safeguard the main PC's computations.
+The PC functions as the main computation unit but has a low \ac{SIL}.
+However, the \acp{SPS} feature a high \ac{SIL} \ac{OS} and are used for redundancy computing to supervise and safeguard the main PC's computations in a safe envelope.
 All \acp{SPS} are connected via an interconnect to the main PC.
-By swapping out safety critical computations to the redundant working \acp{SPS} and sending data between individual components using the dependable real-time data exchange standard \ac{DDS}, the entire system can be raised to a \ac{SIL}4.
+By swapping out safety critical computations to the redundant working \acp{SPS} and sending data between individual components using the dependable real-time data exchange standard \ac{DDS}, the entire system can be raised to a high \ac{SIL}.
 
-The simulation software imitates trackside balise as well as \ac{RBC} components and their corresponding data telegrams and messages, which are received and evaluatd by the PC and the four \acp{SPS}.
+The simulation software imitates trackside balise as well as \ac{RBC} components and their corresponding data telegrams and messages, which are received and evaluated by the PC and the four \acp{SPS}.
 In order to facilitate a realistic test environment, the balise and \ac{RBC} telegrams as well as the functional and operational principles are based on \ac{ETCS} Subset-026.
 
 The simulation software should also be deployable to a lab vehicle's on-board system.
 In that case, it will use positioning information based on \ac{GNSSINS} and odometry data of the lab vehicle in order to provide the system with virtual balise information.
 
 \section*{Related Work}
-%HALF A PAGE
-TODO
-
-% DDS
-
-% ETCS Balisen
+\paragraph{\ac{ETCS}} is a part of \ac{ERTMS} and comprises of the signalling and control components.
+It lays the foundation for further work on automatic train operation by removing the need of manual linesight signal observation in its most advanced form.
+In this work, the \ac{ETCS} Subset-026 is used.
+\vspace{-0.4cm}
+\paragraph{\ac{DDS}} is a data-centric connectivity standard and middleware protocol by the \ac{OMG} for machine-to-machine communication using a publish-subscribe pattern.
+It allows reliable and scalable communication architectures for critical \ac{IOT} applications.
+\vspace{-0.4cm}
+\paragraph{Cyclone DDS} is an implementation of the \ac{DDS} standard developed by ADLINK.
+The project is open source and licensed by the Eclipse Public License - v 2.0.
+In this project, Cyclone DDS will be used for the middleware \ac{DDS} layer's implementation.
+\vspace{-0.4cm}
+\paragraph{Designing Data-Intensive Applications} by Martin Kleppmann can provide good insights into designing a distributed system for redundancy computing.
+Problems that can occur withing a distributed systems for redundant compting include unreliable networks, partial failures and finding a system-wide consensus.
 
 \section*{Work and Risk Analysis}
-% HALF A PAGE
 
 The project can be subdevided into four parts, namely a train and track simulator, a hardware setup, an on-board processing system as well as a testing and evaluation phase.
 This work's main part is made up by the testing and evaluation phase, since this thesis' aim it to experiment and evaluate the system's configuration and characteristics.
