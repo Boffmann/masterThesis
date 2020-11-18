@@ -1,16 +1,19 @@
 OPEN=xdg-open
 PROJ=expose
+VERSION=1_2
+OUTNAME=$(PROJ)$(VERSION)
 
 all: build open
 
 build: $(PROJ).tex
 	pdflatex $(PROJ)
+	mv $(PROJ).pdf $(OUTNAME).pdf
 
 open:
-	$(OPEN) $(PROJ).pdf
+	$(OPEN) $(OUTNAME).pdf
 
 clean:
-	rm -f $(PROJ).pdf $(PROJ).log $(PROJ).aux
+	rm -f $(OUTNAME).pdf $(PROJ).log $(PROJ).aux
 
 retouch:
 	touch $(PROJ).tex
