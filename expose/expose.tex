@@ -9,6 +9,8 @@
 \usepackage{setspace}
 % \onehalfspacing
 
+\usepackage[textsize=tiny]{todonotes}
+
 \usepackage{acronym}
 \newacro{DDS}{Data Distribution Service}
 \newacro{ETCS}{European Train Control System}
@@ -23,6 +25,8 @@
 \acrodefplural{MA}{Movement Authorities}
 \newacro{OMG}{Object Management Group}
 \newacro{OS}{Operating System}
+\newacro{QOS}[QoS]{Quality of Service}
+\acrodefplural{QOS}[QoS]{Quality of Services}
 \newacro{RBC}{Radio Block Center}
 \newacro{SIL}{Safety Integrity Level}
 \acrodefplural{SIL}{Safety Integrity Levels}
@@ -47,9 +51,22 @@ In order to verify the system's safety, its compliance with the required assuran
 The conducted verification, validation and certification steps are very time- and cost-intensive.
 Moreover, the approval process needs to be repeated every time the system is updated.
 
+Modern safety-critical systems tend to distribute their computations to deal with the applied algorithm's increasing complexity and consequently expensive approval process.
+However, work distribution introduces new challenges such as handling the communication overhead as well as dealing with node-, network and computation failures~\cite{DistributedSafety2020}.
+In order to facilitate safe and real-time communication among participants, \ac{DDS}, which allows the definition of \ac{QOS}, can be used.
+It features real-time support, safety, security and good interoperability with other middlewares~\cite{DistributedSafety2020}.
+\ac{DDS} is already successfully applied in safety-critical environments such as underground railways where no constant communication can be guaranteed~\cite{DDSInURail}.
+Redundant computation is the key technique for ensuring a systems reliability and safety, while also allowing failure correlation and self-recovery~\cite{TanenbaumSteen07}.
+% Node failure can be addressed with a layered safety mechanism as proposed by~\cite{DistributedVerification2008}.
+However, redundancy typically also complicates a system's approval process~\cite{ReliabilityThroughRedundancy}.
+
+In our case, though, it is investigated how redundancy can help to support the approval process by elevating the system's safety-level.
+\todo{How does my work differ from others}
+Further, while others to ..., we do ...
+
 \section*{Aim of the project}
 In the course of this master thesis, a distributed system architecture that combines quality characteristics, such as simplicity, modularity, control\-ler-level partitioning, and distributed processing, with dynamic reconfiguration and data-driven designs, is assessed and demonstrated.
-This architecture allows applications to be broken down in modules with distinct safety and integrity requirements.
+This architecture targets the autmotive and transportation industry and allows applications to be broken down in modules with distinct safety and integrity requirements.
 In order to prove the approach, such a distributed system is build and validated against a core functionality of the \ac{ETCS OBU}.
 Therefore, essential track-to-train messages from balises and \acp{RBC} are decoded, \acp{MA} and \acp{SSP} are calculated and the vehicle's speed is supervised.
 The functional modules will be distributed across a modular system which is interconnected using the \ac{OMG} \ac{DDS} standard's publish-subscribe pattern.
@@ -95,5 +112,8 @@ Simulating a train and track-side balises is choosen to be the show-case of this
 Because of \ac{ETCS}'s complexity, building such a simulator from scratch is likely to take much resources.
 It's preferred to either use existing simulators that provide the required packages or limit to very basic and time-periodic messages at first and postpone the implementation of a train simulation to the end of this project.
 For evaluating the system, it is not mandatory that the analyzed messages conform to the \ac{ETCS} specification, so that adhering to \ac{ETCS} should not considered to be a main requirement of this project.
+
+\bibliographystyle{plain}
+\bibliography{bibtex}
 
 \end{document}
