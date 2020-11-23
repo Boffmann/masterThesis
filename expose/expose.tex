@@ -12,6 +12,8 @@
 \usepackage[textsize=tiny]{todonotes}
 
 \usepackage{acronym}
+\newacro{ASIL}{Automotive Safety Integrity Level}
+\acrodefplural{ASIL}{Automotive Safety Integrity Levels}
 \newacro{DDS}{Data Distribution Service}
 \newacro{ETCS}{European Train Control System}
 \newacro{ERTMS}{European Rail Traffic Management System}
@@ -44,6 +46,9 @@
   \large{\textsc{Hendrik Tjabben}}
 \end{center}
 
+% INTRODUCTION
+% -------------------------------------------------------------------------------------
+
 \section*{Introduction}
 Embedded systems, which are deployed in safety-critical environments, must comply with certification requirements to demonstrate the systems' functional safety and integrity.
 Nowadays, systems operating in safety-critical environments are demanded within various industries, including aerospace, medical, transportation and automotive applications.
@@ -59,11 +64,19 @@ It features real-time support, safety, security and good interoperability with o
 Redundant computation is the key technique for ensuring a system's reliability and safety, while also allowing failure correlation and self-recovery~\cite{TanenbaumSteen07}.
 However, redundancy typically also complicates a system's approval process~\cite{ReliabilityThroughRedundancy}.
 
+% AIM OF THE PROJECT
+% -------------------------------------------------------------------------------------
+
 \section*{Aim of the project}
 Redundancy is often performed on homogenous nodes, which means that they use the same chip architecture and processing unit.
 In the course of this master thesis, though, it is investigated how redundant computation on diverse nodes with different processing units can further improve a system's safety-level.
-In addition, a suitable subset of \ac{DDS} will be determined, that is suitable to achieve the same results as in~\cite{DistributedSafety2020}, but with less expense and a reduced feature set.
-All this is done based on \ac{ETCS} and certification requirements for the railway.
+While distributed systems for safety mechanism, that build on top of \ac{DDS}, already exist in the automotive domain~\cite{DistributedSafety2020}, the system presented in this work focus the railway.
+Therefore, the work done build on \ac{ETCS} and the CENELEC 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
+In addition, it will be determined whether there exists a suitable subset of \ac{DDS}, that is suitable to achieve the same results as in~\cite{DistributedSafety2020}, but with less expense and a reduced feature set.
+Further, it is investigated to what extend a fine-tuning of \ac{DDS}, for example using participants' \ac{QOS} settings, can improve an application's safety, as proposed by Kugele et al.~\cite{KugeleDataCentricForAuto}.
+
+For doing this, it is striven to cooperate with ADLINK~\footnote{\url{https://www.adlinktech.com/en/index.aspx}}, who build and maintain \ac{DDS} middlewares, such as Eclipse Cyclone DDS~\footnote{\url{https://github.com/eclipse-cyclonedds/cyclonedds}}, and corresponding tools.
+The benefit of using a \ac{DDS} implementation by ADLINK is, that remaining certification and security issues are covered - as demanded by~\cite{KugeleDataCentricForAuto}.
 
 For validating and demonstrating this approach, a distributed system architecture id build and assessed.
 This system's special aspect is, that it should combine quality characteristics, such as modularity, control\-ler-level partitioning, and distributed diverse-redundant processing, with dynamic reconfiguration and data-driven designs.
@@ -74,6 +87,9 @@ Therefore, essential track-to-train messages from balises and \acp{RBC} are deco
 The functional modules will be distributed across a modular system which is interconnected using the \ac{OMG} \ac{DDS} standard's publish-subscribe pattern.
 Upon the test system, characteristics such as certifiability - with a focus modularity - maintainability and performance are examined.
 Further, a high-level safety case analysis will be provided in order to identify functions that could be mapped to nodes with lower \acp{SIL}.
+
+% EXPERIMENTAL SETUP
+% -------------------------------------------------------------------------------------
 
 \section*{Experimental Setup}
 The experimental setup will comprise of a PC, four \acp{SPS}, an interconnect, a middleware layer running the \ac{DDS} standard and a simulation software.
@@ -89,17 +105,30 @@ In order to facilitate a realistic test environment, the balise and \ac{RBC} tel
 The simulation software should also be deployable to a lab vehicle's on-board system.
 In that case, it will use positioning information based on \ac{GNSSINS} and odometry data of the lab vehicle in order to provide the system with virtual balise information.
 
+% RELATED WORK
+% -------------------------------------------------------------------------------------
+
 \section*{Related Work}
-\paragraph{\ac{ETCS}} is a part of \ac{ERTMS} and comprises of the signalling and control components.
-It lays the foundation for further work on automatic train operation by removing the need of manual linesight signal observation in its most advanced form.
-In this work, the \ac{ETCS} Subset-026 is used.
-\vspace{-0.4cm}
-\paragraph{\ac{DDS}} is a data-centric connectivity standard and middleware protocol by the \ac{OMG} for machine-to-machine communication using a publish-subscribe pattern.
-It allows reliable and scalable communication architectures for critical \ac{IOT} applications.
-\vspace{-0.4cm}
-\paragraph{Cyclone DDS} is an implementation of the \ac{DDS} standard developed by ADLINK.
-The project is open source and licensed by the Eclipse Public License - v 2.0.
-In this project, Cyclone DDS will be used for the middleware \ac{DDS} layer's implementation.
+Kugele et al. evaluate to what extend \ac{DDS} is feasible for automotive software~\cite{KugeleDataCentricForAuto}.
+For answering this question, they implement an automotive service-oriented architecture and perform benchmark experiments upon this architecture.
+For evaluating \ac{DDS}'s applicability in such a domain, Kugele et al. propose requirements and quality attributes for autonomous driving software.
+The used list of requirements is composed by summarizing and adapting standards from the literature.
+Their experiments are realized on a Ethernet topology with four Raspberry Pi 3 model B nodes and OpenDDS.
+Results show that \ac{DDS} provides decent yet expandable availability and safety characteristics.
+However, they also state that \ac{DDS} only covers automotive requirements when certain aspects, such as certification and security issues, are addressed.
+\\
+
+In their work, Bijlsma et al. extend the state-of-the-art E-Gas layered monitoring concept to handle faults in a distributed and redundant system~\cite{DistributedSafety2020}.
+Upon their middleware, \ac{DDS} is applied to facilitate reliable communication among individual components with various \acp{ASIL}.
+Besides functional data, diagnosis data is trasmitted using \ac{DDS} in order to detect faulty components.
+\\
+
+Jean-Louis Boulanger presents the 2011 version of the CENELEC 50128 standard and its implementations in his book~\cite{BoulangerStandards}.
+CENELEC 50128 describes a software creation process for railway applications, as well as resources needed to achieve a set level of assurance.
+Boulanger accentuates that the standard defines a context by which the safety of a software can be managed and thereby provides a guideline for safe software in the railway domain.
+
+% WORK AND RISK ANALYSIS
+% -------------------------------------------------------------------------------------
 
 \section*{Work and Risk Analysis}
 The project can be subdevided into four parts, namely a train and track simulator, a hardware setup, an on-board processing system as well as a testing and evaluation phase.
