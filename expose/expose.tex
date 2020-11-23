@@ -45,8 +45,8 @@
 \end{center}
 
 \section*{Introduction}
-Embedded systems, which are deployed in safety-critical environments, must comply with certification requirements to demonstrate the system's functional safety and integrity.
-Nowadays, such safety-critical systems are demanded within various industries, including aero, medical, transportation and automotive applications.
+Embedded systems, which are deployed in safety-critical environments, must comply with certification requirements to demonstrate the systems' functional safety and integrity.
+Nowadays, systems operating in safety-critical environments are demanded within various industries, including aerospace, medical, transportation and automotive applications.
 In order to verify the system's safety, its compliance with the required assurance level is ensured during an approval process.
 The conducted verification, validation and certification steps are very time- and cost-intensive.
 Moreover, the approval process needs to be repeated every time the system is updated.
@@ -56,21 +56,23 @@ However, work distribution introduces new challenges such as handling the commun
 In order to facilitate safe and real-time communication among participants, \ac{DDS}, which allows the definition of \ac{QOS}, can be used.
 It features real-time support, safety, security and good interoperability with other middlewares~\cite{DistributedSafety2020}.
 \ac{DDS} is already successfully applied in safety-critical environments such as underground railways where no constant communication can be guaranteed~\cite{DDSInURail}.
-Redundant computation is the key technique for ensuring a systems reliability and safety, while also allowing failure correlation and self-recovery~\cite{TanenbaumSteen07}.
-% Node failure can be addressed with a layered safety mechanism as proposed by~\cite{DistributedVerification2008}.
+Redundant computation is the key technique for ensuring a system's reliability and safety, while also allowing failure correlation and self-recovery~\cite{TanenbaumSteen07}.
 However, redundancy typically also complicates a system's approval process~\cite{ReliabilityThroughRedundancy}.
 
-In our case, though, it is investigated how redundancy can help to support the approval process by elevating the system's safety-level.
-\todo{How does my work differ from others}
-Further, while others to ..., we do ...
-
 \section*{Aim of the project}
-In the course of this master thesis, a distributed system architecture that combines quality characteristics, such as simplicity, modularity, control\-ler-level partitioning, and distributed processing, with dynamic reconfiguration and data-driven designs, is assessed and demonstrated.
-This architecture targets the autmotive and transportation industry and allows applications to be broken down in modules with distinct safety and integrity requirements.
+Redundancy is often performed on homogenous nodes, which means that they use the same chip architecture and processing unit.
+In the course of this master thesis, though, it is investigated how redundant computation on diverse nodes with different processing units can further improve a system's safety-level.
+In addition, a suitable subset of \ac{DDS} will be determined, that is suitable to achieve the same results as in~\cite{DistributedSafety2020}, but with less expense and a reduced feature set.
+All this is done based on \ac{ETCS} and certification requirements for the railway.
+
+For validating and demonstrating this approach, a distributed system architecture id build and assessed.
+This system's special aspect is, that it should combine quality characteristics, such as modularity, control\-ler-level partitioning, and distributed diverse-redundant processing, with dynamic reconfiguration and data-driven designs.
+The modular and distributed properties allow applications to be broken down in modules with distinct safety and integrity requirements.
+
 In order to prove the approach, such a distributed system is build and validated against a core functionality of the \ac{ETCS OBU}.
 Therefore, essential track-to-train messages from balises and \acp{RBC} are decoded, \acp{MA} and \acp{SSP} are calculated and the vehicle's speed is supervised.
 The functional modules will be distributed across a modular system which is interconnected using the \ac{OMG} \ac{DDS} standard's publish-subscribe pattern.
-Upon the test system, characteristics such as certifiability - with a focus modularity and the identification of a sufficient \ac{DDS} subset - maintainability and performance are examined.
+Upon the test system, characteristics such as certifiability - with a focus modularity - maintainability and performance are examined.
 Further, a high-level safety case analysis will be provided in order to identify functions that could be mapped to nodes with lower \acp{SIL}.
 
 \section*{Experimental Setup}
@@ -98,9 +100,6 @@ It allows reliable and scalable communication architectures for critical \ac{IOT
 \paragraph{Cyclone DDS} is an implementation of the \ac{DDS} standard developed by ADLINK.
 The project is open source and licensed by the Eclipse Public License - v 2.0.
 In this project, Cyclone DDS will be used for the middleware \ac{DDS} layer's implementation.
-\vspace{-0.4cm}
-\paragraph{Designing Data-Intensive Applications} by Martin Kleppmann can provide good insights into designing a distributed system for redundancy computing.
-Problems that can occur withing a distributed systems for redundant compting include unreliable networks, partial failures and finding a system-wide consensus.
 
 \section*{Work and Risk Analysis}
 The project can be subdevided into four parts, namely a train and track simulator, a hardware setup, an on-board processing system as well as a testing and evaluation phase.
