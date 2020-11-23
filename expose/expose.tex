@@ -3,6 +3,7 @@
 \usepackage[english]{babel}
 
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \usepackage[left=2.5cm, right=2.5cm, top=2.0cm]{geometry}
 
@@ -36,6 +37,36 @@
 \acrodefplural{SPS}[PLCs]{Programmable Logic Controllers}
 \newacro{SSP}{Static Speed Profile}
 \acrodefplural{SSP}{Static Speed Profiles}
+
+% autoref with capital letter (from https://tex.stackexchange.com/a/40413)
+\usepackage{catoptions}
+\makeatletter
+\def\figureautorefname{figure}
+\def\tableautorefname{table}
+\def\Autoref#1{%
+  \begingroup
+  \edef\reserved@a{\cpttrimspaces{#1}}%
+  \ifcsndefTF{r@#1}{%
+    \xaftercsname{\expandafter\testreftype\@fourthoffive}
+      {r@\reserved@a}.\\{#1}%
+  }{%
+    \ref{#1}%
+  }%
+  \endgroup
+}
+\def\testreftype#1.#2\\#3{%
+  \ifcsndefTF{#1autorefname}{%
+    \def\reserved@a##1##2\@nil{%
+      \uppercase{\def\ref@name{##1}}%
+      \csn@edef{#1autorefname}{\ref@name##2}%
+      \autoref{#3}%
+    }%
+    \reserved@a#1\@nil
+  }{%
+    \autoref{#3}%
+  }%
+}
+\makeatother
 
 \begin{document}
 
@@ -92,7 +123,15 @@ Further, a high-level safety case analysis will be provided in order to identify
 % -------------------------------------------------------------------------------------
 
 \section*{Experimental Setup}
-The experimental setup will comprise of a PC, four \acp{SPS}, an interconnect, a middleware layer running the \ac{DDS} standard and a simulation software.
+
+\begin{figure}
+  \includegraphics[width=\linewidth]{img/experimentalSetup.png}
+  \caption{This work's experimental setup.}
+  \label{fig:setup}
+\end{figure}
+
+The experimental setup is depicted in~\Autoref{fig:setup}.
+It will comprise of a PC, four \acp{SPS}, an interconnect, a middleware layer running the \ac{DDS} standard and a simulation software.
 The entire computation is done by the PC, which functions as the main computation unit but has no safety guarantees at all.
 However, the \acp{SPS} feature a high \ac{SIL} \ac{OS} and are used for redudancy computation by only reprocessing the workload's safety-critical parts.
 Synchronizing the \ac{SPS}'s results with the main PC supervises its work and wraps it into a safe envelope.
