@@ -101,13 +101,15 @@ However, redundancy typically also complicates a system's approval process~\cite
 \section*{Aim of the project}
 Redundancy is often performed on homogenous nodes, which means that they use the same chip architecture and processing unit.
 In the course of this master thesis, though, it is investigated how redundant computation on diverse nodes with different processing units can further improve a system's safety-level.
-While distributed systems for safety mechanism, that build on top of \ac{DDS}, already exist in the automotive domain~\cite{DistributedSafety2020}, the system presented in this work focus the railway.
+Distributed systems for safety mechanism, that build on top of \ac{DDS}, already exist in the automotive~\cite{DistributedSafety2020} and in the railway domain~\cite{DDSInURail}.
+Howevr, \ac{DDS} middleware solutions need to be re-evaluated for each specific execution context they are applied in, because of unexpected interactions with the execution environment~\cite{CotroneoDDSFailureAnalysis}.
+In this work, a distributed solution for the context of on-board balise telegram evaluation in the railway execution environment will be examined.
 Therefore, the work done build on \ac{ETCS} and the CENELEC 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
 In addition, it will be determined whether there exists a suitable subset of \ac{DDS}, that is suitable to achieve the same results as in~\cite{DistributedSafety2020}, but with less expense and a reduced feature set.
 Further, it is investigated to what extend a fine-tuning of \ac{DDS}, for example using participants' \ac{QOS} settings, can improve an application's safety, as proposed by Kugele et al.~\cite{KugeleDataCentricForAuto}.
 
 For doing this, it is striven to cooperate with ADLINK~\footnote{\url{https://www.adlinktech.com/en/index.aspx}}, who build and maintain \ac{DDS} middlewares, such as Eclipse Cyclone DDS~\footnote{\url{https://github.com/eclipse-cyclonedds/cyclonedds}}, and corresponding tools.
-The benefit of using a \ac{DDS} implementation by ADLINK is, that remaining certification and security issues are covered - as demanded by~\cite{KugeleDataCentricForAuto}.
+The benefit of using a \ac{DDS} implementation by ADLINK is, that it has been proven in practice and remaining certification and security issues are covered - as demanded by~\cite{KugeleDataCentricForAuto}.
 
 For validating and demonstrating this approach, a distributed system architecture id build and assessed.
 This system's special aspect is, that it should combine quality characteristics, such as modularity, control\-ler-level partitioning, and distributed diverse-redundant processing, with dynamic reconfiguration and data-driven designs.
@@ -165,6 +167,12 @@ Besides functional data, diagnosis data is trasmitted using \ac{DDS} in order to
 Jean-Louis Boulanger presents the 2011 version of the CENELEC 50128 standard and its implementations in his book~\cite{BoulangerStandards}.
 CENELEC 50128 describes a software creation process for railway applications, as well as resources needed to achieve a set level of assurance.
 Boulanger accentuates that the standard defines a context by which the safety of a software can be managed and thereby provides a guideline for safe software in the railway domain.
+\\
+
+The applicability of the \ac{DDS} standard and the OpenSlice DDS implementation for safety-critical railway systems is proven by Schmidt et al~\cite{SchmidtMissionCriticalChallenges}.
+Findings show that OpenSplice DDS' \ac{QOS} policies allow predictable time and locality characteristics for data distribution.
+Further, this work provides and overview of \ac{QOS} policies and OpenSplice DDS features to ensure reliability, availability, data-delivery, and resource usage.
+Although Schmidt et al. address OpenSplice DDS in their work, the results also apply to Cyclone DDS since it is designed as being a superset of OpenSplice DDS.
 
 % WORK AND RISK ANALYSIS
 % -------------------------------------------------------------------------------------
