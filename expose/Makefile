@@ -1,6 +1,6 @@
 OPEN=xdg-open
 PROJ=expose
-VERSION=1_2
+VERSION=2
 OUTNAME=$(PROJ)$(VERSION)
 
 all: build open
