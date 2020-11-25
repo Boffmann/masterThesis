@@ -7,7 +7,7 @@
 
 \usepackage[left=2.5cm, right=2.5cm, top=2.0cm]{geometry}
 
-\usepackage{setspace}
+% \usepackage{setspace}
 % \onehalfspacing
 
 \usepackage[textsize=tiny]{todonotes}
@@ -100,24 +100,24 @@ However, redundancy typically also complicates a system's approval process~\cite
 
 \section*{Aim of the project}
 Redundancy is often performed on homogeneous nodes, which means that they use the same chip architecture and processing unit.
+This also means that failures, that are common for a particular chip architecture, affect the safety of the entire system.
 In the course of this master thesis, though, it is investigated how redundant computation on diverse nodes with different processing units can further improve a system's safety-level.
 Distributed and safety-critical systems, that build on top of \ac{DDS}, already exist in the automotive~\cite{DistributedSafety2020} and in the railway domain~\cite{DDSInURail}.
 However, \ac{DDS} middleware solutions need to be re-evaluated for each specific execution context they are applied in, because of unexpected interactions with the execution environment~\cite{CotroneoDDSFailureAnalysis}.
-In this work, a distributed \ac{DDS} conform solution for the context of on-board balise telegram evaluation in the railway execution environment will be examined.
-Therefore, this work builds on \ac{ETCS} and the CENELEC 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
-In addition, it will be determined whether there exists a suitable subset of \ac{DDS}, so that the same results as in~\cite{DistributedSafety2020} and~\cite{KugeleDataCentricForAuto} can be achieved with less expense.
+In this work, a distributed \ac{DDS} conform system for the context of on-board balise telegram evaluation in the railway execution environment will be examined.
+Therefore, this work builds on a core functionality of the \ac{ETCS OBU} and the CENELEC 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
+The system's special aspect is, that it should combine quality characteristics, such as modularity, control\-ler-level partitioning, and distributed diverse-redundant processing, with dynamic as well as automatic reconfiguration and data-driven designs.
+The modular and distributed properties allow applications to be broken down in modules with distinct safety and reliability requirements.
+For validating the approach, various questions regarding the most suitable system architecture are evaluated.
+This includes, among others, the number of redundant computation units and communication channels, the applied transportation protocol, and the used topology.
+
+In addition, a suitable minimal subset of \ac{DDS} for achieving with respect to safety, as in~\cite{DistributedSafety2020} and~\cite{KugeleDataCentricForAuto}, will be determined.
 Further, it is investigated to what extend a fine-tuning of \ac{DDS}, for example using participants' \ac{QOS} settings, can improve an application's safety, as proposed by Kugele et al.~\cite{KugeleDataCentricForAuto}.
 
 For doing this, it is striven to cooperate with ADLINK\footnote{\url{https://www.adlinktech.com/en/index.aspx}}, who build and maintain \ac{DDS} middlewares, such as Eclipse Cyclone DDS\footnote{\url{https://github.com/eclipse-cyclonedds/cyclonedds}}, and corresponding tools.
 The benefit of using a \ac{DDS} implementation by ADLINK is, that it has been proven in practice and remaining certification and security issues are covered - as demanded by~\cite{KugeleDataCentricForAuto}.
 
-For validating and demonstrating this approach, a distributed system architecture is build and assessed.
-This system's special aspect is, that it should combine quality characteristics, such as modularity, control\-ler-level partitioning, and distributed diverse-redundant processing, with dynamic reconfiguration and data-driven designs.
-The modular and distributed properties allow applications to be broken down in modules with distinct safety and reliability requirements.
-
-In order to prove the approach, such a distributed system is build and validated against a core functionality of the \ac{ETCS OBU}.
-Therefore, essential track-to-train messages from balises and \acp{RBC} are decoded, \acp{MA} and \acp{SSP} are calculated and the vehicle's speed is supervised.
-The functional modules will be distributed across a modular system which is interconnected using the \ac{OMG} \ac{DDS} standard's publish-subscribe pattern.
+In order to validate the approaches practicability, essential track-to-train messages from balises and \acp{RBC} are decoded, \acp{MA} and \acp{SSP} are calculated and the vehicle's speed is supervised.
 Upon the test system, characteristics such as certifiability - with a focus on modularity - maintainability and performance are examined.
 Further, a high-level safety case analysis will be provided in order to identify functions that could be mapped to nodes with lower \acp{SIL}.
 
@@ -165,10 +165,11 @@ Upon their middleware, \ac{DDS} is applied to facilitate reliable communication 
 Besides functional data, diagnosis data is transmitted using \ac{DDS} in order to detect faulty components.
 \\
 
-The applicability of the \ac{DDS} standard and the OpenSlice DDS implementation for safety-critical railway systems is proven by Schmidt et al.~\cite{SchmidtMissionCriticalChallenges}.
+\todo{Schmidt and vant Hang}
+The applicability of the \ac{DDS} standard and the OpenSlice DDS implementation for safety-critical railway systems is proven by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
 Findings show that OpenSplice DDS' \ac{QOS} policies allow predictable time and locality characteristics for data distribution.
 Further, this work provides and overview of \ac{QOS} policies and OpenSplice DDS features to ensure reliability, availability, data-delivery, and resource usage.
-Although Schmidt et al. address OpenSplice DDS in their work, the results also apply to Cyclone DDS since it is designed as being a super-set of OpenSplice DDS.
+Although Schmidt and van't Hag address OpenSplice DDS in their work, the results also apply to Cyclone DDS since it is designed as being a super-set of OpenSplice DDS.
 \\
 
 Jean-Louis Boulanger presents the 2011 version of the CENELEC 50128 standard and its implementations in his book~\cite{BoulangerStandards}.

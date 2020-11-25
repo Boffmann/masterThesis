@@ -13,7 +13,7 @@ build: $(PROJ).tex
 	mv $(PROJ).pdf $(OUTNAME).pdf
 
 open:
-	$(OPEN) $(OUTNAME).pdf
+	$(OPEN) $(OUTNAME).pdf&
 
 clean:
 	rm -f $(OUTNAME).pdf $(PROJ).log $(PROJ).aux $(PROJ).bbl $(PROJ).blg $(PROJ).out
