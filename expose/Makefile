@@ -1,7 +1,6 @@
 OPEN=xdg-open
 PROJ=expose
-VERSION=2
-OUTNAME=$(PROJ)$(VERSION)
+OUTNAME=$(PROJ)
 
 all: build open
 
@@ -10,7 +9,7 @@ build: $(PROJ).tex
 	bibtex $(PROJ)
 	pdflatex $(PROJ)
 	pdflatex $(PROJ)
-	mv $(PROJ).pdf $(OUTNAME).pdf
+	# mv $(PROJ).pdf $(OUTNAME).pdf
 
 open:
 	$(OPEN) $(OUTNAME).pdf&

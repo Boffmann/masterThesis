@@ -5,6 +5,12 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{WIP 1.3}
+
+
 \usepackage[left=2.5cm, right=2.5cm, top=2.0cm]{geometry}
 
 % \usepackage{setspace}
@@ -82,8 +88,8 @@
 
 \section*{Introduction}
 Embedded systems, which are deployed in safety-critical environments, must comply with certification requirements to demonstrate the systems' functional safety and reliability.
-Nowadays, systems operating in safety-critical environments are demanded within various industries, including railway, aerospace, medical, transportation and automotive.
-In order to verify the system's safety, its compliance with the required assurance level is ensured during an approval process.
+Nowadays, systems operating in safety-critical environments are demanded within various industries, including railway, aerospace, medical, transportation, and automotive.
+In order to verify the system's safety, its compliance with the required safety-level is ensured during an approval process.
 The conducted verification, validation and certification steps are very time- and cost-intensive.
 Moreover, the approval process needs to be repeated every time the system is updated.
 
@@ -92,7 +98,7 @@ However, work distribution introduces new challenges such as handling the commun
 In order to facilitate safe and real-time communication among participants, the \ac{DDS} standard, which allows the definition of \acp{QOS}, can be used.
 It features real-time support, safety, security and good interoperability with other middlewares~\cite{DistributedSafety2020}.
 \ac{DDS} is already successfully applied in safety-critical environments such as underground railways where no constant communication can be guaranteed~\cite{DDSInURail}.
-Redundant computation is a key technique for ensuring a system's reliability and safety, while also allowing failure correlation and self-recovery~\cite{TanenbaumSteen07}.
+A key technque for increasing a system's reliability and safety, as well as allowing failure correlation and self-recovery, is redundant computation~\cite{TanenbaumSteen07}.
 However, redundancy typically also complicates a system's approval process~\cite{ReliabilityThroughRedundancy}.
 
 % AIM OF THE PROJECT
@@ -100,20 +106,19 @@ However, redundancy typically also complicates a system's approval process~\cite
 
 \section*{Aim of the project}
 Redundancy is often performed on homogeneous nodes, which means that they use the same chip architecture and processing unit.
-This also means that failures, that are common for a particular chip architecture, affect the safety of the entire system.
-In the course of this master thesis, though, it is investigated how redundant computation on diverse nodes with different processing units can further improve a system's safety-level.
+This also means that failures, that are common for a particular chip architecture, compromise the safety of the entire system.
+Therefore, in the course of this master thesis, it is investigated how redundant computation on diverse nodes with different processing units and chip architectures can further improve a system's safety-level.
 Distributed and safety-critical systems, that build on top of \ac{DDS}, already exist in the automotive~\cite{DistributedSafety2020} and in the railway domain~\cite{DDSInURail}.
 However, \ac{DDS} middleware solutions need to be re-evaluated for each specific execution context they are applied in, because of unexpected interactions with the execution environment~\cite{CotroneoDDSFailureAnalysis}.
 In this work, a distributed \ac{DDS} conform system for the context of on-board balise telegram evaluation in the railway execution environment will be examined.
-Therefore, this work builds on a core functionality of the \ac{ETCS OBU} and the CENELEC 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
+Therefore, this work builds on a core functionality of the \ac{ETCS OBU} and the EN 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
 The system's special aspect is, that it should combine quality characteristics, such as modularity, control\-ler-level partitioning, and distributed diverse-redundant processing, with dynamic as well as automatic reconfiguration and data-driven designs.
-The modular and distributed properties allow applications to be broken down in modules with distinct safety and reliability requirements.
+The modular and distributed properties allow applications to be broken down and arranged on modules with distinct safety and reliability requirements.
 For validating the approach, various questions regarding the most suitable system architecture are evaluated.
 This includes, among others, the number of redundant computation units and communication channels, the applied transportation protocol, and the used topology.
 
-In addition, a suitable minimal subset of \ac{DDS} for achieving with respect to safety, as in~\cite{DistributedSafety2020} and~\cite{KugeleDataCentricForAuto}, will be determined.
+In addition, a suitable minimal subset of \ac{DDS} for achieving the desired safety and reliability requirements is determined.
 Further, it is investigated to what extend a fine-tuning of \ac{DDS}, for example using participants' \ac{QOS} settings, can improve an application's safety, as proposed by Kugele et al.~\cite{KugeleDataCentricForAuto}.
-
 For doing this, it is striven to cooperate with ADLINK\footnote{\url{https://www.adlinktech.com/en/index.aspx}}, who build and maintain \ac{DDS} middlewares, such as Eclipse Cyclone DDS\footnote{\url{https://github.com/eclipse-cyclonedds/cyclonedds}}, and corresponding tools.
 The benefit of using a \ac{DDS} implementation by ADLINK is, that it has been proven in practice and remaining certification and security issues are covered - as demanded by~\cite{KugeleDataCentricForAuto}.
 
@@ -133,7 +138,7 @@ Further, a high-level safety case analysis will be provided in order to identify
 \end{figure}
 
 The experimental setup is depicted in~\Autoref{fig:setup}.
-It will comprise of a PC, four \acp{SPS}, an interconnect, a middleware layer running the \ac{DDS} standard, and a simulation software.
+It will comprise of a PC, a number of \acp{SPS}, an interconnect, a middleware layer running the \ac{DDS} standard, and a simulation software.
 The entire computation is done by the PC, which functions as the main computation unit but has no safety guarantees at all.
 However, the \acp{SPS} feature a high \ac{SIL} \ac{OS} and are used for redundancy computation by only reprocessing the workload's safety-critical parts.
 Synchronizing the \ac{SPS}'s results with the main PC supervises its work and wraps it into a safe envelope.
@@ -165,7 +170,6 @@ Upon their middleware, \ac{DDS} is applied to facilitate reliable communication 
 Besides functional data, diagnosis data is transmitted using \ac{DDS} in order to detect faulty components.
 \\
 
-\todo{Schmidt and vant Hang}
 The applicability of the \ac{DDS} standard and the OpenSlice DDS implementation for safety-critical railway systems is proven by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
 Findings show that OpenSplice DDS' \ac{QOS} policies allow predictable time and locality characteristics for data distribution.
 Further, this work provides and overview of \ac{QOS} policies and OpenSplice DDS features to ensure reliability, availability, data-delivery, and resource usage.
