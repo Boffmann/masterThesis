@@ -89,7 +89,7 @@
 \section*{Introduction}
 Embedded systems, which are deployed in safety-critical environments, must comply with certification requirements to demonstrate the systems' functional safety and reliability.
 Nowadays, systems operating in safety-critical environments are demanded within various industries, including railway, aerospace, medical, transportation, and automotive.
-In order to verify the system's safety, its compliance with the required safety-level is ensured during an approval process.
+In order to verify a system's safety, its compliance with the required safety-level is ensured during an approval process.
 The conducted verification, validation and certification steps are very time- and cost-intensive.
 Moreover, the approval process needs to be repeated every time the system is updated.
 
@@ -110,10 +110,10 @@ This also means that failures, that are common for a particular chip architectur
 Therefore, in the course of this master thesis, it is investigated how redundant computation on diverse nodes with different processing units and chip architectures can further improve a system's safety-level.
 Distributed and safety-critical systems, that build on top of \ac{DDS}, already exist in the automotive~\cite{DistributedSafety2020} and in the railway domain~\cite{DDSInURail}.
 However, \ac{DDS} middleware solutions need to be re-evaluated for each specific execution context they are applied in, because of unexpected interactions with the execution environment~\cite{CotroneoDDSFailureAnalysis}.
-In this work, a distributed \ac{DDS} conform system for the context of on-board balise telegram evaluation in the railway execution environment will be examined.
+In this work, a distributed \ac{DDS}-conform system for the context of on-board balise telegram evaluation in the railway execution environment will be examined.
 Therefore, this work builds on a core functionality of the \ac{ETCS OBU} and the EN 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
 The system's special aspect is, that it should combine quality characteristics, such as modularity, control\-ler-level partitioning, and distributed diverse-redundant processing, with dynamic as well as automatic reconfiguration and data-driven designs.
-The modular and distributed properties allow applications to be broken down and arranged on modules with distinct safety and reliability requirements.
+The modular and distributed properties allow distinct safety and reliability requirements on a per-module basis.
 For validating the approach, various questions regarding the most suitable system architecture are evaluated.
 This includes, among others, the number of redundant computation units and communication channels, the applied transportation protocol, and the used topology.
 
@@ -122,7 +122,7 @@ Further, it is investigated to what extend a fine-tuning of \ac{DDS}, for exampl
 For doing this, it is striven to cooperate with ADLINK\footnote{\url{https://www.adlinktech.com/en/index.aspx}}, who build and maintain \ac{DDS} middlewares, such as Eclipse Cyclone DDS\footnote{\url{https://github.com/eclipse-cyclonedds/cyclonedds}}, and corresponding tools.
 The benefit of using a \ac{DDS} implementation by ADLINK is, that it has been proven in practice and remaining certification and security issues are covered - as demanded by~\cite{KugeleDataCentricForAuto}.
 
-In order to validate the approaches practicability, essential track-to-train messages from balises and \acp{RBC} are decoded, \acp{MA} and \acp{SSP} are calculated and the vehicle's speed is supervised.
+In order to validate the approache's practicability, essential track-to-train messages from balises and \acp{RBC} are decoded, \acp{MA} and \acp{SSP} are calculated and the vehicle's speed is supervised.
 Upon the test system, characteristics such as certifiability - with a focus on modularity - maintainability and performance are examined.
 Further, a high-level safety case analysis will be provided in order to identify functions that could be mapped to nodes with lower \acp{SIL}.
 
@@ -140,7 +140,7 @@ Further, a high-level safety case analysis will be provided in order to identify
 The experimental setup is depicted in~\Autoref{fig:setup}.
 It will comprise of a PC, a number of \acp{SPS}, an interconnect, a middleware layer running the \ac{DDS} standard, and a simulation software.
 The entire computation is done by the PC, which functions as the main computation unit but has no safety guarantees at all.
-However, the \acp{SPS} feature a high \ac{SIL} \ac{OS} and are used for redundancy computation by only reprocessing the workload's safety-critical parts.
+However, the \acp{SPS} feature a high-\ac{SIL} \ac{OS} and are used for redundancy computation by only reprocessing the workload's safety-critical parts.
 Synchronizing the \ac{SPS}'s results with the main PC supervises its work and wraps it into a safe envelope.
 All \acp{SPS} are connected via an interconnect to the main PC.
 By swapping out safety critical computations to the redundant working \acp{SPS} and sending data between individual components using the dependable real-time data exchange standard \ac{DDS}, the entire system could be raised to a high \ac{SIL}.
