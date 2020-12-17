@@ -18,31 +18,31 @@
 
 \usepackage[textsize=tiny]{todonotes}
 
-\usepackage{acronym}
-\newacro{ASIL}{Automotive Safety Integrity Level}
-\acrodefplural{ASIL}{Automotive Safety Integrity Levels}
-\newacro{DDS}{Data Distribution Service}
-\newacro{ETCS}{European Train Control System}
-\newacro{ERTMS}{European Rail Traffic Management System}
-\newacro{ETCS OBU}{European Train Control System Onboard Unit}
-\newacro{GNSS}{Global Navigation Satellite System}
-\newacro{GNSSINS}[GNSS/INS]{Global Navigation Satellite System/Inertial Navigation System}
-\newacro{INS}{Inertial Navigation System}
-\newacro{IOT}[IoT]{Internet of Things}
-\acrodefplural{RBC}{Radio Block Centers}
-\newacro{MA}{Movement Authority}
-\acrodefplural{MA}{Movement Authorities}
-\newacro{OMG}{Object Management Group}
-\newacro{OS}{Operating System}
-\newacro{QOS}[QoS]{Quality of Service}
-\acrodefplural{QOS}[QoS]{Quality of Services}
-\newacro{RBC}{Radio Block Center}
-\newacro{SIL}{Safety Integrity Level}
-\acrodefplural{SIL}{Safety Integrity Levels}
-\newacro{SPS}[PLC]{Program\-mable Logic Control\-ler}
-\acrodefplural{SPS}[PLCs]{Program\-mable Logic Control\-lers}
-\newacro{SSP}{Static Speed Profile}
-\acrodefplural{SSP}{Static Speed Profiles}
+\usepackage[acronym]{glossaries}
+\newacronym{ASIL}{ASIL}{Automotive Safety Integrity Level}
+\newacronym{DDS}{DDS}{Data Distribution Service}
+\newacronym{ETCS}{ETCS}{European Train Control System}
+\newacronym{ERTMS}{ERTMS}{European Rail Traffic Management System}
+\newacronym{ETCS OBU}{ETCS OBU}{\gls*{ETCS} Onboard Unit}
+\newacronym{GNSS}{GNSS}{Global Navigation Satellite System}
+\newacronym{GNSSINS}{GNSS/INS}{Global Navigation Satellite System/Inertial Navigation System}
+\newacronym{INS}{INS}{Inertial Navigation System}
+\newacronym{IOT}{IoT}{Internet of Things}
+\newacronym{MA}{MA}{Movement Authority}
+\newacronym{OMG}{OMG}{Object Management Group}
+\newacronym{OS}{OS}{Operating System}
+\newacronym{QOS}{QoS}{Quality of Service}
+\newacronym{RBC}{RBC}{Radio Block Center}
+\newacronym{SIL}{SIL}{Safety Integrity Level}
+\newacronym{SPS}{PLC}{Program\-mable Logic Control\-ler}
+\newacronym{SSP}{SSP}{Static Speed Profile}
+
+% \newglossaryentry{TEST} {
+%     name={One-Way Delay},
+%       description={The time a packet uses through a network from one host to another},
+%     }
+
+  \makenoidxglossaries
 
 % autoref with capital letter (from https://tex.stackexchange.com/a/40413)
 \usepackage{catoptions}
@@ -95,9 +95,9 @@ Moreover, the approval process needs to be repeated every time the system is upd
 
 Modern safety-critical systems tend to distribute their computations to deal with the increasing complexity of applied algorithms and consequently increasing costs of approval processes.
 However, work distribution introduces new challenges such as handling the communication overhead as well as dealing with node-, network and computation failures~\cite{DistributedSafety2020}.
-In order to facilitate safe and real-time communication among participants, the \ac{DDS} standard, which allows the definition of \acp{QOS}, can be used.
+In order to facilitate safe and real-time communication among participants, the \gls*{DDS} standard, which allows the definition of \glspl*{QOS}, can be used.
 It features real-time support, safety, security and good interoperability with other middlewares~\cite{DistributedSafety2020}.
-\ac{DDS} is already successfully applied in safety-critical environments such as underground railways where no constant communication can be guaranteed~\cite{DDSInURail}.
+\gls*{DDS} is already successfully applied in safety-critical environments such as underground railways where no constant communication can be guaranteed~\cite{DDSInURail}.
 A key technque for increasing a system's reliability and safety, as well as allowing failure correlation and self-recovery, is redundant computation~\cite{TanenbaumSteen07}.
 However, redundancy typically also complicates a system's approval process~\cite{ReliabilityThroughRedundancy}.
 
@@ -108,23 +108,23 @@ However, redundancy typically also complicates a system's approval process~\cite
 Redundancy is often performed on homogeneous nodes, which means that they use the same chip architecture and processing unit.
 This also means that failures, that are common for a particular chip architecture, compromise the safety of the entire system.
 Therefore, in the course of this master thesis, it is investigated how redundant computation on diverse nodes with different processing units and chip architectures can further improve a system's safety-level.
-Distributed and safety-critical systems, that build on top of \ac{DDS}, already exist in the automotive~\cite{DistributedSafety2020} and in the railway domain~\cite{DDSInURail}.
-However, \ac{DDS} middleware solutions need to be re-evaluated for each specific execution context they are applied in, because of unexpected interactions with the execution environment~\cite{CotroneoDDSFailureAnalysis}.
-In this work, a distributed \ac{DDS}-conform system for the context of on-board balise telegram evaluation in the railway execution environment will be examined.
-Therefore, this work builds on a core functionality of the \ac{ETCS OBU} and the EN 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
+Distributed and safety-critical systems, that build on top of \gls*{DDS}, already exist in the automotive~\cite{DistributedSafety2020} and in the railway domain~\cite{DDSInURail}.
+However, \gls*{DDS} middleware solutions need to be re-evaluated for each specific execution context they are applied in, because of unexpected interactions with the execution environment~\cite{CotroneoDDSFailureAnalysis}.
+In this work, a distributed \gls*{DDS}-conform system for the context of on-board balise telegram evaluation in the railway execution environment will be examined.
+Therefore, this work builds on a core functionality of the \gls*{ETCS OBU} and the EN 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
 The system's special aspect is, that it should combine quality characteristics, such as modularity, control\-ler-level partitioning, and distributed diverse-redundant processing, with dynamic as well as automatic reconfiguration and data-driven designs.
 The modular and distributed properties allow distinct safety and reliability requirements on a per-module basis.
 For validating the approach, various questions regarding the most suitable system architecture are evaluated.
 This includes, among others, the number of redundant computation units and communication channels, the applied transportation protocol, and the used topology.
 
-In addition, a suitable minimal subset of \ac{DDS} for achieving the desired safety and reliability requirements is determined.
-Further, it is investigated to what extend a fine-tuning of \ac{DDS}, for example using participants' \ac{QOS} settings, can improve an application's safety, as proposed by Kugele et al.~\cite{KugeleDataCentricForAuto}.
-For doing this, it is striven to cooperate with ADLINK\footnote{\url{https://www.adlinktech.com/en/index.aspx}}, who build and maintain \ac{DDS} middlewares, such as Eclipse Cyclone DDS\footnote{\url{https://github.com/eclipse-cyclonedds/cyclonedds}}, and corresponding tools.
-The benefit of using a \ac{DDS} implementation by ADLINK is, that it has been proven in practice and remaining certification and security issues are covered - as demanded by~\cite{KugeleDataCentricForAuto}.
+In addition, a suitable minimal subset of \gls*{DDS} for achieving the desired safety and reliability requirements is determined.
+Further, it is investigated to what extend a fine-tuning of \gls*{DDS}, for example using participants' \gls*{QOS} settings, can improve an application's safety, as proposed by Kugele et al.~\cite{KugeleDataCentricForAuto}.
+For doing this, it is striven to cooperate with ADLINK\footnote{\url{https://www.adlinktech.com/en/index.aspx}}, who build and maintain \gls*{DDS} middlewares, such as Eclipse Cyclone DDS\footnote{\url{https://github.com/eclipse-cyclonedds/cyclonedds}}, and corresponding tools.
+The benefit of using a \gls*{DDS} implementation by ADLINK is, that it has been proven in practice and remaining certification and security issues are covered - as demanded by~\cite{KugeleDataCentricForAuto}.
 
-In order to validate the approache's practicability, essential track-to-train messages from balises and \acp{RBC} are decoded, \acp{MA} and \acp{SSP} are calculated and the vehicle's speed is supervised.
+In order to validate the approache's practicability, essential track-to-train messages from balises and \glspl*{RBC} are decoded, \glspl*{MA} and \glspl*{SSP} are calculated and the vehicle's speed is supervised.
 Upon the test system, characteristics such as certifiability - with a focus on modularity - maintainability and performance are examined.
-Further, a high-level safety case analysis will be provided in order to identify functions that could be mapped to nodes with lower \acp{SIL}.
+Further, a high-level safety case analysis will be provided in order to identify functions that could be mapped to nodes with lower \glspl*{SIL}.
 
 % EXPERIMENTAL SETUP
 % -------------------------------------------------------------------------------------
@@ -138,41 +138,41 @@ Further, a high-level safety case analysis will be provided in order to identify
 \end{figure}
 
 The experimental setup is depicted in~\Autoref{fig:setup}.
-It will comprise of a PC, a number of \acp{SPS}, an interconnect, a middleware layer running the \ac{DDS} standard, and a simulation software.
+It will comprise of a PC, a number of \glspl*{SPS}, an interconnect, a middleware layer running the \gls*{DDS} standard, and a simulation software.
 The entire computation is done by the PC, which functions as the main computation unit but has no safety guarantees at all.
-However, the \acp{SPS} feature a high-\ac{SIL} \ac{OS} and are used for redundancy computation by only reprocessing the workload's safety-critical parts.
-Synchronizing the \ac{SPS}'s results with the main PC supervises its work and wraps it into a safe envelope.
-All \acp{SPS} are connected via an interconnect to the main PC.
-By swapping out safety critical computations to the redundant working \acp{SPS} and sending data between individual components using the dependable real-time data exchange standard \ac{DDS}, the entire system could be raised to a high \ac{SIL}.
+However, the \glspl*{SPS} feature a high-\gls*{SIL} \gls*{OS} and are used for redundancy computation by only reprocessing the workload's safety-critical parts.
+Synchronizing the \gls*{SPS}'s results with the main PC supervises its work and wraps it into a safe envelope.
+All \glspl*{SPS} are connected via an interconnect to the main PC.
+By swapping out safety critical computations to the redundant working \glspl*{SPS} and sending data between individual components using the dependable real-time data exchange standard \gls*{DDS}, the entire system could be raised to a high \gls*{SIL}.
 
-The simulation software imitates track-side balise as well as \ac{RBC} components and their corresponding data telegrams and messages, which are received and evaluated by the PC and the four \acp{SPS}.
-In order to facilitate a realistic test environment, the balise and \ac{RBC} telegrams as well as the functional and operational principles are based on \ac{ETCS} Subset-026.
+The simulation software imitates track-side balise as well as \gls*{RBC} components and their corresponding data telegrams and messages, which are received and evaluated by the PC and the four \glspl*{SPS}.
+In order to facilitate a realistic test environment, the balise and \gls*{RBC} telegrams as well as the functional and operational principles are based on \gls*{ETCS} Subset-026.
 
 The simulation software should also be deployable to a lab vehicle's on-board system.
-In that case, it will use positioning information based on \ac{GNSSINS} and odometry data of the lab vehicle in order to provide the system with virtual balise information.
+In that case, it will use positioning information based on \gls*{GNSSINS} and odometry data of the lab vehicle in order to provide the system with virtual balise information.
 
 % RELATED WORK
 % -------------------------------------------------------------------------------------
 
 \section*{Related Work}
-Kugele et al. evaluate to what extend \ac{DDS} is feasible for automotive software~\cite{KugeleDataCentricForAuto}.
+Kugele et al. evaluate to what extend \gls*{DDS} is feasible for automotive software~\cite{KugeleDataCentricForAuto}.
 For answering this question, they implement an automotive service-oriented architecture and perform benchmark experiments upon this architecture.
-For evaluating \ac{DDS}'s applicability in such a domain, Kugele et al. propose requirements and quality attributes for autonomous driving software.
+For evaluating \gls*{DDS}'s applicability in such a domain, Kugele et al. propose requirements and quality attributes for autonomous driving software.
 The used list of requirements is composed by summarizing and adapting standards from the literature.
 Their experiments are realized on a Ethernet topology with four Raspberry Pi 3 model B nodes and OpenDDS.
-Results show that \ac{DDS} provides decent yet expandable availability and safety characteristics.
-However, they also state that \ac{DDS} only covers automotive requirements when certain aspects, such as certification and security issues, are addressed.
-Those aspects are not part of the \ac{DDS} standard, though.
+Results show that \gls*{DDS} provides decent yet expandable availability and safety characteristics.
+However, they also state that \gls*{DDS} only covers automotive requirements when certain aspects, such as certification and security issues, are addressed.
+Those aspects are not part of the \gls*{DDS} standard, though.
 \\
 
 Bijlsma et al. extend the state-of-the-art E-Gas layered monitoring concept to handle faults in a distributed and redundant system~\cite{DistributedSafety2020}.
-Upon their middleware, \ac{DDS} is applied to facilitate reliable communication among individual components with various \acp{ASIL}.
-Besides functional data, diagnosis data is transmitted using \ac{DDS} in order to detect faulty components.
+Upon their middleware, \gls*{DDS} is applied to facilitate reliable communication among individual components with various \glspl*{ASIL}.
+Besides functional data, diagnosis data is transmitted using \gls*{DDS} in order to detect faulty components.
 \\
 
-The applicability of the \ac{DDS} standard and the OpenSlice DDS implementation for safety-critical railway systems is proven by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
-Findings show that OpenSplice DDS' \ac{QOS} policies allow predictable time and locality characteristics for data distribution.
-Further, this work provides and overview of \ac{QOS} policies and OpenSplice DDS features to ensure reliability, availability, data-delivery, and resource usage.
+The applicability of the \gls*{DDS} standard and the OpenSlice DDS implementation for safety-critical railway systems is proven by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
+Findings show that OpenSplice DDS' \gls*{QOS} policies allow predictable time and locality characteristics for data distribution.
+Further, this work provides and overview of \gls*{QOS} policies and OpenSplice DDS features to ensure reliability, availability, data-delivery, and resource usage.
 Although Schmidt and van't Hag address OpenSplice DDS in their work, the results also apply to Cyclone DDS since it is designed as being a super-set of OpenSplice DDS.
 \\
 
@@ -187,15 +187,16 @@ Boulanger accentuates that the standard defines a context by which the safety of
 \section*{Work and Risk Analysis}
 The project can be subdivided into four parts, namely the development of a train and track simulator, of a hardware setup, and of an on-board processing system as well as a testing and evaluation phase.
 This work's main part is the testing and evaluation phase, since this thesis' aim is to experimentally evaluate the system's functionality and reliability.
-The on-board processing system comprises of data exchange with \ac{DDS}, decision making and redundancy computation.
+The on-board processing system comprises of data exchange with \gls*{DDS}, decision making and redundancy computation.
 It lays the foundation for the evaluation phase and is expected to take up the most time in this project.
 Connecting the hardware is an essential part in this project but is unlikely to consume much time.
 Simulating a train and track-side balises is chosen to be the show case of this work.
-Because of \ac{ETCS}'s complexity, building such a simulator from scratch is likely to take much resources.
+Because of \gls*{ETCS}'s complexity, building such a simulator from scratch is likely to take much resources.
 It is preferred to either use existing simulators that provide the required packages or limit to basic and periodic messages at first and postpone the implementation of a train simulation to the end of this project.
-For evaluating the system, it is not mandatory that the analyzed messages conform to the \ac{ETCS} specification, so that adhering to \ac{ETCS} should not considered to be a main requirement of this project.
+For evaluating the system, it is not mandatory that the analyzed messages conform to the \gls*{ETCS} specification, so that adhering to \gls*{ETCS} should not considered to be a main requirement of this project.
 
 \bibliographystyle{plain}
 \bibliography{bibtex}
 
+\printnoidxglossary
 \end{document}
