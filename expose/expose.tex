@@ -5,11 +5,11 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 
-\usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhf{}
-\lhead{WIP 1.3}
-\cfoot{\thepage}
+% \usepackage{fancyhdr}
+% \pagestyle{fancy}
+% \fancyhf{}
+% \lhead{WIP 1.3}
+% \cfoot{\thepage}
 
 \usepackage[left=2.5cm, right=2.5cm, top=2.0cm]{geometry}
 
@@ -23,12 +23,12 @@
 \newacronym{DDS}{DDS}{Data Distribution Service}
 \newacronym{ETCS}{ETCS}{European Train Control System}
 \newacronym{ERTMS}{ERTMS}{European Rail Traffic Management System}
-\newacronym{ETCS OBU}{ETCS OBU}{\gls*{ETCS} Onboard Unit}
 \newacronym{GNSS}{GNSS}{Global Navigation Satellite System}
 \newacronym{GNSSINS}{GNSS/INS}{Global Navigation Satellite System/Inertial Navigation System}
 \newacronym{INS}{INS}{Inertial Navigation System}
 \newacronym{IOT}{IoT}{Internet of Things}
 \newacronym{MA}{MA}{Movement Authority}
+\newacronym{OBU}{OBU}{On-Board Unit}
 \newacronym{OMG}{OMG}{Object Management Group}
 \newacronym{OS}{OS}{Operating System}
 \newacronym{QOS}{QoS}{Quality of Service}
@@ -98,7 +98,7 @@ However, work distribution introduces new challenges such as handling the commun
 In order to facilitate safe and real-time communication among participants, the \gls*{DDS} standard, which allows the definition of \glspl*{QOS}, can be used.
 It features real-time support, safety, security and good interoperability with other middlewares~\cite{DistributedSafety2020}.
 \gls*{DDS} is already successfully applied in safety-critical environments such as underground railways where no constant communication can be guaranteed~\cite{DDSInURail}.
-A key technque for increasing a system's reliability and safety, as well as allowing failure correlation and self-recovery, is redundant computation~\cite{TanenbaumSteen07}.
+A key technique for increasing a system's reliability and safety, as well as allowing failure correlation and self-recovery, is redundant computation~\cite{TanenbaumSteen07}.
 However, redundancy typically also complicates a system's approval process~\cite{ReliabilityThroughRedundancy}.
 
 % AIM OF THE PROJECT
@@ -111,7 +111,7 @@ Therefore, in the course of this master thesis, it is investigated how redundant
 Distributed and safety-critical systems, that build on top of \gls*{DDS}, already exist in the automotive~\cite{DistributedSafety2020} and in the railway domain~\cite{DDSInURail}.
 However, \gls*{DDS} middleware solutions need to be re-evaluated for each specific execution context they are applied in, because of unexpected interactions with the execution environment~\cite{CotroneoDDSFailureAnalysis}.
 In this work, a distributed \gls*{DDS}-conform system for the context of on-board balise telegram evaluation in the railway execution environment will be examined.
-Therefore, this work builds on a core functionality of the \gls*{ETCS OBU} and the EN 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
+Therefore, this work builds on a core functionality of the \gls*{ETCS} \gls*{OBU} and the EN 50128:2011 standard for software in railway applications~\cite{BoulangerStandards}.
 The system's special aspect is, that it should combine quality characteristics, such as modularity, control\-ler-level partitioning, and distributed diverse-redundant processing, with dynamic as well as automatic reconfiguration and data-driven designs.
 The modular and distributed properties allow distinct safety and reliability requirements on a per-module basis.
 For validating the approach, various questions regarding the most suitable system architecture are evaluated.
@@ -122,7 +122,7 @@ Further, it is investigated to what extend a fine-tuning of \gls*{DDS}, for exam
 For doing this, it is striven to cooperate with ADLINK\footnote{\url{https://www.adlinktech.com/en/index.aspx}}, who build and maintain \gls*{DDS} middlewares, such as Eclipse Cyclone DDS\footnote{\url{https://github.com/eclipse-cyclonedds/cyclonedds}}, and corresponding tools.
 The benefit of using a \gls*{DDS} implementation by ADLINK is, that it has been proven in practice and remaining certification and security issues are covered - as demanded by~\cite{KugeleDataCentricForAuto}.
 
-In order to validate the approache's practicability, essential track-to-train messages from balises and \glspl*{RBC} are decoded, \glspl*{MA} and \glspl*{SSP} are calculated and the vehicle's speed is supervised.
+In order to validate the approach's practicability, essential track-to-train messages from balises and \glspl*{RBC} are decoded, \glspl*{MA} and \glspl*{SSP} are calculated and the vehicle's speed is supervised.
 Upon the test system, characteristics such as certifiability - with a focus on modularity - maintainability and performance are examined.
 Further, a high-level safety case analysis will be provided in order to identify functions that could be mapped to nodes with lower \glspl*{SIL}.
 
@@ -170,7 +170,7 @@ Upon their middleware, \gls*{DDS} is applied to facilitate reliable communicatio
 Besides functional data, diagnosis data is transmitted using \gls*{DDS} in order to detect faulty components.
 \\
 
-The applicability of the \gls*{DDS} standard and the OpenSlice DDS implementation for safety-critical railway systems is proven by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
+The applicability of the \gls*{DDS} standard and the OpenSplice DDS implementation for safety-critical railway systems is proven by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
 Findings show that OpenSplice DDS' \gls*{QOS} policies allow predictable time and locality characteristics for data distribution.
 Further, this work provides and overview of \gls*{QOS} policies and OpenSplice DDS features to ensure reliability, availability, data-delivery, and resource usage.
 Although Schmidt and van't Hag address OpenSplice DDS in their work, the results also apply to Cyclone DDS since it is designed as being a super-set of OpenSplice DDS.
@@ -185,15 +185,19 @@ Boulanger accentuates that the standard defines a context by which the safety of
 % -------------------------------------------------------------------------------------
 
 \section*{Work and Risk Analysis}
-The project can be subdivided into four parts, namely the development of a train and track simulator, of a hardware setup, and of an on-board processing system as well as a testing and evaluation phase.
+The project can be subdivided into four parts, namely the development of a train and track simulator, of a hardware setup, and of an on-board processing system, as well as a testing and evaluation phase.
 This work's main part is the testing and evaluation phase, since this thesis' aim is to experimentally evaluate the system's functionality and reliability.
-The on-board processing system comprises of data exchange with \gls*{DDS}, decision making and redundancy computation.
-It lays the foundation for the evaluation phase and is expected to take up the most time in this project.
+The on-board processing system, which is the foundation for the evaluation phase, comprises of data exchange with \gls*{DDS}, decision making, and redundant computation.
+Designing, implementing, and evaluating the system's architecture and functional requirements is expected to take up the most time in this project.
 Connecting the hardware is an essential part in this project but is unlikely to consume much time.
 Simulating a train and track-side balises is chosen to be the show case of this work.
 Because of \gls*{ETCS}'s complexity, building such a simulator from scratch is likely to take much resources.
 It is preferred to either use existing simulators that provide the required packages or limit to basic and periodic messages at first and postpone the implementation of a train simulation to the end of this project.
-For evaluating the system, it is not mandatory that the analyzed messages conform to the \gls*{ETCS} specification, so that adhering to \gls*{ETCS} should not considered to be a main requirement of this project.
+For evaluating the system, it is not mandatory that the analyzed messages entirely conform to the \gls*{ETCS} specification, so that only a small part of \gls*{ETCS} will be covered by this project.
+
+When possible, the final results should be tested on a lab vehicle.
+This, however, depends on different external factors, such as time, admission, provision of the lab vehicle, and the vehicle's equipment.
+If operating on a lab vehicle is not possible due to limitations in track-to-train communication, virtual balise telegrams could be used as an alternative.
 
 \bibliographystyle{plain}
 \bibliography{bibtex}
