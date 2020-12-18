@@ -4,3 +4,12 @@
 **/*.out
 **/*.bbl
 **/*.blg
+**/*.acn
+**/*.acr
+**/*.alg
+**/*.glg
+**/*.glo
+**/*.gls
+**/*.ist
+**/*.tex.bak
+

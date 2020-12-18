@@ -16,7 +16,7 @@ open:
 	$(OPEN) $(OUTNAME).pdf&
 
 clean:
-	rm -f $(OUTNAME).pdf $(PROJ).log $(PROJ).aux $(PROJ).bbl $(PROJ).blg $(PROJ).out
+	rm -f $(OUTNAME).pdf $(PROJ).log $(PROJ).aux $(PROJ).bbl $(PROJ).blg $(PROJ).out $(PROJ).acn $(PROJ).acr $(PROJ).alg $(PROJ).glg $(PROJ).glo $(PROJ).gls $(PROJ).ist $(PROJ).tex.bak
 
 retouch:
 	touch $(PROJ).tex
