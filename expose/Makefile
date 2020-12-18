@@ -7,6 +7,7 @@ all: build open
 build: $(PROJ).tex
 	pdflatex $(PROJ)
 	bibtex $(PROJ)
+	makeglossaries $(PROJ)
 	pdflatex $(PROJ)
 	pdflatex $(PROJ)
 	# mv $(PROJ).pdf $(OUTNAME).pdf
