@@ -2,14 +2,14 @@
 \usepackage[ngerman,bibtex]{osm-thesis} % <= Sprache der Arbeit ("ngerman"/"english"), Biblatex-Backend ("bibtex"/"biber")
 
 % ABOUT
-\newcommand{\hpitype}{Bachelorarbeit/Masterarbeit}
-\newcommand{\hpiauthor}{Maxi Musterfrau}
-\newcommand{\hpititle}{Die Geräusche eines zerknitterten Bonboneinwickelpapiers als Untersuchung eines~ungeordneten~Systems}
-\newcommand{\hpititleother}{The Noise from a Crumpled Candy Wrapper as a Probe of a Disordered~System} % <= das Studienreferat verlangt einen deutschen UND englischen Titel
-\newcommand{\hpisupervisor}{Prof.\,Dr.\,Andreas Polze, Max Mustermann}
+\newcommand{\hpitype}{Masterarbeit}
+\newcommand{\hpiauthor}{Hendrik Tjabben}
+\newcommand{\hpititle}{TODO}
+\newcommand{\hpititleother}{TODO} % <= das Studienreferat verlangt einen deutschen UND englischen Titel
+\newcommand{\hpisupervisor}{Prof.\,Dr.\,Andreas Polze, TODO}
 \newcommand{\hpichair}{Professur für Betriebssysteme und Middleware}
-\newcommand{\hpiexternalsupervisor}{Wile\,E. Coyote, Road Runner}
-\newcommand{\hpiexternal}{ACME Cooperation}
+\newcommand{\hpiexternalsupervisor}{TODO}
+\newcommand{\hpiexternal}{TODO}
 \newcommand{\hpidate}{\today}
 
 % DOCUMENT
@@ -25,7 +25,7 @@
 	% (Haupt-)Titelseite, Abstract, ggf. Danksagung & Inhaltsverzeichnis
 	\pagenumbering{roman}
 	\include{content/titlepage}
-	\ifisbook\cleardoubleemptypage\fi\include{content/abstract}
+	% \ifisbook\cleardoubleemptypage\fi\include{content/abstract}
 	%\ifisbook\cleardoubleemptypage\fi\include{content/dedication}
 	\tableofcontents
 	\cleardoublepage
@@ -40,12 +40,12 @@
 	\printbibliography[category=cited]
 
 	% ggf. Anhang
-	\appendix\include{content/appendix} % example
+	% \appendix\include{content/appendix} % example
 
 	% ggf. bei englischen Arbeiten den deutschen Abstract nach hinten verschieben
 	% \ifisbook\pagestyle{plain}\cleardoubleemptypage\include{content/abstract_deu}\fi
 
 	% Eigenständigkeitserklärung
-	\ifisbook\pagestyle{plain}\cleardoubleemptypage\include{content/disclaimer}\fi
+	% \ifisbook\pagestyle{plain}\cleardoubleemptypage\include{content/disclaimer}\fi
 
 \end{document}
