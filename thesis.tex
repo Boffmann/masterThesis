@@ -1,5 +1,7 @@
 \documentclass{scrbook} % <= Druckversion: "scrbook" / Bildschirmversion: "scrreprt"
-\usepackage[ngerman,bibtex]{osm-thesis} % <= Sprache der Arbeit ("ngerman"/"english"), Biblatex-Backend ("bibtex"/"biber")
+\usepackage[english,bibtex]{osm-thesis} % <= Sprache der Arbeit ("ngerman"/"english"), Biblatex-Backend ("bibtex"/"biber")
+
+\usepackage{amssymb}
 
 % ABOUT
 \newcommand{\hpitype}{Masterarbeit}
@@ -11,6 +13,8 @@
 \newcommand{\hpiexternalsupervisor}{TODO}
 \newcommand{\hpiexternal}{TODO}
 \newcommand{\hpidate}{\today}
+
+\include{content/abbrevation}
 
 % DOCUMENT
 \bibliography{bibliography}
@@ -32,7 +36,8 @@
 
 	% Textteil
 	\pagenumbering{arabic}
-	\include{content/chapter1} % example
+    \include{content/introduction}
+    \include{content/chapter1}
 
 	% Bibliographie
 	\ifisbook\cleardoubleemptypage\fi

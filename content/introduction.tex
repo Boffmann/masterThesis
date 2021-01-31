@@ -1,0 +1,47 @@
+\chapter{Introduction}
+	
+Railway operation is undergoing a rapid change.
+Ongoing developments in computation and railway applications have improved interlocking technologies, train length and travel speed.
+Further, with the introduction of new communication technologies, such as 5G, new possibilties of transmitting information have emerged.
+With improvements in railway technologies, the significance of \gls*{ATO} systems to monitor and control a train's operating procedures rises~\cite{YIN2017RNDofATO}.
+This has not only the potential to decrease running expenses, but could also help to disburden drivers~\todo{ref}.
+\\
+
+Nowadays, multiple \gls*{ATO} systems have been developed in different countries.
+In order to solve the thereby caused incompatabilities among the different \gls*{ATO} systems, \gls*{ETCS}, as a part of \gls*{ERTMS}, has been established as an international standard for \gls*{ATO} systems~\cite{ETCS26}.
+Because of the railway domain being a safety-critical environment, a system solving the \gls*{ETCS} specification must comply with certification requirements, such as safety and reliability characteristics, to be applicable for practical use.
+
+The compliance of system requirements is ensured during an approval process.
+The thereby applied verification, validation and certification steps are very time- and cost-intensive.
+Moreover, the approval process needs to be repleated every time the system updates.
+\\
+
+A solution for simplifying the approval process is to combine related functions into modules and map these modules onto a distributed system.
+A benefit of this concept is, that it allows to build safe and reliable systems out of unsafe and unreliable parts (ref slides fault tolerance).
+The distribution approach is already applied in modern safety-critical systems, but also introduces new challenges such handling the communication overhead and dealing with node-, network and computation failures~\cite{DistributedSafety2020}.
+
+\section{Contribution}
+
+In this work, an approach for building a distributed \gls*{ATO} system that meets the certification requirements for \gls*{ETCS} is presented.
+The key idea is to use proven architecture patterns, such as redundancy, system self-testing and fault detection, to build a safe and reliable system out of unreliable parts.
+Further, for communication in the distributed system, the applicability of \gls*{DDS}, a dependable machine-to-machine communication standard following the publish-subscribe pattern, is analyzed.
+The worked out approach is finally demonstrated based on \gls*{ETCS} balise telegram evaluation.
+Based on my work, future ETCS implementations can be realized.
+
+\section{Outline}
+
+\paragraph{\autoref{chptr:system_requirements}}
+In this chapter, a set of requirements for a \gls*{ATO} system is established.
+For quantitative requirements, such as safety or reliability, mathematical concepts for evaluation are presented.
+
+\paragraph{Concepts}
+In this chapter, different possible system architecture candidates are presented.
+Further, these candidate's appliance with the system requirements from~\autoref{chptr:system_requirements} are assessed.
+Therefore, a high level analysis towards reliability and safety is made.
+The result of this chapter is a suitable system architecture candidate, as well as specific hardware and software specifications to meet the architecture's requirements.
+
+\paragraph{Implementation}
+In this chapter the system implementation is described.
+
+\paragraph{Evaluation}
+Here, the practical system is evaluated and a conclusion is made.
