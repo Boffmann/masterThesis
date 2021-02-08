@@ -4,7 +4,7 @@ Railway operation is undergoing a rapid change.
 Ongoing developments in computation and railway applications have improved interlocking technologies, train length and travel speed.
 Further, with the introduction of new communication technologies, such as 5G, new possibilties of transmitting information have emerged.
 With improvements in railway technologies, the significance of \gls*{ATO} systems to monitor and control a train's operating procedures rises~\cite{YIN2017RNDofATO}.
-This has not only the potential to decrease running expenses, but could also help to disburden drivers~\todo{ref}.
+This has not only the potential to decrease running expenses, but could also help to disburden drivers.
 \\
 
 Nowadays, multiple \gls*{ATO} systems have been developed in different countries.
@@ -17,31 +17,41 @@ Moreover, the approval process needs to be repleated every time the system updat
 \\
 
 A solution for simplifying the approval process is to combine related functions into modules and map these modules onto a distributed system.
-A benefit of this concept is, that it allows to build safe and reliable systems out of unsafe and unreliable parts (ref slides fault tolerance).
-The distribution approach is already applied in modern safety-critical systems, but also introduces new challenges such handling the communication overhead and dealing with node-, network and computation failures~\cite{DistributedSafety2020}.
+A benefit of this concept is, that it allows to build safe and reliable systems out of less safe and less reliable parts.
+%(ref slides fault tolerance).
+The distribution approach is already applied in modern safety-critical systems, but also introduces new challenges such as handling the communication overhead and dealing with node-, network and computation failures~\cite{DistributedSafety2020}.
+Redundancy, recovery and protection mechanisms are used to achieve reliability and safety~\cite{ChakrabortyFaultTolerantRailway}. 
+In order to facilitate a safe and reliable communication among participants, the \gls*{DDS} standard, which follows a publish-subscribe communication pattern, can be used.
+\Gls*{DDS} middlewares features real-time support, safety, security and good interoperability with other middlewares by providing various \glspl*{QOS}~\cite{DistributedSafety2020}.
+The middlewares are already sucessfully applied in safety-critical environments such as underground railways~\cite{DDSInSubways} and automotive~\cite{DistributedSafety2020}.
+Typically, only a subset of \gls*{DDS} is required for a certain use case.
+However, state of the art \gls*{DDS} implementations, such as Vortex OpenSplice by ADLINK, cover the entire \gls*{DDS} specification.
+Thus, in order to reduce the approval costs of a specific safety-critical application, a subset of all \gls*{DDS}-features needs to be identified.
+
 
 \section{Contribution}
 
-In this work, an approach for building a distributed \gls*{ATO} system that meets the certification requirements for \gls*{ETCS} is presented.
-The key idea is to use proven architecture patterns, such as redundancy, system self-testing and fault detection, to build a safe and reliable system out of unreliable parts.
-Further, for communication in the distributed system, the applicability of \gls*{DDS}, a dependable machine-to-machine communication standard following the publish-subscribe pattern, is analyzed.
-The worked out approach is finally demonstrated based on \gls*{ETCS} balise telegram evaluation.
-Based on my work, future ETCS implementations can be realized.
+
+In this work, approaches for building a safe and reliable distributed system that applies \gls*{DDS} on its middleware layer for communication, are presented.
+A key technique for increasing a system's reliability and safety in distributed systems is through redundancy~\cite{BarryFaultToleranceAnalysis}.
+Therefore, in this work, proven redundancy patterns are analyzed towards their compatibility with the publish-subscribe pattern of \gls*{DDS}.
+Further, a subset of the \gls*{DDS} features and \gls*{QOS}, suitable for solving each presented architecture, is identified.
+Finally, the findings are presented in a practical implementation following a selected part of \gls*{ETCS}.
 
 \section{Outline}
 
-\paragraph{\autoref{chptr:system_requirements}}
-In this chapter, a set of requirements for a \gls*{ATO} system is established.
-For quantitative requirements, such as safety or reliability, mathematical concepts for evaluation are presented.
+\paragraph{\autoref{chptr:concepts}}
+In this chapter, an overview about popular patterns and characteristics for building safe and reliable systems, as well as about \gls*{DDS}, is given.
+Afterwards, mathematical concepts for evaluating the safety and reliability of these systems, are pointed out.
+Finally, however, a selection of related work that uses \gls{DDS} in safety critical applications, is presented.
 
-\paragraph{Concepts}
-In this chapter, different possible system architecture candidates are presented.
-Further, these candidate's appliance with the system requirements from~\autoref{chptr:system_requirements} are assessed.
-Therefore, a high level analysis towards reliability and safety is made.
-The result of this chapter is a suitable system architecture candidate, as well as specific hardware and software specifications to meet the architecture's requirements.
+\paragraph{Systems Evaluation}
+In this chapter, an example scenario and its requirements are presented.
+Therefore, a risk analysis is made, a data model is presented and a high level analysis towards reliability and safety is conducted.
+Finally, different possible system patterns are presented and compared based on their reliability, practicability and comparability with the \gls*{DCPS}.
 
 \paragraph{Implementation}
-In this chapter the system implementation is described.
+In this chapter, the practical implementation of an example architecture using hardware redundancy and \gls*{DDS}'s publish-subscribe pattern, as well as neccessary \glspl*{QOS}, are presented.
 
 \paragraph{Evaluation}
 Here, the practical system is evaluated and a conclusion is made.

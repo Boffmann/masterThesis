@@ -1,3 +1,111 @@
 \chapter{Concept Development}
+
+\iffalse
+
+In this chapter, typical system architectures for solving highly safety-critical tasks are presented and discussed.
+
+One way of building a dependable system, even out of undependable components, is through distribution (Source ReliabilityEngineering Slides).
+This is because the failure of one individual component in a distributed system does not affect the remaining component's dependability.
+However, if the failing component was responsible for a crucial system function, then a single failure can lead to a failure of the entire system.
+A commonly applied technique for maintaining a system's functionality even when a crucial componant fails is redundancy~\cite{TanenbaumSteen07}.
+Therefore, the crucial component's work is performed on multiple components, called replicas, simultaneously.
+When one replica fails, the remaining replicas still allow the system to continue its work.
+
+In the following of this chapter, different distributed and redundant system architecture approaches are described and assessed.
+At first, redundancy categories that have been proven both in practice and in theory are described, based on~\cite{GeffroyMotetDependableComputing} and~\cite{BarryFaultToleranceAnalysis}.
+Afterwards, the most prominent representatives out of the presented redundancy categories are choosen and evaluated based on the requirements made in~\todo{Ref to chapter 1}.
+Finally, a decision for the most suitable system architecture for the described use case is compiled.
+
+\section{Redundancy Techniques}
+
+
+\subsection{Redundancy}
+
+However, adding redundancy also increases the complexity as well as design and building costs of a system.
+
+In computing systems, the two types \texttt{functional}- and \texttt{structural}-redundancy can be found.
+While functional-redundancy incorporates a system's external manner, structural-redundancy refers to its internals.
+
+\subsubsection{Functional Redundancy}
+Functional redundancy is encoded in the relationship between a system's input and its output.
+It allows the system to filter out impossible or unacceptable inputs or outputs.
+Functional redundancy is independent of the system's design and implementation and solely depends on its functions.
+A way of adding functional redundancy to a system is to structure it into interconnected modules~\cite{GeffroyMotetDependableComputing}.
+\todo{Explain this further}
+
+\subsubsection{Structural Redundancy}
+For structural redundancy, additional components are added to the system that would be unnecessary, provided all components are working correctly.
+Structural redundancy can be applied in software, in hardware or in the time domain~\cite{GeffroyMotetDependableComputing}.
+Examples for structural redundancy are:
+
+\paragraph{Standby Redundancy}
+In standby redundancy, the redundant components are subdevided into primary and secondary components.
+A third component type is required to switch between the primary and secondary components, when required.
+The switching step, however, is not possible without any costs and adds an additional point of failure~\cite{PepperlFuchs}.
+Standby redundancy is subdevided into cold and hot standby, implicated whether the secondary components are turned off or on while they are not used.
+
+\paragraph{M-out-of-N Redundancy}
+Another popular redundancy pattern for industrial applications is \gls*{MOON}-redundancy~\cite{GamerIncreasingMOON}.
+Thereby, N individual components are executing the same task simultaneously and all separate outputs are collected.
+The system finally generates the overall output by selecting the value where at least M out of the N components agreed on.
+This allows the system to generate the right output even if $N-M$ components produced a wrong output.
+
+
+
+\todo{Define module composition}
+
+In structural redundant systems, it often happens that multiple redundant outputs need to be reduced to a single system output.
+In order to produce a single output out of $N$ individual outputs, a voter or a consensus algorithm could be used.
+
+\paragraph{Voter} 
+A voter is an entity that collects the components individual outputs and performs a voting algorithm to combine them to a single output.
+The voter approach has the benefit that it is fast and easy to implement.
+For voter based systems, Chow and Willsky argue that system output's residual generation can be done by simply comparing outputs of redundantly working components~\cite{ChowFailureDetectionSystems}.
+However, a voter is a single point of failure and thereby impairs the entire systems reliability and availability.
+
+\paragraph{Consensus} 
+A consensus algorithm is applied to reach consensus among the system's individual components in order to agree on a single output value.
+This single output value is required to be proposed by at least one component~\cite{lamport2001paxos}.
+While not having a single point of failure anymore, consensus approaches typically introduce a communication overhead and lead to rigid configurations~\cite{GamerIncreasingMOON}.
+
+
+\section{Choosing a System Architecture}
+
+
+
+
+
+
+
+\autoref{fig:Classical2OO3} depicts the most prominent form of passive hardware redundancy, \gls*{TMR}~\cite{BarryFaultToleranceAnalysis}.
+
+
+The weakness of \gls*{TMR} is the voter, because it marks a single point of failure.
+Therefore, the voter's reliability in this system has to be very high compared to the three replicas, because the entire system's dependability cannot be higher than the voter's dependability.
+A solution to this problem would be to increase the number of voters.
+However, having multiple voters would also lead to having multiple outputs and would require an additional step to combine the individual outputs to a final output, being a new single point of failure.
+
+It is assumed that all replicas follow the exponential failure law.
+Based on \autoref{eq:expFailureLaw} and \autoref{eq:reliabilityMOON} follows for the replicas reliability
+\begin{equation}
+R_{2oo3}(t) = \sum_{i = 2}^3 {3 \choose i} * (e^{-\lambda t})^i * (1 - e^{-\lambda t})^{3 - i}
+\end{equation}
+
+%
+%
+%
+
+
+\section{Error Checking and Correction}
+
+
+
+%Throughput can be increased by combining the parallel and serial pattern in a pipelined way.
+%This also has the way that it adds functional redundancy to the system~\cite{GeffroyMotetDependableComputing}.
+
+
 \todo{Define several candidate designs}
 \todo{Analyze candidate designs}
+
+
+\fi
