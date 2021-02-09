@@ -1,28 +1,52 @@
 \chapter{Background and Related Word}
 \label{chptr:concepts}
 
-%In this chapter, an overview about popular patterns and characteristics for building safe and reliable systems, as well as about \gls*{DDS}, is presented.
-%Afterwards, mathematical concepts for evaluating the safety and reliability of a system, are pointed out.
-%At first, however, a selection of related work that uses \gls{DDS} in safety critical applications, is presented.
+Introducing redundancy to safety-critical systems is a popular opportunity to ensure that failures inside the system do not effect the system's environment~\cite{BarryFaultToleranceAnalysis}.
+Redundancy can be achieved in multiple ways, some of which being adding additional resources, adding additional information to a message or performing the same operation multiple times.
+Although being one of the most often used redundancy techniques, the addition of hardware component, called replicas in redundant computation, leads to multiple results which need to be reduced to an individual system result.
+Thus, the replicas need to communicate with each other and synchronize their results in order to act like a closed unit in their environment.
+A promising approach to solve the communication overhead could be \gls*{DDS}, a \gls*{DCPS} system, since it allows reliable and real-time communication~\cite{omgDDSspec}.
+Further, adding additional hardware might not be the best redundancy approach to improve a system's fault-tolerance.
+
+In this chapter, different redundancy techniques are presented, important terms are defined and criteria for evaluating the redundancy techniques are described.
+Afterwards, standards for building and designing safe and fault-tolerant systems are given and related works, that sucessfully use \gls*{DCPS}-middleware in the railway context, are shown.
+At first, however, an overview about the \gls*{DDS} standard and its concepts are exposed.
+
+
 
 \section{Data Distribution Service}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/DDSStructure}
+	\caption{Overview about the basic structure of \gls*{DDS}.}
+	\label{fig:DDSStructure}
+\end{figure}
+
 \Gls*{DDS} is a \gls*{DCPS} model for machine-to-machine communication, that is specified by the \gls*{OMG}~\cite{omgDDSspec}.
-It is specified that the model should, for practical use, be implemented as a middleware, to directly interface with the underlaying \gls*{OS}.
+It is stated that the model should, for practical use, be implemented as a middleware, to directly interface with the underlaying \gls*{OS}.
 The model follows the concept of a global data space to facilitate data exchange among entities based on type and content.
 Central entities in the design are \texttt{Publishers} and \texttt{Subscribers}, while data exchange is based on \texttt{Topics}.
 A Publisher is used for sending data of different types.
 In order to send specifically typed data, a \texttt{DataWriter} object is used, which acts as a typed interface to a Publisher.
-On the other side, a Subscriber is used to receive data and make it accessible to the receiving application.
+On the other side, a Subscriber is used to receive data and to make it accessible to the receiving application.
 The equivalent of the DataWriter for the Subscriber is the \texttt{DataReader} object.
 A Topic acts as the connecting element between publishing entities on the one side and subscribing entities on the other.
 Any forecasting of when and how data is published to a Topic or received by a Subscriber is made possible through so called \glspl*{QOS} policies.
+This concept is illustrated in~\autoref{fig:DDSStructure}, which is based on the official \gls*{DDS} specification~\cite{omgDDSspec} and shows the information flow from the publishing to the subscribing side.
 
-The usefulness of \glspl*{DDS} for containerization technologies in automotive architectures has been studied by Kugele et. al~\cite{KugeleDataCentricForAuto}.
-Although their findings are based on containerization technologies and therefore not very resilient for this work, Kugele et. al showed that the applicability of \gls*{DDS} with regards to safety, certification and security depends on the actual implementation's characteristics~\cite{KugeleDataCentricForAuto}.
-Therefore, Vortex OpenSplice DDS is used thoughout this thesis.
-Vortex OpenSplice DDS is developed and maintained by ADLINK and has been proven in practice to meets the requirements towards safety, certificability and security, demanded by~\cite{KugeleDataCentricForAuto}.
+The usefulness of \gls*{DDS} for containerization technologies in automotive architectures has been studied by Kugele et. al~\cite{KugeleDataCentricForAuto}.
+Although their findings are based on containerization technologies and are therefore not very resilient for this work, Kugele et. al showed that the applicability of \gls*{DDS} with regards to safety, certification and security depends on the actual implementation's characteristics~\cite{KugeleDataCentricForAuto}.
+Therefore, Vortex OpenSplice DDS is used thoughout this thesis, which is being developed and maintained by ADLINK.
+
+The applicability of the \gls*{DDS}-standard and of Vortex OpenSplice \gls*{DDS} for safety-critical railway applications has been proven by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
+Their findings show, that OpenSplice \gls*{DDS}'s \gls*{QOS} policies allow predictable time and locality characteristics for data distribution.
+Further, their work provides an overview about Vortex OpenSplice's \gls*{QOS} policies and features to ensure reliability, availability, data-delivery, and resource usage.
 
 \section{Techniques for Safety and Reliability Evaluation}
+In order to profoundly express and analyze redundancy techniques towards their safety, reliability and fault-tolerance, it needs to be defined what these characteristics mean.
+\\
+
 Reliability is, by IEEE 610.12-1990, defined as the ability of a system or component to perform its required function under stated conditions for a specified period of time~\cite{ieee610.12}.
 The definition of reliability used in this work is the following:
 
@@ -30,7 +54,7 @@ The definition of reliability used in this work is the following:
 Reliability is a system's ability to not have any failure for a specific period of time.
 \end{definition}
 
-This definition, however, assumes the definition of a failure, which is deduced from the IEEE reliability definition as follows:
+This definition, however, assumes the definition of a failure, which is deduced from the IEEE definition for reliability:
 
 \begin{definition}
 A failure of a system or a system component is an incorrect behaviour of this system or this system component that lets it not perform its required function.
@@ -43,7 +67,7 @@ The serious outcome depends on the execution environment and is often linked to 
 
 Based on these definitions, it can be conducted that the reliability of a system can only be finally assessed when the system's environment, the reliability of the system's components and the operations performed by the system are known.
 Futher, in order to specifically evaluate a system's safety, possible sources of failures and their consequences need to be known.
-In order to be able to evaluate and compare different architectural pattern towards their safety characteristics, the definition of \texttt{intrinsic safety}, made by~\cite{BoulangerStandards}, is used in this work.
+In order to be able to evaluate and compare different architectural pattern towards their safety characteristics, independently of the subsequently conducted operations, the definition of \texttt{intrinsic safety}, made by~\cite{BoulangerStandards}, is used in this work.
 
 \begin{definition}
 A system is said to be intrinsically safe if one can be certain that any failure of one or more components of that system will only result in its becoming more permissive.
@@ -54,7 +78,7 @@ In the railway context, a complete stoppage is generally the safest state.
 In other words, an intrinsically safe system can fail, as long as it stops the train when doing so.
 In order for the system to be able to stop the train in case of an intrinsic failure, the system needs to be able to detect any intrinsic failure.
 It follows from~\autoref{def:intrinsic_safety}, that for safety-critical systems, the system's reliability is completely included in the system's intrinsic safety~\cite{BoulangerStandards}.
-This allows to analyze a systems safety and reliability by only considering the system's architecture and components and independently of its environment and applied computations.
+This allows to analyze a systems safety and reliability by only considering the system's architecture and components and independently of its environment and the applied computations.
 Thus, for the rest of this thesis, only the system's intrinsic safety will be evaluated and the term safety will be used synonymously for intrinsic safety.
 \begin{definition}
 A system, in the course of this thesis, is said to be safe when it reliably detects intrinsic failures and stops the train in the presence of an intrinsic failure.
@@ -79,15 +103,44 @@ It describes a component's reliability as an exponential function on time.
 R(t) = e^{-\lambda t}.
 \label{eq:expFailureLaw}
 \end{equation}
-The parameter $\lambda$ encodes the probability of failures occuring in a certain time span, typically in an hour.
+The parameter $\lambda$ is called the failure rate and encodes the probability of failures occuring in a certain time span, typically in an hour.
+\\
 
+Among various theoretical techniques for evaluating a system's safety, Markov chains are one of the most commonly used~\cite{BarryFaultToleranceAnalysis}.
+Markov chains are a stochastic process that models the alterations of a system's state and probabilities for the system to transition into a specific state given that it was in a certain state~\cite{KemenyMarkovChains}.
+Thereby, the next state only depends on the current state and is independent from all previous system modifications.
 
-\todo{Describe techniques used in following safety evaluation/analysis}
+For a safety analysis, each state models the system in one out of three conditions:
+\begin{enumerate}
+\item The system functions without any intrinsic failure
+\item The system detects and sucessfully mitigates an intrinsic failure without leading to a fault
+\item The system either not detects an intrinsic failure or does not recover from it, leading to a fault
+\end{enumerate}
+
+For the state transition probabilities, the exponential failure law~\autoref{eq:expFailureLaw}, with a constant failure rate $\lambda$.
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/TriplexSystemNASA}
+	\caption{\Gls*{TMR} modelled using Markov chains.}
+	\label{fig:NASATMR}
+\end{figure}
+
+An example Markov chain for a system using three replicas is proposed by NASA and depicted in~\autoref{fig:NASATMR}~\cite{NASAMarkovChains}.
+At state (1), assuming that the system is homogeneous redundant, the probability that one of the replicas fails is $3\lambda$.
+In state (2), the system applies failure detection and mitigation procedures and has a chance of $F(t)$ for successful reconfiguration, which allows the system to continue its work.
+However, there is still a change of $2\lambda$ that another component fails before the system detects and mitigate the first failure, which would lead to a system fault and render the entire system unsafe.
+In state (4), there is again a $2\lambda$ change for one of the remaining components to fail, which would lead to a failure of the entire system.
+
+As experiments have shown, a system's recovery time is not exponential~\cite{TheoryAndPracticeReliableSystem}.
+Thus, it is expressed by $F(t)$ which is the probability that the system recovers within a timespan less than $t$.
+
+In a diverse redundant system, each component failure is represented with an individual state.
 
 \section{Redundancy Patterns}
-A typically applied technique for handling and masking failures in a system is redundancy~\cite{TanenbaumSteen07}.
+As already stated, a typically applied technique for handling and masking failures in a system is redundancy~\cite{TanenbaumSteen07}.
 Failure masking is the concept of catching the effects of internal system failures, so that they do not effect the system's environment.
-For redundancy, additional resources are added to a system, that would not be required when no internal system failures ever happen.
+For redundancy, additional resources or information are added to a system, that would not be required when no internal system failures ever happen.
 Barry Johnson defines redundancy in the following way~\cite{BarryFaultToleranceAnalysis}:
 \begin{definition}
 The concept of redundancy implies the addition of information, resources, or time beyound what is needed for normal system operation.
@@ -99,8 +152,8 @@ Each form of redundancy has its unique characteristics and patterns, which are p
 \subsection{Hardware Redundancy}
 In hardware redundancy, additional replications of physical components are added to the system.
 This typically increases the system's safety by masking internal failures, but also increases the system's cost.
-In general, a system's safety can be improved when using components that are based on different internal components.
-Using different components in redundancy patterns is called diverse redundancy, while replicating the same components is called homogeneous redundancy\todo{Ref}.
+In general, a system's safety can be further improved when using components that are based on different internal components.
+Using different components in redundancy patterns is called diverse redundancy, while replicating the same components is called homogeneous redundancy~\cite{HomogeneousRedundancyOuzineb}.
 Using diverse redundancy has the benefit that it reduced the effect that common core errors have on a system's or component's safety.
 
 Johnson subdevides hardware redundancy into two parts, namely passive and active redundancy.
@@ -108,7 +161,7 @@ In passive hardware redundancy, a voter or consensus algorithm is used to reduce
 In active hardware redundancy, the system tries to detect and repair any internal failure.
 While \gls*{MOON} systems are a typical example of passive hardware redundancy, standby redundancy is often used as an example of active hardware redundancy.
 
-\paragraph{M-out-of-N Redundancy}
+\paragraph{Tripple Modular Redundancy}
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/Classical2OO3}
@@ -149,7 +202,7 @@ An example of how this could be achieved is depicted in~\autoref{fig:Intermediat
 	\label{fig:StandbyRedundancy}
 \end{figure}
 
-As stated above, standby redundancy is an example of active hardware redundancy and build on the concept of error detection, location and recovery.
+As stated above, standby redundancy is an example of active hardware redundancy and builds on the concept of error detection, location and recovery.
 In an exemplary case of an internal component failure, the resulting error needs to be detected and the faulty component needs to be located, so that the system can recover from the error by replacing the faulty component by an identical spare component.
 An example is depicted in~\autoref{fig:StandbyRedundancy}, where two identical replicas are used, one as a primary and one as a secondary component.
 A switching element observes the active component and, when no internal failure in the active component happened, leads the active components output out of the system.
@@ -197,8 +250,8 @@ The encoding function must be choosen so that it allows the detection of faults 
 \section{Related Work}
 
 Alapan Chakroborty demonstrates a development process of a reliable, safe and fault-tolerant system using redundancy methods by an example of railway signalling~\cite{ChakrabortyFaultTolerantRailway}.
-He argues that every fault tolerant system needs to build upon real-time software solutions.
-This requires both logical, as well as timing correctness which can only be achieved by correct redundancy management such as fault-propagation, synchronization and consensus among replicas.
+He argues, that every fault tolerant system needs to build upon real-time software solutions.
+This requires both logical, as well as timing correctness, which can only be achieved by correct redundancy management such as fault-propagation, synchronization and consensus among replicas.
 At a fail-safe design's heart lies fault idenfication, masking and recovery.
 Therefore, in a first step, each redundant design should be subdevided into redundant elements that are not affected by any fault from outside the element.
 Chakroborty calls these redundant elements \glspl*{FCR}.
@@ -211,72 +264,100 @@ Finally in the work, the shown method is performed on developing a railway signa
 
 An overview about possible redundancy concepts for the railway domain is provided by Bemment et. al~\cite{BemmentEvaluationOfRedundancy}.
 They further made a cost, benefit and performance analysis for each presented concept.
+\\
 
-
-In this work, the concepts proposed by Bemment et. al are extended based on the steps by Chakraborty and by using and evaluating the feasibility of \gls*{DDS} for redundancy in the railway context.
-The redundancy evaluation is made based on a simplified example, because Bemment et. al pointed out that an in depth redundancy evaluation can only be made for well defined use cases where hazards, risks and potential accidents are known.
-An overview about about possible accidents in railway is given by~\cite{ERTMSRailwayAccidents}.
+In my work, the concepts proposed by Bemment et. al are extended based on the steps by Chakraborty and by using and evaluating the feasibility of \gls*{DDS} for redundancy in the railway context.
+Normally, as Bemment et. al pointed out, an in depth redundancy evaluation towards safety and reliability can only be made for well defined use cases where hazards, risks and potential accidents are know.
+In my work, however, only the intrinsic safety in examined, which can be done theoretically without doing an exact risk analysis.
+For further evaluations, an overview about about possible accidents in railway is given by~\cite{ERTMSRailwayAccidents}.
 \\
 
 The CENELEC 50128 standard is a norm for software creating processes for railway applications, so that the build software can be considered safe.
 The 2011 version of CENELEC 50128, as well as resources needed to achieve a set level of assurance, are presented by Jean-Louis Boulanger~\cite{BoulangerStandards}.
-Describing a CENELEC 50128 design process for each software artefact described and used in this thesis is outside its scope.
+Conducting a CENELEC 50128 conform design process for all software artefacts created in this thesis is outside of its scope.
 However, each software indended to be used in railway practice should pass the CENELEC 50128 norm.
 \\
+
+\begin{table}[h!]
+	\begin{center}
+		\caption{\Gls*{QOS} policies that affect the communication overhead (o) or the communication time (t).}
+		\label{tab:qos_garciavalls}
+		\begin{tabularx}{\textwidth}{|l|l|X|}
+			\hline
+			\textbf{QoS policy} & \textbf{Entity} & \textbf{Description}\\
+			\hline \hline
+			Deadline (t) & DR \& DW & Max exprected elapsed time between arriving data samples or instances. Max committed time to publish samples or instances.\\
+			\hline
+			REliability (o) & DR \& DW & Global policy that specifies whether or not data will be delivered reliably. It can be configured on a per DataWriter/-DataReader connection. \\
+			\hline
+			History (o) & DR \& DW & Stores sent or received data in cache. It affects the Reliability \gls*{QOS} policy. \\
+			\hline
+			Resource Limits (o) & DP & Limit to the allocated memory. It limits the queue size for History when the Reliability protocol is used. \\
+			\hline
+			Latency Budget (t) & T \& DR \& DW & Indication on how to handle data that requires low latency. Allow specification of maximum acceptable delay from time the data is written to the time the data is received by the subscriber. \\
+			\hline
+			Time based Filter (t) & DR & Limits the number of data samples sent for each instance per a given time period. \\
+			\hline
+			Transport Priority (t) & DW & Establishes a given priority for the data sent by a writer.\\
+			\hline
+		\end{tabularx}
+	\end{center}
+\end{table}
 
 The \gls*{DDS} is already successfully deployed in distributed time- and safety critical environments.
 One example is given by Bijlsma et. al~\cite{DistributedSafety2020}, who extended the E-Gas layered monitoring concept to handle faults in a distributed and redundant system.
 \Gls*{DDS} is applied to facilitate a reliable communication among individual components in the system.
 An other example is given by Hadiwardoyo and Gao, who proposed the use of \gls*{DDS} in security cameras for subways using \glspl*{QOS}~\cite{DDSInSubways}.
 A more general approach of how \gls*{DDS} can be used for enabling communication in distributed as well as time- and safety-critical environments, is given by García-Valls et. al~\cite{GarciaVallsDDSInDistributed}.
-They used a simple design of sensor data reading and monitoring to benchmarked the middleware's communication performance with different \glspl*{QOS}.
-Their results show that the communication performance remains stable even under heavy load.
-
-Even though they applied a different \gls*{DDS} implementation than in this work, the network topologie and used hardware are comparable, which renders the results from García-Valls et. al useful for this work.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+They used a design of reading and monitoring sensor data to benchmark the middleware's communication performance with different \glspl*{QOS}.
+One of their findings is a summary of \gls*{QOS}-policies that effect the system's communication overhead and communication time.
+These are illustrated in~\autoref{tab:qos_garciavalls} and are especially important when examining real-time and mission-critical systems.
+The results from García-Valls et. al show that the communication performance remains stable even under heavy load.
+Even though they applied a different \gls*{DDS} implementation than in my work, the network topology and used hardware are comparable, which renders the results from García-Valls et. al useful for my work.
 
 
 \iffalse
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Dependability is a characteristic for computing systems to ''deliver [a] services that can justifiably be trusted''~\cite{AvizienisDependability2001}.
 
