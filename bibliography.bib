@@ -125,6 +125,34 @@ volume = {2179},
 journal = {Lecture Notes in Engineering and Computer Science}
 }
 
+@article{FLPProblemConsensus,
+author = {Fischer, Michael J. and Lynch, Nancy A. and Paterson, Michael S.},
+title = {Impossibility of Distributed Consensus with One Faulty Process},
+year = {1985},
+issue_date = {April 1985},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {32},
+number = {2},
+issn = {0004-5411},
+url = {https://doi.org/10.1145/3149.214121},
+doi = {10.1145/3149.214121},
+abstract = {The consensus problem involves an asynchronous system of processes, some of which may be unreliable. The problem is for the reliable processes to agree on a binary value. In this paper, it is shown that every protocol for this problem has the possibility of nontermination, even with only one faulty process. By way of contrast, solutions are known for the synchronous case, the “Byzantine Generals” problem.},
+journal = {J. ACM},
+month = apr,
+pages = {374–382},
+numpages = {9}
+}
+
+@article{RaftConsensusPaper,
+author = {Ongaro, D. and Ousterhout, J.},
+year = {2014},
+month = {01},
+pages = {305-320},
+title = {In search of an understandable consensus algorithm},
+journal = {USENIX}
+}
+
 @article{NASAMarkovChains,
 author = {Butler, Ricky W. and Johnson, Sally C.},
 year = {1995},
@@ -146,6 +174,34 @@ issn = {1572-9397},
 doi = {https://doi.org/10.1007/s10732-009-9117-3},
 journal = {Journal of Heuristics}
 }
+
+@article{FaultToleranceViaNMR,
+  author={ {Yinong Chen} and  {Tinghuai Chen}},
+  journal={IEEE Transactions on Reliability}, 
+  title={Implementing fault-tolerance via modular redundancy with comparison}, 
+  year={1990},
+  volume={39},
+  number={2},
+  pages={217-225},
+  doi={10.1109/24.55885}
+}
+
+@article{ArifeenFaultTolerantTMR,
+AUTHOR = {Arifeen, Tooba and Hassan, Abdus Sami and Lee, Jeong-A},
+TITLE = {A Fault Tolerant Voter for Approximate Triple Modular Redundancy},
+JOURNAL = {Electronics},
+VOLUME = {8},
+YEAR = {2019},
+NUMBER = {3},
+ARTICLE-NUMBER = {332},
+URL = {https://www.mdpi.com/2079-9292/8/3/332},
+ISSN = {2079-9292},
+ABSTRACT = {Approximate Triple Modular Redundancy has been proposed in the literature to overcome the area overhead issue of Triple Modular Redundancy (TMR). The outcome of TMR/Approximate TMR modules serves as the voter input to produce the final output of a system. Because the working principle of Approximate TMR conditionally allows one of the approximate modules to differ from the original circuit, it is critical for Approximate TMR that a voter not only be tolerant toward its internal faults but also toward faults that occur at the voter inputs. Herein, we present a novel compact voter for Approximate TMR using pass transistors and quadded transistor level redundancy to achieve a higher fault masking. The design also targets a better Quality of Circuit (QoC), a new metric which we have proposed for highlighting the ability of a circuit to fully mask all possible internal faults for an input vector. Comparing the fault masking features with those of existing works, the proposed voter delivered upto 45.1%, 62.5%, 26.6% improvement in Fault Masking Ratio (FMR), QoC, and reliability, respectively. With respect to the electrical characteristics, our proposed voter can achieve an improvement of up to 50% and 56% in terms of the transistor count and power delay product, respectively.},
+DOI = {10.3390/electronics8030332}
+}
+
+
+
 
 @book{TheoryAndPracticeReliableSystem,
   title={The Theory and Practice of Reliable System Design},

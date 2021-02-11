@@ -3,17 +3,23 @@
 
 \usepackage{amssymb}
 \usepackage{tabularx}
+\usepackage{xspace}
 
 % ABOUT
 \newcommand{\hpitype}{Masterarbeit}
 \newcommand{\hpiauthor}{Hendrik Tjabben}
-\newcommand{\hpititle}{TODO}
+\newcommand{\hpititle}{V 0.2}
 \newcommand{\hpititleother}{TODO} % <= das Studienreferat verlangt einen deutschen UND englischen Titel
 \newcommand{\hpisupervisor}{Prof.\,Dr.\,Andreas Polze, TODO}
 \newcommand{\hpichair}{Professur für Betriebssysteme und Middleware}
 \newcommand{\hpiexternalsupervisor}{TODO}
 \newcommand{\hpiexternal}{TODO}
 \newcommand{\hpidate}{\today}
+
+
+\newcommand{\etal}{\textit{et al.}\xspace}
+\newcommand{\abr}{\gls*}
+\newcommand{\abrpl}{\glspl*}
 
 \include{content/abbrevation}
 
@@ -39,6 +45,7 @@
 	\pagenumbering{arabic}
     \include{content/introduction}
     \include{content/chapter1}
+    \include{content/chapter2}
     
 	% Bibliographie
 	\ifisbook\cleardoubleemptypage\fi
