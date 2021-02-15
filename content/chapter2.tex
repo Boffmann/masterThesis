@@ -25,9 +25,9 @@ In this section, an overview about different information types and possibilities
 			\hline
 			\textbf{QoS policy} & \textbf{Setting} & \textbf{Description}\\
 			\hline \hline
-			DestinationOrder & SourceTimestamp & The event samples should be ordered based on the time they got produced. \\
-			\hline
 			Deadline & Depends on actual implementation & For periodically updating events, a deadline can be specified to detect when events are missing in a period. \\
+			\hline
+			DestinationOrder & SourceTimestamp & The event samples should be ordered based on the time they got produced. \\
 			\hline
 			Durability & Depends on actual implementation & It might be appropriate to let late joining DataReaders process the events. \\
 			\hline
@@ -58,17 +58,17 @@ While some settings are common for event topics, some others need to be evaluate
 			\hline
 			\textbf{QoS policy} & \textbf{Setting for volatile state} & \textbf{Setting for enduring state} & \textbf{Description}\\
 			\hline \hline
-			Reliability & BestEffort & Reliable & For rapidly and periodically changing state, it is ok if some data gets lost. For enduring state however, data has to be transferred reliably. \\
+			Deadline & Depends on actual implementation & Not required & For volatile state, the deadline should match the period in which the data updates. Because enduring state is changing irregularly, it is not possible to define deadlines. \\
+			\hline
+			DestinationOrder & SourceTimestamp & SourceTimestamp & Using the source timestamp as ordering guarantees that always the most recent data is stored. However, this also requires a common clock for the distributed system. \\
 			\hline
 			Durability & Volatile & Transient or Persistent & Since volatile state is updated frequently, it is no problem when late joining subscribers miss previouly published data. The opposite is the case for slowly changing state, however. \\
 			\hline
 			History & KeepLast(n) & KeepLast(n) & Most of the time, only the last state matters, which is why n is typically set to one. \\
 			\hline
-			Deadline & Depends on actual implementation & Not required & For volatile state, the deadline should match the period in which the data updates. Because enduring state is changing irregularly, it is not possible to define deadlines. \\
-			\hline
 			LatencyBudget & Depends on actual implementation & Not required & The maximum acceptable delay for sending the data should be choosen so that deadlines are not missed. \\
 			\hline
-			DestinationOrder & SourceTimestamp & SourceTimestamp & Using the source timestamp as ordering guarantees that always the most recent data is stored. However, this also requires a common clock for the distributed system. \\
+			Reliability & BestEffort & Reliable & For rapidly and periodically changing state, it is ok if some data gets lost. For enduring state however, data has to be transferred reliably. \\
 			\hline
 			WriterDataLifecycle & Not required & autodispose\_unregistered\_instances = False & Event if data instances are unregistered, the actual data should not be disposed on enduring state topics. \\
 			\hline
