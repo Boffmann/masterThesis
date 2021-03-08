@@ -1,17 +1,17 @@
 \chapter{Background and Related Work}
-\todo{Explain somewhere that redundant communication channels might be a good idea}
 \label{chptr:concepts}
 
 Introducing redundancy to safety-critical systems is a popular approach to ensure that faults inside the system do not lead to failures that effect the system's environment~\cite{BarryFaultToleranceAnalysis}.
-Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information to a message (information redundancy) or performing the same operation multiple times (time redundancy).
+Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy) or performing the same operation multiple times (time redundancy).
 Although being one of the most often used redundancy techniques, the addition of hardware components, called replicas for redundant computation, leads to multiple results which need to be consolidated to an individual system result.
 Thus, the replicas need to communicate with each other and synchronize their results in order to act like a single unit in their environment.
-A promising approach to solve the communication overhead could be \gls*{DDS}, a \gls*{DCPS} system, since it allows reliable and real-time communication~\cite{omgDDSspec}.
+A promising approach to cope with the communication overhead is \gls*{DDS}, a \gls*{DCPS} system, since it allows reliable and real-time communication~\cite{omgDDSspec}.
 However, while hardware redundancy enhances a system's fault-tolerance, it also increases its costs and complexity.
 
-For weighting out different redundancy concepts, various redundancy techniques, important terms and criteria for evaluating redundant systems are described in this chapter.
-Afterwards, standards for building and designing safe and fault-tolerant systems are given and related works, that sucessfully use \gls*{DCPS}-middleware in the railway context, are shown.
-At first, however, an overview about the \gls*{DDS} standard and its concepts are exposed.
+In this chapter, various redundancy techniques, as well as important terms and criteria for evaluating redundant systems, are described.
+Further, different redundancy concepts are weighted against each other with regards to reliability, safety and performance.
+Afterwards, standards for building and designing safe and fault-tolerant systems are given and related works, that sucessfully applied \gls*{DCPS}-middleware in the railway context, are shown.
+At first, however, an overview about the \gls*{DDS} standard and its concepts is exposed.
 
 \section{Data Distribution Service}
 
@@ -35,7 +35,7 @@ Any forecasting of when and how data is published to a \texttt{Topic} or receive
 This concept is illustrated in~\autoref{fig:DDSStructure}, which is based on the official \gls*{DDS} specification~\cite{omgDDSspec} and shows the information flow from the publishing to the subscribing side.
 
 The usefulness of \gls*{DDS} for containerization technologies in automotive architectures has been studied by Kugele \etal~\cite{KugeleDataCentricForAuto}.
-Although their findings are based on containerization technologies and are therefore not resilient for this work, Kugele \etal showed that the applicability of \gls*{DDS} with regards to safety, certification and security depends on the actual implementation's characteristics~\cite{KugeleDataCentricForAuto}.
+Although their findings are based on containerization technologies and are therefore not resilient for this work, Kugele \etal showed that the applicability of \gls*{DDS} with regards to safety, certification and security depends on the actual implementation's characteristics.
 Therefore, Vortex OpenSplice DDS is used thoughout this thesis, which is being developed and maintained by ADLINK.
 
 The applicability of the \gls*{DDS}-standard and of Vortex OpenSplice \gls*{DDS} for safety-critical railway applications has been demonstrated by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
@@ -68,10 +68,10 @@ In other words, reliability is a system's ability to not have any failure for a 
 A system's safety is associated with its reliability, since it consitutes an extension of reliability~\cite{AvizienisDependability2001}.
 In general, safety defines the absence of catastrophic failures on a system's environment.
 When the presence of non-catastropic failures can be reliably detected and a safe state can be taken in case of failures, safety can be treated as reliability concerning catastropic failures.
-In other words, safety can be expressed as a system's probability to not experience any fault that would lead to a catastrophic failure in a specific timespan.
+In other words, safety can be expressed as a system's probability to not experience any fault that would lead to a catastrophic failure in a specific time span.
 
 Based on these definitions, it can be conducted that a system's safety and reliability can only be finally assessed when the system's environment, the reliability of the system's components and the operations performed by the system are known.
-In addition, the system's architecture and structure needs to be aquainted.
+In addition, the system's architecture and structure need to be aquainted.
 Finally, in order to specifically evaluate a system's safety, possible faults and their consequences need to be known.
 In order to be able to evaluate and compare different architectural pattern towards their safety characteristics, independently of the subsequently conducted operations, the definition of \texttt{intrinsic safety}, made by~\cite{BoulangerStandards}, is used in this work.
 
@@ -101,7 +101,7 @@ Flaviu Cristian has established the following five fault classes for distributed
 \item \textbf{F5:} One or multiple components produce arbitrary responses at arbitrary times (\textbf{byzantine fault}).
 \end{enumerate}
 
-It applies, that all failure classes \textbf{Fx} are included in \textbf{Fy}, given that $y \geq x$.
+It applies, that all fault classes \textbf{Fx} are included in \textbf{Fy}, given that $y \geq x$.
 In the course of this thesis, the fault classes \textbf{F1} to \textbf{F4} are analyzed and byzantine faults are not covered.
 
 \subsection{Safety Evaluation}
@@ -152,7 +152,7 @@ In a diverse redundant system, each component failure is represented with an ind
 
 \section{Redundancy Patterns}
 \label{sec:redundancyPatterns}
-As already stated, a typically applied technique for handling and masking errors in a system is redundancy~\cite{TanenbaumSteen07}.
+Redundancy is a typically applied technique for handling and masking errors in a system~\cite{TanenbaumSteen07}.
 Error masking is the concept of detecting and mitigating errors, so that they do not become failures and effect the system's environment.
 For redundancy, additional resources or information are added to a system, that would not be required when errors where impossible to happen in the system.
 Barry Johnson defines redundancy in the following way~\cite{BarryFaultToleranceAnalysis}:
@@ -176,10 +176,10 @@ In active hardware redundancy, the system tries to detect and repair any interna
 While \gls*{MOON} systems are a typical example of passive hardware redundancy, standby redundancy is often used as an example of active hardware redundancy.
 
 A voter can be realized in software and in hardware.
-The benefit of software voters is, that they typically cost less and are easier to develop, because no special hardware is required.
+The benefits of software voters are, that they typically cost less and are easier to develop, because no special hardware is required.
 However, software voters operate slower and the approval process is more complicated, because additional hardware and software is used, that does not contribute to the voting.
 
-The benefit of hardware voters is, that they can operate faster and a minimal set of hardware needs to be approved, which reduces the time and cost expenses.
+The benefit of hardware voters is, that they can operate faster and a minimal set of hardware needs to be approved, which reduces the time and cost expenses for approving the system.
 Both types of voters have in common, that they require some kind of synchronization with the replicas to recognize failed or delayed redundant results.
 
 \paragraph{M-out-of-N Systems}
@@ -192,17 +192,20 @@ Both types of voters have in common, that they require some kind of synchronizat
 
 One of the most common versions of \gls*{MOON} systems is \gls*{TMR}~\autoref{fig:Classical2OO3}.
 In \gls*{TMR}, three replicas are receiving the same input and performing the same work in parallel.
-A voter collects the individual outputs and reduces them to a single system output based on a majority vote.
+A voter collects the individual outputs and reduces them to a single system output based on majority voting.
 The system output must qualify the characteristic that at least two out of the three replicas agree on this output.
 This allows the entire system to still produce a correct output even in the presents of a faulty replica.
-All replicas, as well as the voter, are running on individual hardware units.
+All replicas, as well as the voter, are running on individual execution units.
 
-The weakness of \gls*{TMR} is the voter, because it marks a single point of failure.
-Therefore, the voter's reliability in this system has to be very high compared to the three replicas, because the entire system's dependability cannot be higher than the voter's dependability.
+Instead of having one voter that decides about the final result, the calculations could be modularized and votings on intermediate results could be made.
+This would have the benefit of masking intermediate faults and not letting them influence further calculations.
+An example of how this could be achieved is depicted in~\autoref{fig:IntermediateVoting}.
+\\
+
+The biggest weakness of \gls*{TMR} is the voter, because it marks a single point of failure.
+Therefore, the voter's reliability in the system has to be high compared to the remaining replicas, because the entire system's reliability cannot be higher than the voter's reliability.
 There is a lot of research for making voters more reliable, one of which being Arifeen \etal, who proposed a highly reliable hardware voter~\cite{ArifeenFaultTolerantTMR}.
-As an alternative to the voter, a consensus algorithm could be used.
-A consensus algorithm is applied to let all components in the system agree on a single output value.
-This single output value is required to be proposed by at least one component~\cite{lamport2001paxos}.
+An alternative to voters are consensus algorithm, where all components, not only a single voter, are involved in deciding about the system's output value~\cite{lamport2001paxos}.
 While not having a single point of failure anymore, consensus approaches typically introduce a communication overhead and lead to rigid configurations~\cite{GamerIncreasingMOON}.
 
 \begin{figure}[!hb]
@@ -211,10 +214,6 @@ While not having a single point of failure anymore, consensus approaches typical
 	\caption{Intermediate voting could be applied to reduce the effect of partial results on the final output. Another benefit of this approach is its pipelined fashion, which improves the overall system throughput.}
 	\label{fig:IntermediateVoting}
 \end{figure}
-
-Instead of having one voting about the final result, the calculations could be modularized and votings on intermediate results could be made.
-This would have the benefit of masking intermediate faults and not letting them influence further calculations.
-An example of how this could be achieved is depicted in~\autoref{fig:IntermediateVoting}.
 
 \paragraph{Standby Redundancy}
 \begin{figure}[!hb]
@@ -225,17 +224,17 @@ An example of how this could be achieved is depicted in~\autoref{fig:Intermediat
 \end{figure}
 
 As stated above, standby redundancy is an example of active hardware redundancy and builds on the concept of error detection, location and recovery.
-In an exemplary case of an internal component failure, the resulting error needs to be detected and the faulty component needs to be located, so that the system can recover from the error by replacing the faulty component by an identical spare component.
-An example is depicted in~\autoref{fig:StandbyRedundancy}, where two identical replicas are used, one as a primary and one as a secondary component.
-A switching element observes the active component and, when no internal failure in the active component happened, leads the active components output out of the system.
-As soon as the switching element detects an internal failure, it excludes the active component from the system and takes the secondary component's output as the system's output, which thereby becomes the active component.
+When, in an exemplary case, an individual component experiences a fault, the resulting error needs to be detected and the faulty component needs to be located, so that the system can recover from the error by replacing the faulty component by an identical spare component.
+This concept is depicted in~\autoref{fig:StandbyRedundancy}, where two identical replicas are used, one as a primary and one as a secondary component.
+A switching element observes the active component and, when no error is detected, provides control about the system's output to the active components.
+As soon as the switching element detects an error, it excludes the active component from the system and transfers control about the system's output to the secondary component, which thereby becomes the active component.
 When the secondary component is already running when the switching happens, this is called hot standby redundancy.
 When the secondary component needs to be turned on before it can be used as the active component, this is called cold standby redundancy.
 
 \subsection{Software Redundancy}
-One speaks of software redundancy, when redundancy concepts for error detection are implemented in software.
-Examples for software redundancy are heartbeat messages to validate a component's accessibility, component-checking or software voters.
-In component-checking, a program is used to monitor and validate a component's hardware, for example its memory, clock or \gls*{CPU}.
+One speaks of software redundancy, when the redundancy concepts or error detection methods are implemented in software.
+Examples for software redundancy are heartbeat messages to validate a component's accessibility, component-checking, or software voters.
+In component-checking, a program is used to monitor and validate a component's hardware, for example its memory, its clock, or its \gls*{CPU}.
 Thereby, it can be qualified whether a specific component's output can be considered valid or not.
 This state is summarized into the term \texttt{internal consistency}.
 
@@ -261,12 +260,12 @@ All information redundancy concepts share that they somehow encode redundancy in
 \end{figure}
 
 Another way of adding redundancy is to perform the same operation multiple times at different points in time.
-This concept is called \texttt{Time Redundancy} and has the benefit that it does not require many additional physical components.
+This concept is called \texttt{Time Redundancy} and has the benefit that it does not necessarily require additional physical components.
 Thereby, permanent faults in a system can be detected.
 
 \autoref{fig:ECC} depicts an example of a combination of information and time redundancy using \gls*{ECC} techniques.
 Therefore, an encoder encodes potential outputs for certain inputs and transmits this redundant information together with the input data.
-After the system produces an output based on its input information, another encoder encodes the output, which is afterwards compared to the encoded input.
+After the system produces an output based on its input information, the output is also encoded and afterwards compared to the encoded input.
 When there are anomalies between the system's input and its output, safety operations can be initiated.
 The encoding function must be choosen so that it allows the detection of faults in the system, such as arithmetic shifting.
 
@@ -301,7 +300,6 @@ Conducting a CENELEC 50128 conform design process for all software artefacts cre
 However, each software indended to be used in railway practice should pass the CENELEC 50128 norm.
 \\
 
-\todo{Adapt table so that I extend the QOS from the paper with those that I need. Also drop those from the paper that I do not need}
 \begin{table}[h!]
 	\begin{center}
 		\caption{\Gls*{QOS} policies that affect the communication overhead (o) or the communication time (t). Each \abr{QOS} policy can either be applied to \texttt{DataWriters} (DR), \texttt{DataReaders} (DR), \texttt{Topics} (T), or \texttt{Publishers} (P).}

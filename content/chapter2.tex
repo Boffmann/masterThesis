@@ -1,15 +1,44 @@
 \chapter{Systems Evaluation}
 \label{chptr:evaluation}
 
-\section{Scenario Description}
-\todo{Find better title}
+As already stated, the actual system will be located within the context of the ~\gls*{ETCS}.
+Information in \gls*{ETCS} can be quite diverse in terms of type, size, durability, actualization frequency, and priority.
+For example, a train's position is a periodically and frequently updated type of information, while a \gls*{MA} is valid for a longer time and may be updated unfrequently.
+There is also a difference in whether the information is kept as a state of the system, used as a message within the system, or if it is provided as system input, where system state is derived from.
 
-As already explained before, the system will be located within the context of ~\gls*{ETCS}.
-Information in \gls*{ETCS} can be quite diverse, all in terms of type, size, durability, actualization frequency, priority.
-For example, the trains position is a small, periodically and frequently updated type of information, while a \gls*{MA} is valid for a longer time and may be updated unfrequently.
-There is also a difference in whether the information is kept as a state of the system, or if it is provided as system input, that needs to be consumed and processed.
+\section{Events and States in \abr{DDS}}
+In this section, an overview about different information types and possibilities for their representation in \gls*{DDS} topics is provided.
 
-In this section, an overview about different information types and possibilities for their representation in \gls*{DDS} topics is specified.
+\begin{table}[h!]
+	\begin{center}
+		\caption{\Gls*{QOS} policies for volatile and enduring states in a \gls*{DDS} system. For an enduring state, data changes slow and unperiodically. In volatile states, data changes frequently and periodically.}
+		\label{tab:stateQOS}
+		\begin{tabularx}{\textwidth}{|X|X|X|X|}
+			\hline
+			\textbf{QoS policy} & \textbf{Setting for volatile state} & \textbf{Setting for enduring state} & \textbf{Description}\\
+			\hline \hline
+			Deadline & Depends on actual implementation & Not required & For volatile state, the deadline should match the period in which the data updates. \\
+			\hline
+			DestinationOrder & SourceTimestamp & SourceTimestamp & Using the source timestamp as ordering guarantees that always the most recent data is stored. \\
+			\hline
+			Durability & Volatile & Transient or Persistent & The more frequent the state changes, the less critical it is for late joining subscribers to see previouly published data. \\
+			\hline
+			History & KeepLast(1) & KeepLast(1) & Most of the time, only the last state matters. \\
+			\hline
+			LatencyBudget & Depends on actual implementation & Not required & The maximum acceptable delay for sending the data should be choosen so that deadlines are not missed. \\
+			\hline
+			Reliability & BestEffort & Reliable & For rapidly and periodically changing state, it is ok if some data gets lost. For enduring state however, data has to be transferred reliably. \\
+			\hline
+			WriterDataLifecycle & Not required & autodispose\_unregistered\_instances = False & Even if data instances are unregistered, the actual data should not be disposed on enduring state topics. \\
+			\hline
+		\end{tabularx}
+	\end{center}
+\end{table}
+
+A train's speed or position data, as well as currently valid \abrpl{MA} are examples for the system's state.
+A state could contain perodically changing data, or irregular changing data, respectively.
+A state whose data changes periodically is called a volatile state, while a state whose data changes slow and irregular is called an enduring state.
+Possible \gls*{QOS} settings for volatile and enduring states are presented in~\autoref{tab:stateQOS}.
 
 \begin{table}[h!]
 	\begin{center}
@@ -39,89 +68,56 @@ In this section, an overview about different information types and possibilities
 	\end{center}
 \end{table}
 
-A train's speed, as input data, is an example of data that needs to be eventually read and processed.
-This kind of data can be summarized in the concept of events.
+Certain circumstances, such as the availablity of track-side information or the exceeding of speed limits, need to be processed as soon as possible.
+Such data is typically expressed as events and can be expressed using event topics.
 \autoref{tab:eventQOS} provides an overview about \gls*{QOS}-policy settings for event topics.
-While some settings are common for event topics, some others need to be evaluated with regards to an actual system implementation and consequential requirements.
-
-\begin{table}[h!]
-	\begin{center}
-		\caption{\Gls*{QOS} policies for volatile and enduring states in a \gls*{DDS} system.}
-		\label{tab:stateQOS}
-		\begin{tabularx}{\textwidth}{|X|X|X|X|}
-			\hline
-			\textbf{QoS policy} & \textbf{Setting for volatile state} & \textbf{Setting for enduring state} & \textbf{Description}\\
-			\hline \hline
-			Deadline & Depends on actual implementation & Not required & For volatile state, the deadline should match the period in which the data updates. Because enduring state is changing irregularly, it is not possible to define deadlines. \\
-			\hline
-			DestinationOrder & SourceTimestamp & SourceTimestamp & Using the source timestamp as ordering guarantees that always the most recent data is stored. However, this also requires a common clock for the distributed system. \\
-			\hline
-			Durability & Volatile & Transient or Persistent & Since volatile state is updated frequently, it is no problem when late joining subscribers miss previouly published data. The opposite is the case for slowly changing state, however. \\
-			\hline
-			History & KeepLast(n) & KeepLast(n) & Most of the time, only the last state matters, which is why n is typically set to one. \\
-			\hline
-			LatencyBudget & Depends on actual implementation & Not required & The maximum acceptable delay for sending the data should be choosen so that deadlines are not missed. \\
-			\hline
-			Reliability & BestEffort & Reliable & For rapidly and periodically changing state, it is ok if some data gets lost. For enduring state however, data has to be transferred reliably. \\
-			\hline
-			WriterDataLifecycle & Not required & autodispose\_unregistered\_instances = False & Event if data instances are unregistered, the actual data should not be disposed on enduring state topics. \\
-			\hline
-		\end{tabularx}
-	\end{center}
-\end{table}
-
-While a train's speed could be periodically processed as an input information, it could also be kept as the system's state.
-A state could contain perodically changing data, or irregular changing data, respectively.
-A state that which data changes periodically is called a volatile state, while a state whose data changes slow and irregular is called enduring state.
-Possible \gls*{QOS} settings for volatile and enduring states are presented in~\autoref{tab:stateQOS}.
-
+The presented combination of \abr{QOS}-settings ensures that events are eventually processed in the order they were issued and that no event is omitted.
+While some settings are universal for event topics, some others need to be evaluated with regards to an actual system implementation and consequential requirements.
 
 %\subsection{High-Level Risk Analysis}
 
 \section{System Design and Comparison}
-The different redundancy techniques, as proposed, among others, by Johnson Barry, are applicable for different use-cases.
+The different redundancy techniques, as proposed by Johnson Barry, are applicable for different use-cases~\cite{BarryFaultToleranceAnalysis}.
 In this section, different redundancy techniques are selected, combined and evaluated based on following criteria:
 
 \begin{itemize}
-\item \textbf{Safety:} How likely is the system to reliable detect a failure and transition the system into a safe state.
-\item \textbf{Implementability using \gls*{DDS}:} What ways are there to realize the redundancy with the \gls*{DDS} communication middleware.
+\item \textbf{Safety:} How likely is the system to reliable detect an error and transition the system into a safe state.
+\item \textbf{Implementability using \gls*{DDS}:} How easy is it to implement the redundant architecture using \abr{DCPS} concepts.
 \end{itemize}
 
 In order to evaluate the redundant system's safety, it is mathematically evaluated using Marcov Chains, as described in~\autoref{sec:safetyEvaluation}.
-For investigating the technique's implementability with \gls*{DDS}, the required functionalities, and \gls*{QOS} policies for setting up the architecture, are proposed and examined.
+For investigating the technique's implementability with \gls*{DDS}, the required functionalities and \gls*{QOS} policies for setting up the architecture, are proposed and examined.
 \\
 
 %------DDS-------
-%In order to map a redundant technique onto a \gls*{DDS} publish-/subscribe architecture, the core functionalities and \gls*{QOS} policies need to be defined.
-All redundant architectures have in common, that they somehow receive an input and produce an output.
-Both the system's input and its output can be trasmitted using \abr{DDS} topics.
-Such an \texttt{Input}-topic should be defined as an event-topic to make sure that every replica is able to receive and eventually process the input.
-Because input occur asynchronously, the deadline \gls*{QOS} is not applicable for input events.
+All computing systems have in common, that they receive an input and produce an output.
+In the exemplary case that is considered in this thesis, the system's input can be trasmitted using \abr{DDS} topics.
+Such an \texttt{Input}-topic should be defined as an event-topic to make sure that every replica receives and eventually processes the inputs.
+Because inputs occur asynchronously, the deadline \gls*{QOS} is not applicable for the \texttt{Input} event topic.
 For real-time applications, as examined in this work, an output is expected to be delivered by the sytem withing a maximal timespan of $\Delta t$ after the system received an input.
 Therefore, the input topic's \texttt{Durability} should be set to volatile and the \texttt{Lifespan}-policy should be set to at least $\Delta t$ plus a network latency.
 The input's \texttt{ResourceLimit} depends on the frequency the input is expected to be delivered and can be set to one when the input's frequency is higher than $\Delta t$.
 \\
 
-A replica's output should be implemented as an event topic, so that it can be ensured that the voter consumes and considers all replica outputs to process a final result.
-Thus, the output topic's \gls*{QOS}-settings can be the same as for the input topic.
-However, the \texttt{Lifespan}-policy needs further specification, because the replicas are independent and network latency problems can occur.
-Consequently, a voter can receive the result of certain replicas after it received the result of another replica.
-A replica's results should therefore remain valid until it is expected that the voter received all replica's result and the \texttt{Lifespan} should be set accordingly.
-\todo{Solution to what happens when a result with higher priority is produced}.
+The components in a redundant system are required to communicate with one another because at the end, the entire system needs to present a single result.
+In the course of this thesis, all communication in the system will be implemented using \abr{DDS} event topics because it should be ensured that, given a sufficient network, no information is lost in the system.
+Thus, the communication topic's \gls*{QOS}-settings can be the same as for the input topic.
+However, the \texttt{Lifespan}-policy needs further specification, because the replicas are independent and messages might be delayed due to network latency.
+After a specific time, however, certain message might not be valid anymore.
+An example for this could be message concerning a \abr{MA} that has been expired by the time the delayed information was received.
+A component's message might therefore require a certain \texttt{Lifespan} that depends on the actual message.
 \\
 
+The minimal communication overhead required in a redundant system is between the replicas and the voter.
 As described earlier, voters can either be implemented in software, or in hardware.
-When using \gls*{DDS} for the communication between the replicas and the voter, there always needs to be a software part involved in the voter that implements the \gls*{DCPS} standard.
+This does not hold for redundant systems where \gls*{DDS} is used for the communication between the replicas and the voter because the voter always requires a software part that implements the \gls*{DCPS} standard.
 
-A datamodel will be carved out in \todo{Ref chapter 3}, when the proposed \gls*{DDS} architecture is implemented based on a real-life example.
+One of the most commonly used redundancy techniques is \gls*{TMR}~\cite{FaultToleranceViaNMR}, which will therefore constitute the foundation for further system investigations.
 
-One of the most commonly used techniques for building safe and fault-tolerant systems is \gls*{TMR}~\cite{FaultToleranceViaNMR}.
-Therefore, \gls*{TMR} will be the starting point for system investigation in this thesis.
-
-\subsection{Tripple Modular Redundancy}
-\Gls*{TMR} was already briefly discussed in~\autoref{sec:redundancyPatterns} and depicted in~\autoref{fig:Classical2OO3}.
-The reliability and safety characteristics of \gls*{TMR} has been studied in depth, for example by Arifeen \etal~\cite{ArifeenFaultTolerantTMR}.
-Their findings show that the reliability of \gls*{TMR}-systems ($R_{TMR}(t)$), and thereby its intrinsic safety, is given by the sum of the probability of all three components functioning and two components functioning.
+\subsection{Triple Modular Redundancy}
+\Gls*{TMR} was already briefly discussed in~\autoref{sec:redundancyPatterns} and is depicted in~\autoref{fig:Classical2OO3}.
+The reliability and safety characteristics of \gls*{TMR} have been studied in depth, for example by Arifeen \etal~\cite{ArifeenFaultTolerantTMR}.
+Their findings show that the reliability of \gls*{TMR}-systems ($R_{TMR}(t)$) is given by the sum of the probability of all three components functioning and two components functioning.
 
 \begin{equation}
 R_{TMR}(t) = 3e^{-2 \lambda t} - 2e^{-3 \lambda t}
@@ -131,24 +127,24 @@ This equation only holds for homogeneous redundancy and when the components are 
 While the independence is is a precondition for the exponential failure law, a diverse system can be described in the same way by using a distinct $\lambda$ for each component.
 \\
 
-All four failure classes from~\autoref{sec:techniquesSafetyReliability} for at most one failing replica can be detected and masked by the system.
+The first four fault classes from~\autoref{sec:techniquesSafetyReliability} for at most one failing replica can be tolerated by a triple modular system.
 For example, if one replica produces a wrong result, the voter still receives two correct results and can mask the wrong result using a majority voting.
 However, if two or more replicas produce the same, but wrong result, the voter erroneously accepts the wrong result as the majority.
-On the other hand, if two or more replicas fail to produce on output within a certain time span, the voter can detect this as a deadline violation and can transfer the system in a safe state, e.g. by stopping the train.
+On the other hand, if two or more replicas fail to produce on output within a certain time span, the voter can detect this as a deadline violation and can transfer the system into a safe state, e.g. by stopping the train.
 Therefore, only \textbf{F1}, \textbf{F2}, and \textbf{F3} can be detected when more than one replica is affected in \abr{TMR}.
 
 This is different, when a component's wrong result is based on a corrupt internal consistency and component checking mechanisms are applied.
-In this case, the faulty components can be determined and \texttt{F4} can also be covered by excluding the faulty components from the voting and the system remains safe.
+In this case, the faulty components can be determined and \textbf{F4} can also be covered by excluding the faulty components from the voting so that the system remains safe.
 
 Nevertheless, a failed voter can render the entire system unsafe, because it marks a single point of failure in \abr{TMR}.
 Therefore, the entire system's reliability and safety cannot be higher than the voter's reliability and safety~\cite{ArifeenFaultTolerantTMR}.
-The same applies for the used communication channel, when only a single one is used.
+The same holds true for the applied communication channel, when only a single one is used.
 
 Another problem arises when the frequency in which inputs occur is higher than the time that the system needs to produce an output.
 In such a case, an output might be already outdated even before it is being produced.
 \\
 
-Recapped, \abr{TMR} suffers three major challenges, which being
+Recapped, \abr{TMR} suffers four major challenges, which being
 
 \newcommand{\ChallengeWR}{\textbf{C1}\xspace}
 \newcommand{\ChallengeVoter}{\textbf{C2}\xspace}
@@ -167,24 +163,21 @@ For example, one communication channel could use Ethernet as and another could b
 \\
 
 In order to solve \ChallengeVoter and prevent the voter from being a single point of failure, redundancy can be introduced for the voters as well.
-However, this introduces new challenges such as the possibility of a split brain, where multiple voters are active and manipulate the output at the same time.
-A solution for this are discussed later in~\todo{Ref}.
+However, this introduces new challenges such as the possibility of a split brain, where multiple voters are active and can manipulate the output at the same time.
+A solution for this are discussed later in~\autoref{subsec:consensusArchitecture}.
+\\
 
 In order to achieve \ChallengeWR, each replica's internal consistency needs to be monitored.
 This could be done in two ways, either each replica monitors itself and reports its internal consistency via periodic heartbeat messages, or each replica is monitored by another component in the system.
 When a replica monitors itself, it is also responsible to exclude itself from the voting process when its internal consistency is fault.
 Further, the affected replicy needs to notify other components, e.g. the voter, about this fact.
-The notification should be done via a \abr{DDS} event topic to ensure that the other components are informed about this fact.
+The notification should be done via a \abr{DDS} event topic to ensure that the other components are informed.
 Another way would be to store information about a replica's internal consistency in an enduring \abr{DDS} state, so that it is retrievable by each subscriber at any time.
 It depends on the actual implementation, which method is more applicable.
-
-When a replica is monitored by another component, the communication between those should also be done via \abr{DDS} event topics.
 \\
 
-Without knowing anything about a replica's internal consistency or when a replica's internal consistency is not liable for the wrong result, \abr{TMR} is not capable of being safe in case of more than one identical wrong result.
-One way of allowing more replicas to produce a wrong result would be to add more replicas
+Another way to allow more replicas to fail and produce the same wrong result would be to add more replicas
 It can be shown via induction, that adding more replicas increases a system's reliability.
-Instead of adding more replicas in a passive hardware redundancy way, they can also be added as spares in an active hardware redundancy approach.
 
 \paragraph{Proof by induction}
 Let $M$ be contant and $M \leq N$, let $R_{c}$ the reliability of the system's components.
@@ -207,14 +200,14 @@ $\square$
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/TMRWithSparesDDS}
-	\caption{A hot standby can be implemented using \abr{DDS} Topics for communication.}
+	\caption{A hot standby can be implemented using \abr{DDS} event topics. In this case, the voter is responsible for detecting when a replica crashed and activates a spare component in this case by sending a corresponding event.}
 	\label{fig:TMRWithSparesDDS}
 \end{figure}
 
-
+Instead of adding more replicas in a passive hardware redundancy way, they can also be added as spares in an active hardware redundancy approach.
 However, this also increases costs and communication overhead.
 
-Standby redundancy is a way for redundant systems to repair itself in case of failures by adding spare replicas, that can replace faulty replicas.
+Standby redundancy is a way for redundant systems to repair themselves in case of failures by adding spare replicas, that can replace faulty replicas.
 Therefore, the system relies on error detection methods.
 For the reliability of \abr{TMR} with a spare component holds, provided that the system can reliable detect and repair any error and the replicas are homogeneous and independent:
 
@@ -226,7 +219,7 @@ R_{TMR\_S}(t) = 2 * {3 \choose 3} e^{-\lambda t} + {3 \choose 2} e^{-\lambda t}
 One way of implementing \abr{TMR} with a spare using \abr{DDS} is depicted in~\autoref{fig:TMRWithSparesDDS}.
 The input, as well as the replica's results and an activate event are modelled as \abr{DDS} event topics.
 In an exemplary case, where one replica crashed, the voter would receive only two replica results and thereupon sends an activate event via the corresponding topic.
-When the spare replica (S) receives the activate event, is subscribes the the input topic and registers to the Replica Results topic to publish data to it.
+When the spare replica (S) receives the activate event, is subscribes the the \texttt{Input} topic and registers to the \texttt{Replica Results} topic to publish data to it.
 In case the failed replica comes back to life and the voter recognizes this, the voter can reject the result from (S) and send a deactivate event.
 Thereafter, the spare replica ends its subscription to the input topic and stops publishing results.
 A precondition for this approach is, that a replica's result can be unambiguously assigned to a replica, for example by using IDs or by using an individual result topic for each replica. 
@@ -238,18 +231,18 @@ Although \abr{TMR} with spares improves the replicated system's reliability and 
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/InterconnectedVoterPipeline}
-	\caption{Two interconnected pipeline streams with on-component intermediate voting can improve throughput.}
+	\caption{Two interconnected pipeline streams with on-component intermediate voting can improve throughput. However, it also increased the system's cost, complexity and communication overhead.}
 	\label{fig:PipelineIntermediateVoters}
 \end{figure}
 
-In order to improve a system's throughput, an often applied technique is pipelined computation~\todo{Ref}.
+In order to improve a system's throughput, an often applied technique is pipelined computation~\cite{TanenbaumSteen07}.
 In a pipelined approach, intermediate voting should be used to reduce the effect of wrong intermediat results.
 It is further possible that components function as both a voter and a data processing replica.
 A paradigmatic redundant and pipelined system with intermediate voting on replicas is depicted in~\autoref{fig:PipelineIntermediateVoters}, where voters (1), (2), and (3) each perform a majority voting based on the results from replicas (1), (3), and (5).
 Based on the voted intermediate results, replicas (2), (4), and (6) can perform their dedicated calculations and produce an individual output which is later reduced by voter (4).
-Thereby, any single failure from replicas (1), (3), and (5) would be masked before they are even handled to the final voter (4).
-However, this approach is still a two-out-of-three approach and therefore has the same challenges that \abr{TMR} has but they can also be solved in the same ways.
-Further, the pipelined approache's reliability can be calculated in the same way as for \abr{TMR}, because in a worst case, two replicas of type A or type B could fail.
+Thereby, any failure from replicas (1), (3), or (5) can be masked before they are even handled to the final voter (4).
+However, this approach is still a two-out-of-three approach and therefore has the same challenges that \abr{TMR} has.
+Further, the pipelined approach's reliability can be calculated in the same way as for \abr{TMR}, because in a worst case, two replicas of type A or type B could fail.
 \\
 
 Although the pipelined approach enhances the system's thoughput, it also enhances the computation and communication overhead, as well as the system's cost.
@@ -257,12 +250,14 @@ Thus, a tradeoff needs to be made between the added throughput and the additiona
 
 Again, the reliability evaluation has been made without evaluating the voter - in the pipelined version voter (4) - which remains a single point of failure.
 As proposed previously, this can be solved by adding redundancy for the voter as well, like for voters (1), (2), and (3) in~\autoref{fig:PipelineIntermediateVoters}.
-In such a system, it needs to be ensured that only a single voter is in charge of dictating about the final system's output.
-When letting a single instance, for example a designated replica, decide about the availability and internal consistency of the voter, a new single point of failure would be introduced in the form of this replica and nothing would have been achieved.
-When each replica by itself decides about the voter's availability, a splic brain situation could arise because of network latencies.
-A way to prevent both of these problems is though a consensus algorithm.
+In such a system, it needs to be ensured that only a single voter is in charge of controlling the system's final output.
+This can be achieved by applying a consensus algorithm.
+%When letting a single instance, for example a designated replica, decide about the availability and internal consistency of the voter, a new single point of failure would be introduced in the form of this replica and nothing would have been achieved.
+%When each replica by itself decides about the voter's availability, a splic brain situation could arise because of network latencies.
+%A way to prevent both of these problems is though a consensus algorithm.
 
 \subsection{Consensus-inspired Architectures}
+\label{subsec:consensusArchitecture}
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/ThreeComponentConsensus}
@@ -270,55 +265,38 @@ A way to prevent both of these problems is though a consensus algorithm.
 	\label{fig:ThreeRepConsensus}
 \end{figure}
 
-For a consensus, multiple components are involved in deciding about redundant information~\todo{find better definition}.
+For a consensus, multiple components are involved in deciding about redundant information.
 An exemplary consensus algorithm is \texttt{Raft}, which has been proposed by Ongaro and Ousterhout~\cite{RaftConsensusPaper}.
 A component in \texttt{Raft} can take on one of three roles, namely \textit{leader}, \textit{follower}, or \textit{candidate}.
 While a leader has the entire responsibility, followers wait for instructions from the leader and can become candidates in order to promote to become the new leader.
-The system needs to ensure that only one leader is present at a time.
+\texttt{Raft}'s leader election algorithm ensures that only one leader is active at a time and that the absence of a leader in the system is reliably detected.
 
-An example, where these three roles are used, is depicted in~\autoref{fig:ThreeRepConsensus}.
+An example of how the three roles from \texttt{Raft} are used is depicted in~\autoref{fig:ThreeRepConsensus}.
 The replicas (1), (2), and (3) make up a \abr{TMR} system, while replicas (4), (5), and (6) together define a voter for the system.
-Each of the replicas (4), (5), and (6) has a designated voter running on the same execution unit.
-Only these replicas can take over one of \texttt{Raft}'s roles.
+The replicas (4), (5), and (6) toghether implement the consensus protocol and each provide a designated voter.
 In the example of~\autoref{fig:ThreeRepConsensus}, replica (4) took over the leader role and thereby has complete control over the output, while (5) and (6) are followers.
 
 In \texttt{Raft}, it is the leader's responsibility to send periodic heartbeat messages to notify the followers about its existence.
-The heartbeat messages, as well as all other messages in \texttt{Raft} are expressed as \abrpl{RPC}.
+The heartbeat messages, as well as all other messages in \texttt{Raft}, are expressed as \abrpl{RPC}.
 At least two \abrpl{RPC} need to be supported, namely \texttt{AppendEntries} and \texttt{RequestVote}.
-\texttt{AppendEntries} is used for sending heartbeat messages and other commands, called logs in \texttt{Raft}.
+\texttt{AppendEntries} is used for sending heartbeat messages and other commands, called logs in \texttt{Raft}, while \texttt{RequestVote} is invoked by candidates to gather votes.
 
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/ThreeComponentConsensusDDS}
-	\caption{TODO}
+	\includegraphics[width=0.9\linewidth]{images/ThreeComponentConsensusDDS}
+	\caption{A raft consensus algorithm requires at least two types of \abrpl{RPC} to be passed in the system, namely \texttt{RequestVote} and \texttt{AppendEntries}. These two can be implemented using \abr{DDS} event topics.}
 	\label{fig:ThreeRepConsensusDDS}
 \end{figure}
 
 \autoref{fig:ThreeRepConsensusDDS} shows how the concept of \texttt{Raft}, with its roles and \abrpl{RPC}, can be implemented using \abr{DDS}.
 In this example, the replicas of type (A) publish their intermediate results in a \abr{DDS} event topic, which can be read by the individual voters.
-Voter (1) with its replica (4) took over the leader role and thereby decide about the system's output by performing a majority voting over the intermediate results.
-In addition, the leader published periodic heartbeat messages to the \texttt{AppendEntries} topic, which is received by the followers being the other two voters and their replicas.
+Voter (1) with its replica (4) took over the leader role and thereby controls the system's output by performing a majority voting over the intermediate results.
+In addition, the leader publishes periodic heartbeat messages to the \texttt{AppendEntries} topic, which are received by the followers (5) and (6).
 When a heartbeat message stayed out for a period, the system assumes that the leader has crashed and the followers initiate a new leader election using the \texttt{RequestVote} topic.
 When a new leader is elected, it gains complete control over the output, subscribes to the \texttt{Replica A Result} topic, and starts sending heartbeat messages.
 In the event of the previous leader coming back online again, it subscribes to \texttt{AppendEntries}, receives heartbeat messages and thereby takes over a follower role.
 Using replicated voters with a consensus algorithm, \ChallengeVoter can be solved, because the voter is no single point of failure anymore.
-However, from the four failure classed introduced in~\autoref{sec:techniquesSafetyReliability}, only the failure of a crashed voter or a crashed replica of type (B) can be handled.
-This is because the leader has the sole control about the system's output.
-In the case of a voter, or a type (B) replica, failing to respond to incoming intermediate results, the system fails to produce any output.
+However, without any further treatment, only crash faults can be tolerated for voters using a consensus algorithm.
+Methods for detecting and handling time and omission faults exist but require additional hardware.
+However, since the leader has sole control about the system's output, it is impossible to tolerate computation faults in this way.
 Thus, it needs to be assured that neither a voter, nor a replica of type (B), have any ommision, timing, or computation fault.
-
-
-\subsection{Summary}
-In this section, a redundant architecture using \abr{DDS} is established step by step.
-\abr{TMR} was only able to mask a wrong result from one replica (\ChallengeWR) and suffered from the voter (\ChallengeVoter) and the communication channel (\ChallengeComm) being a single point of failure.
-Further, the system's throughput might not be sufficient (\ChallengeThrough).
-\ChallengeComm could be solved by using redundant communication channels, following the idea of information redundancy.
-In order to solve (\ChallengeWR) and to allow more replicas to fail without affecting the system's safety, more replicas could be added, either in an active, or in a passive way.
-An active approach for adding replicas is presented in the form of \abr{TMR} with spares.
-To enhance a system's throughput, and thereby solve \ChallengeThrough, a pipelined \abr{TMR} is presented.
-Finally, a possible solution for \ChallengeVoter is presented by replicating the voter and using concepts from consensus algorithms.
-However, the replicated voters still need to be designed carefully, because only crash faults can be mitigated with the approach presented in this section.
-\\
-
-\todo{Present the final solution. E.g. consensus on three replicas with one spare}
-\todo{Transition to next section}
