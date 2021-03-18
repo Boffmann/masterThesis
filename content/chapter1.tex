@@ -34,6 +34,13 @@ A \texttt{Topic} acts as the connecting element between publishing entities on t
 Any forecasting of when and how data is published to a \texttt{Topic} or received by a \texttt{Subscriber} is made possible through so called \glspl*{QOS} policies.
 This concept is illustrated in~\autoref{fig:DDSStructure}, which is based on the official \gls*{DDS} specification~\cite{omgDDSspec} and shows the information flow from the publishing to the subscribing side.
 
+An application can either rely on the middleware to asynchronously notify it about the presence of new data through so called \texttt{Listeners}, or actively wait for new data by utalizing \texttt{WaitSets}.
+A \texttt{WaitSet} can be attached with different \texttt{Conditions} and allows the application to wait until one or more of the attached conditions are satisfied, or until it times out.
+Examples for conditions are \texttt{ReadCondition} and \texttt{QueryCondition}.
+The \texttt{ReadCondition} object allows to designate specific data samples and is met when the specified type of data is present in a \texttt{DataReader}.
+A \texttt{QueryCondition} is a specified \texttt{ReadCondition} that further provides capabilities of filtering the data that is read through a \texttt{DataReader}.
+\\
+
 The usefulness of \gls*{DDS} for containerization technologies in automotive architectures has been studied by Kugele \etal~\cite{KugeleDataCentricForAuto}.
 Although their findings are based on containerization technologies and are therefore not resilient for this work, Kugele \etal showed that the applicability of \gls*{DDS} with regards to safety, certification and security depends on the actual implementation's characteristics.
 Therefore, Vortex OpenSplice DDS is used thoughout this thesis, which is being developed and maintained by ADLINK.

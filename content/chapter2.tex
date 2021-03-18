@@ -35,7 +35,7 @@ In this section, an overview about different information types and possibilities
 	\end{center}
 \end{table}
 
-A train's speed or position data, as well as currently valid \abrpl{MA} are examples for the system's state.
+A train's speed or position data, as well as currently valid \abrpl{MA}, are examples for the system's state.
 A state could contain perodically changing data, or irregular changing data, respectively.
 A state whose data changes periodically is called a volatile state, while a state whose data changes slow and irregular is called an enduring state.
 Possible \gls*{QOS} settings for volatile and enduring states are presented in~\autoref{tab:stateQOS}.
@@ -69,7 +69,7 @@ Possible \gls*{QOS} settings for volatile and enduring states are presented in~\
 \end{table}
 
 Certain circumstances, such as the availablity of track-side information or the exceeding of speed limits, need to be processed as soon as possible.
-Such data is typically expressed as events and can be expressed using event topics.
+Such data is typically expressed as events and can be represented using event topics.
 \autoref{tab:eventQOS} provides an overview about \gls*{QOS}-policy settings for event topics.
 The presented combination of \abr{QOS}-settings ensures that events are eventually processed in the order they were issued and that no event is omitted.
 While some settings are universal for event topics, some others need to be evaluated with regards to an actual system implementation and consequential requirements.
@@ -92,7 +92,7 @@ For investigating the technique's implementability with \gls*{DDS}, the required
 %------DDS-------
 All computing systems have in common, that they receive an input and produce an output.
 In the exemplary case that is considered in this thesis, the system's input can be trasmitted using \abr{DDS} topics.
-Such an \texttt{Input}-topic should be defined as an event-topic to make sure that every replica receives and eventually processes the inputs.
+Such an \texttt{Input}-topic should be defined as an event topic to make sure that every replica receives and eventually processes the inputs.
 Because inputs occur asynchronously, the deadline \gls*{QOS} is not applicable for the \texttt{Input} event topic.
 For real-time applications, as examined in this work, an output is expected to be delivered by the sytem withing a maximal timespan of $\Delta t$ after the system received an input.
 Therefore, the input topic's \texttt{Durability} should be set to volatile and the \texttt{Lifespan}-policy should be set to at least $\Delta t$ plus a network latency.
@@ -146,10 +146,10 @@ In such a case, an output might be already outdated even before it is being prod
 
 Recapped, \abr{TMR} suffers four major challenges, which being
 
-\newcommand{\ChallengeWR}{\textbf{C1}\xspace}
-\newcommand{\ChallengeVoter}{\textbf{C2}\xspace}
-\newcommand{\ChallengeComm}{\textbf{C3}\xspace}
-\newcommand{\ChallengeThrough}{\textbf{C4}\xspace}
+\newcommand{\ChallengeWR}{\textbf{Multiple Wrong Results}\xspace}
+\newcommand{\ChallengeVoter}{\textbf{Single Voter}\xspace}
+\newcommand{\ChallengeComm}{\textbf{Single Communication Channel}\xspace}
+\newcommand{\ChallengeThrough}{\textbf{Throughput Cap}\xspace}
 \begin{itemize}
 \item \ChallengeWR When more than one replica produces a wrong result, \abr{TMR} is only safe if the wrong result happened because the affected replica was not internally consistent and the replica's internal consistency is monitored.
 \item \ChallengeVoter The voter marks a single point of failure.
@@ -169,7 +169,7 @@ A solution for this are discussed later in~\autoref{subsec:consensusArchitecture
 
 In order to achieve \ChallengeWR, each replica's internal consistency needs to be monitored.
 This could be done in two ways, either each replica monitors itself and reports its internal consistency via periodic heartbeat messages, or each replica is monitored by another component in the system.
-When a replica monitors itself, it is also responsible to exclude itself from the voting process when its internal consistency is fault.
+When a replica monitors itself, it is also responsible to exclude itself from the voting process when its internal consistency is faulty.
 Further, the affected replicy needs to notify other components, e.g. the voter, about this fact.
 The notification should be done via a \abr{DDS} event topic to ensure that the other components are informed.
 Another way would be to store information about a replica's internal consistency in an enduring \abr{DDS} state, so that it is retrievable by each subscriber at any time.
@@ -182,19 +182,24 @@ It can be shown via induction, that adding more replicas increases a system's re
 \paragraph{Proof by induction}
 Let $M$ be contant and $M \leq N$, let $R_{c}$ the reliability of the system's components.
 
-\subparagraph{Begin of Induction}
-Let $N = 1 \Rightarrow M = 1$.\\
-$R_{1oo1} = {1 \choose 1} * R_{c}^1 * (1 - R_{c})^0 = R_{c}$
+\subparagraph{Basis}
+\begin{align*}
+&Let N = 1 \Rightarrow M = 1.\\
+&R_{1oo1} = {1 \choose 1} * R_{c}^1 * (1 - R_{c})^0 = R_{c}
+\end{align*}
 
-\subparagraph{Induction Hypothesis}
+\subparagraph{Hypothesis}
+\begin{center}
 $R_{MooN}$ describes the reliability for a M-out-of-N-system and a components reliability $R_{c}$ can only be positive.
+\end{center}
 
-\subparagraph{Induction Step}
-$R_{MooN+1} = \sum_{i=M}^{N+1} {N + 1 \choose i} * R_{c}^i * (1 - R_c)^{N + 1 - i}$\\
-$= \sum_{i=M}^{N} {N \choose i} * R_{c}^i * (1 - R_c)^{N - i} + {N+1 \choose N+1} * R_c^{N+1} * (1 - R_c)^{N+1 - N+1}$\\
-$= R_{MooN} + R_c^{N+1}$ \\
-$\Rightarrow R{MooN} \leq R_{MooN+1}$\\
-$\square$
+\subparagraph{Inductive}
+\begin{align*}
+R_{MooN+1} &= \sum_{i=M}^{N+1} {N + 1 \choose i} * R_{c}^i * (1 - R_c)^{N + 1 - i}\\
+&= \sum_{i=M}^{N} {N \choose i} * R_{c}^i * (1 - R_c)^{N - i} + {N+1 \choose N+1} * R_c^{N+1} * (1 - R_c)^{N+1 - N+1}\\
+&= R_{MooN} + R_c^{N+1} \\
+&\Rightarrow R{MooN} \leq R_{MooN+1} \quad \square
+\end{align*}
 
 \subsection{\Gls*{TMR} with spares}
 \begin{figure}[!hb]
@@ -218,7 +223,7 @@ R_{TMR\_S}(t) = 2 * {3 \choose 3} e^{-\lambda t} + {3 \choose 2} e^{-\lambda t}
 
 One way of implementing \abr{TMR} with a spare using \abr{DDS} is depicted in~\autoref{fig:TMRWithSparesDDS}.
 The input, as well as the replica's results and an activate event are modelled as \abr{DDS} event topics.
-In an exemplary case, where one replica crashed, the voter would receive only two replica results and thereupon sends an activate event via the corresponding topic.
+In an exemplary case, where one replica crashes, the voter would receive only two replica results and thereupon sends an activate event via the corresponding topic.
 When the spare replica (S) receives the activate event, is subscribes the the \texttt{Input} topic and registers to the \texttt{Replica Results} topic to publish data to it.
 In case the failed replica comes back to life and the voter recognizes this, the voter can reject the result from (S) and send a deactivate event.
 Thereafter, the spare replica ends its subscription to the input topic and stops publishing results.
@@ -248,7 +253,7 @@ Further, the pipelined approach's reliability can be calculated in the same way 
 Although the pipelined approach enhances the system's thoughput, it also enhances the computation and communication overhead, as well as the system's cost.
 Thus, a tradeoff needs to be made between the added throughput and the additional computation and communication overhead, as well as the increased cost for the system.
 
-Again, the reliability evaluation has been made without evaluating the voter - in the pipelined version voter (4) - which remains a single point of failure.
+Again, the reliability evaluation can only be made without evaluating the voter - in the pipelined version voter (4) - which remains a single point of failure.
 As proposed previously, this can be solved by adding redundancy for the voter as well, like for voters (1), (2), and (3) in~\autoref{fig:PipelineIntermediateVoters}.
 In such a system, it needs to be ensured that only a single voter is in charge of controlling the system's final output.
 This can be achieved by applying a consensus algorithm.
@@ -275,28 +280,13 @@ An example of how the three roles from \texttt{Raft} are used is depicted in~\au
 The replicas (1), (2), and (3) make up a \abr{TMR} system, while replicas (4), (5), and (6) together define a voter for the system.
 The replicas (4), (5), and (6) toghether implement the consensus protocol and each provide a designated voter.
 In the example of~\autoref{fig:ThreeRepConsensus}, replica (4) took over the leader role and thereby has complete control over the output, while (5) and (6) are followers.
+\\
 
-In \texttt{Raft}, it is the leader's responsibility to send periodic heartbeat messages to notify the followers about its existence.
-The heartbeat messages, as well as all other messages in \texttt{Raft}, are expressed as \abrpl{RPC}.
-At least two \abrpl{RPC} need to be supported, namely \texttt{AppendEntries} and \texttt{RequestVote}.
-\texttt{AppendEntries} is used for sending heartbeat messages and other commands, called logs in \texttt{Raft}, while \texttt{RequestVote} is invoked by candidates to gather votes.
-
-\begin{figure}[!hb]
-	\centering
-	\includegraphics[width=0.9\linewidth]{images/ThreeComponentConsensusDDS}
-	\caption{A raft consensus algorithm requires at least two types of \abrpl{RPC} to be passed in the system, namely \texttt{RequestVote} and \texttt{AppendEntries}. These two can be implemented using \abr{DDS} event topics.}
-	\label{fig:ThreeRepConsensusDDS}
-\end{figure}
-
-\autoref{fig:ThreeRepConsensusDDS} shows how the concept of \texttt{Raft}, with its roles and \abrpl{RPC}, can be implemented using \abr{DDS}.
-In this example, the replicas of type (A) publish their intermediate results in a \abr{DDS} event topic, which can be read by the individual voters.
-Voter (1) with its replica (4) took over the leader role and thereby controls the system's output by performing a majority voting over the intermediate results.
-In addition, the leader publishes periodic heartbeat messages to the \texttt{AppendEntries} topic, which are received by the followers (5) and (6).
-When a heartbeat message stayed out for a period, the system assumes that the leader has crashed and the followers initiate a new leader election using the \texttt{RequestVote} topic.
-When a new leader is elected, it gains complete control over the output, subscribes to the \texttt{Replica A Result} topic, and starts sending heartbeat messages.
-In the event of the previous leader coming back online again, it subscribes to \texttt{AppendEntries}, receives heartbeat messages and thereby takes over a follower role.
-Using replicated voters with a consensus algorithm, \ChallengeVoter can be solved, because the voter is no single point of failure anymore.
-However, without any further treatment, only crash faults can be tolerated for voters using a consensus algorithm.
-Methods for detecting and handling time and omission faults exist but require additional hardware.
-However, since the leader has sole control about the system's output, it is impossible to tolerate computation faults in this way.
-Thus, it needs to be assured that neither a voter, nor a replica of type (B), have any ommision, timing, or computation fault.
+To sum it up, a redundant architecture using \abr{DDS} has been established step by step in this section.
+\abr{TMR} was only able to mask a wrong result from one replica (\ChallengeWR) and suffered from the voter (\ChallengeVoter) and the communication channel (\ChallengeComm) being a single point of failure.
+Further, the system's throughput might not be sufficient in \abr{TMR} (\ChallengeThrough).
+\ChallengeComm could be solved by using redundant communication channels, following the idea of information redundancy.
+In order to solve \ChallengeWR and to allow more replicas to fail without affecting the system's safety, more replicas could be added, either in an active, or in a passive redundant way.
+An active approach for adding replicas was presented in the form of \abr{TMR} with spares.
+To enhance a system's throughput, and thereby solve \ChallengeThrough, a pipelined \abr{TMR} was presented.
+Finally, a possible solution for \ChallengeVoter was presented by replicating the voter and using concepts from consensus algorithms.

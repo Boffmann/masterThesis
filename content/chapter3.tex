@@ -1,2 +1,250 @@
-In order to be able to provide recommendations for possible fault-tolerant and redundant architectures, as well as mappings to~\gls*{DCPS}-systems, the possible input data, their processing demands, as well as the system's domain need to be known.
-Therefore, a example scenario will be introduced in this section by which the reasonings, mappings, and evaluations will be done.
+\chapter{Implementation}
+
+In \texttt{Raft}, it is the leader's responsibility to send periodic heartbeat messages to notify followers about its existence.
+The heartbeat messages, as well as all other messages in \texttt{Raft}, are expressed as \abrpl{RPC}.
+At least two \abrpl{RPC} need to be supported, namely \texttt{AppendEntries} and \texttt{RequestVote}.
+\texttt{AppendEntries} is used for sending heartbeat messages and other commands, called logs in \texttt{Raft}, while \texttt{RequestVote} is invoked by candidates to gather votes.
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.9\linewidth]{images/ThreeComponentConsensusDDS}
+	\caption{A raft consensus algorithm requires at least two types of \abrpl{RPC} to be passed in the system, namely \texttt{RequestVote} and \texttt{AppendEntries}. These two can be implemented using \abr{DDS} event topics.}
+	\label{fig:ThreeRepConsensusDDS}
+\end{figure}
+
+\autoref{fig:ThreeRepConsensusDDS} shows how the concept of \texttt{Raft}, with its roles and \abrpl{RPC}, can be implemented within a pipelined approach using \abr{DDS}.
+In this example, the replicas of type (A) publish their intermediate results in a \abr{DDS} event topic, which can be read by the individual voters.
+Voter (1) with its replica (4) took over the leader role and thereby controls the system's output by performing a majority voting over the intermediate results.
+In addition, the leader publishes periodic heartbeat messages to the \texttt{AppendEntries} topic, which are received by the followers (5) and (6).
+When a heartbeat message stayed out for a period, the system assumes that the leader has crashed and the followers initiate a new leader election using the \texttt{RequestVote} topic.
+When a new leader is elected, it gains complete control over the output, subscribes to the \texttt{Replica A Result} topic, and starts sending heartbeat messages.
+In the event of the previous leader coming back online again, it subscribes to \texttt{AppendEntries}, receives heartbeat messages and thereby takes over a follower role.
+Thereby, crash faults (\textbf{F1}) for voters are caught by the heartbeat mechanism.
+\\
+
+In this chapter, a practical realization is presented which implements a redundant architecture that applies a consensus algorithm based on the model of \texttt{Raft}.
+The aim of this implementation is to showcase the practicability and performance of a redundant architecture that applies \abr{DCPS} concepts for finding a consensus.
+Although the implementation will follow the approach presented in~\autoref{fig:ThreeRepConsensusDDS}, the logic from both replica type (A), type (B) and the voters will be merged into one physical component, so that three instead of six replicas will be used.
+However, the approach can simply be spread out to six replicas by distributing the logic accordingly.
+
+The communication channel is implemented via \textit{Ethernet} and no information redundant communication channel is applied in this demonstration.
+Further, no N-version programming is applied, which means that each replica runs the same software implementation.
+In addition, it is assumed that all replicas function as intended, so that component checking mechanisms are neglected in this implementation.
+In order to build a highly secure system, the mentioned compromises need to be further addressed.
+\\
+
+The solution is implemented in the C programming language and makes use of the C \abr{API} of \textit{Votex OpenSplice DDS} by \texttt{ADLINK}.
+The replicas are represented by \textit{Revolution Pis Connect}, an open source \abr{PLC} that builds upon a Raspberry Pi and is developed by \texttt{Kunbus}.
+As such, it features a Broadcom BCM2837 quad core ARM Cortex A53 1.2 GHz \abr{CPU} and 1 GB RAM.
+The used \abr{OS} is an extended \textit{Raspbian} \abr{OS} that has been patched with real-time support.
+
+%\todo{No active hardware redundancy??}
+
+\section{Consensus Algorithm}
+
+In this section, a consensus algorithm that follows the concepts of \texttt{Raft} and applies the \abr{DDS} publish/subscribe communication pattern, is presented.
+In order for the application to notice available data samples, \texttt{WaitSets} are used.
+\texttt{WaitSets} are preferred over \texttt{Listeners}, because they are state-based rather than event-based, which means they trigger as long as a certain state is present rather than when an event is triggered.
+Thereby, it can be ensured that no available data is missed.
+Further, by using \texttt{WaitSets}, the entire control about the application is managed by the application itself and no application code is executed in middleware threads.
+\\
+
+The system's state is stored in \abr{DDS} state topics and thereby managed by the middleware.
+This ensures that all replicas can operate on the most recent system state and no replica becomes outdated.
+Only the system's leader is permitted to alter the system's state, all other replicas have read-only access.
+\\
+
+The consensus algorithm guarantees that there is at most one leader present in the system at a time - i.e. no split brain - and that a new leader is elected when there is none present.
+Time in \texttt{Raft} is subdevided into \textit{terms}, that each start with a leader election.
+
+\subsection{Leader Election}
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/sequence/CollectResults}
+	\caption{When a replica notices that the leader crashed, it becomes a candidate, votes for itself and sends vote requests to all remaining replicas. When enough votes were granted, it becomes the new leader and starts sending heartbeats. Otherwise, it retries to become leader in the next term.}
+	\label{fig:SeqLeaderElection}
+\end{figure}
+
+The presence of a leader in the system is detected through heartbeat messages.
+When a replica does not receive a message from a leader for a specific period of time, called the \textit{election timeout}, it tries to become leader by initiating the voting process.
+A high level overview about the voting process, after the previous leader crashed, is depicted in~\autoref{fig:SeqLeaderElection}.
+Because of the way the \texttt{election timeout} is implemented (see~\autoref{subsub:timeConsiderations}, replica 1 notices the crashed leader first and tries to become the new leader.
+Therefore, it switches into candidate mode and sends a vote request to each remaining replica.
+In the exemplary case in~\autoref{fig:SeqLeaderElection}, replica 2 accepts the vote request and replica 1 becomes the new leader.
+It immediately starts sending heartbeat messages afterwards.
+\\
+In the following, the allocation, as well as the collection of votes, will be discussed in more detail.
+\\
+\begin{algorithm}[H]\caption{Algorithm for vote allocation. Whether a vote gets granted or rejected depends on whether the replica that receives the vote request has already voted for another replica in the current voting's term.}\label{algo:VoteAllocation}
+\SetKwData{Term}{term}
+\SetKwData{Sender}{senderID}
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+
+\Input{A vote request with a \textit{\Term} and a \textit{senderID}}
+\Output{true if the vote for \textit{senderID} in \textit{\Term} was granted, false otherwise}
+\BlankLine
+\If{\Term $<$ current term}{become follower in new \Term\;}
+\If{\Term $==$ current term \textbf{AND} not voted in current term}{grant vote for \Sender\;}
+\end{algorithm}
+
+The allocation of votes is shown in~\autoref{algo:VoteAllocation}.
+Each replica can only vote for a single other replica in each term.
+Because the system's state is managed globally by \abr{DDS}, every replica is equally up to data so that vote allocation is implemented in a first-come-first-serve manner.
+As soon as a vote request is received that has a higher term number than the replica's term, is automatically transitions into the follower state, because the system will soon have a new leader.
+
+\begin{algorithm}[H]\caption{Algorithm for vote collection. Only votes that were answered in the same term that the vote request was issued are considered. When enough votes are collected, the replica becomes leader. If a votes was answered in a more recent term, the vote collection gets abborted and the replica becomes a follower.}\label{algo:VoteCollection}
+\SetKwData{VoteTerm}{voteTerm}
+\SetKwData{VoteGranted}{voteGranted}
+\SetKwInOut{Input}{input}
+\SetKwInOut{Output}{output}
+
+\Input{A vote reply with a \textit{\VoteTerm} and a \textit{\VoteGranted} flag}
+\Output{Transition to either leader or follower state}
+\BlankLine
+
+\If{the replica is no candidate anymore}{return\;}
+\If{\VoteTerm $>$ term when election started}{
+become follower\;
+return\;}
+\If{\VoteTerm $==$ term when election started \textbf{AND} vote got granted}{
+Increase number of granted votes in the election term\;
+	\lIf{got enough votes}{become leader
+							return\;}
+}
+\end{algorithm}
+
+For each vote reply that is received by a replica, it is first checked whether the replica has left the candidate state in the meantime, which makes the entire vote reply irrelevant.
+This can, for example, happen when another vote request with a higher term number has been granted while the replica waits for incoming vote replies itself.
+Afterwards it is checked whether the term in which the vote request got processed by another replica is higher than the term in which the voting was started.
+This fact indicates that the corresponding replica is outdated, so that it transitions into follower state and should not become a leader in the regarded voting process.
+Finally, when the vote got granted and enough granted votes were received, the replica is elected as a new leader for the corresponding term.
+The number of necessary voted depends on the total number of replicas in the system.
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/RaftServerStates}
+	\caption{Taken from~\cite{RaftConsensusPaper}. Replicas in \texttt{Raft} can be in one of three states. When a follower receives no message from a leader, it starts an election and tries to become the new leader. Leaders operate until they fail or until they discover that their term is outdated.}
+	\label{fig:RaftServerStates}
+\end{figure}
+
+During the entire time, each replica is in one of three states, namely \texttt{Leader}, \texttt{Candidate} or \texttt{Follower}.
+The leader election process can be summarized as transitions and corresponding conditions between these three states, as depicted in~\autoref{fig:RaftServerStates}.
+Fife requirements can be derived from this that must be met by an algorithm that implements \texttt{Raft}'s leader election process:
+
+\begin{enumerate}
+\item \textbf{Start Election:} A follower becomes candidate, increments its term, votes for itself and sends a message to all other replicas stating that it wants to become leader.
+\item \textbf{End of Election:} A candidate stays in candidate state until it either wins the election, receives information about another leader in the system, or times out.
+\item \textbf{Won Election:} A candidate wins the election if it receives votes from a majority of replicas in the same term. Each replica votes for at most one replica in a given term.
+\item \textbf{Lost Election:} When a candidate receives a message from a leader in the system and the leader's term is at least as high as the candidate's term.
+\item \textbf{No Result:} A certain period of time goes by without the candidate winning or loosing the election.
+\end{enumerate}
+In the following, it is described how these requirements are met by using \abr{DDS} features.
+Thereby, the functional correctness of the transcribed leader election algorithm is proven.
+
+\lstset{language=C}
+\begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{AppendEntries} topic. The \texttt{term} variable represents the latest term that the replica has seen, while the \texttt{senderID} encodes which replica sent this message.}, label=code:appendEntries]
+struct AppendEntries {
+    long term;
+    long senderID;
+};
+#pragma keylist AppendEntries term
+\end{lstlisting}
+
+\begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{RequestVote} topic. The \texttt{term} variable represents the candidate's term, while \texttt{candidateID} encodes the candidate that requested the vote.}, label=code:requestVote]
+struct RequestVote {
+    long term;
+    long candidateID;
+};
+#pragma keylist RequestVote
+\end{lstlisting}
+
+\begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{RequestVoteReply} topic. The \texttt{term} encodes the sender's term for the candidate to update itself. \texttt{voteGranted} shows whether the replica granted the vote request for the given term. The \texttt{candidateID} and \texttt{senderID} are used to identify which replica granted the vote for which replica respectively.}, label=code:requestVoteReply]
+struct RequestVoteReply {
+    long senderID;
+    long term;
+    long candidateID;
+    long voteGranted;
+};
+#pragma keylist RequestVoteReply
+\end{lstlisting}
+
+For realizing the leader election algorithm with \abr{DCPS} features, three \texttt{Topics} are required.
+The \texttt{AppendEntries} and \texttt{RequestVote} topics are representatives for the corresponding \texttt{Raft} \abrpl{RPC}.
+The \abr{IDL} representation for \texttt{AppendEntries} is shown in~\autoref{code:appendEntries}.
+In accordance to that, \texttt{RequestVote} is represented by a topic whose \abr{IDL} is shown in~\autoref{code:requestVote}.
+Because data objects that are managed by \abr{DDS} require a predetermined structure, a dedicated topic for replying to vote requests is required.
+Therefore, \texttt{RequestVoteReply} is utilized as described in~\autoref{code:requestVoteReply}.
+
+For implementing an \textit{election timeout}, a \texttt{WaitSet} with a corresponding \texttt{QueryCondition}, that triggers when new data has been published to \texttt{AppendEntries}, is applied.
+In order to initiate the voting process, the replica publishes a new vote request to \texttt{RequestVote}.
+Because the middleware ensures that data is transmitted to all replicas that subscribed to a topic, the \textbf{Start Election} requirement can easily be solved with \abr{DDS}.
+
+Further, \textbf{No Result} can be resolved by using a \texttt{WaitSet}, called \textit{leaderElection\_WaitSet}, with a corresponding timeout (\textit{leader ready timeout}).
+When the timeout expires, the replica starts to wait for heartbeat messages again.
+In addition to the timeout, a \texttt{QueryCondition} is attached to the \textit{leaderElection\_WaitSet} that triggers when messages from another leader have been published to the \texttt{AppendEntries} topic.
+Thereby, \textbf{Lost Election} is ensured.
+By implication, this means that the candidate either won the election, or the election was not successful for the turn, when the timeout attached to \textit{leaderElection\_WaitSet} expires.
+Even though the replica waits for incoming heartbeats after it won the election, the applied \texttt{QueryCondition} prevents that it reads its own heartbeats.
+This partly solves \textbf{Won Election}.
+In order to fully solve \textbf{Won Election}, each replica needs to collect votes and reply to vote requests, parallel to detecting other leaders and voting timeouts.
+The voting part is therefore treated by another \abr{OS} thread, that again makes use of a \texttt{WaitSet}, where two \texttt{QueryConditions} are attached to, one for the \texttt{RequestVote} and one for the \texttt{RequestVoteReply} topic.
+Thereby, the replicas can come to an agreement about a vote request while the candidate waits for the voting to end.
+
+\subsubsection{Time considerations}
+\label{subsub:timeConsiderations}
+Because each \texttt{WaitSet} in \abr{DDS} can be attached with a timeout, the maximal time that the system is without a leader can be determined.
+There are two timeouts involved in the leader election process, namely the \textit{election timeout}, whereby a missing leader is elected, and the \textit{leader ready timeout}.
+When the \textit{leader ready timeout} expires, it was impossible for the system to elect a new leader for the given term.
+This can, for example, happen due split votes when multiple followers try to become the new leader at the same time, because of delays on the network, or because there are not enough running replicas in the system.
+The proposal that \texttt{Raft} makes to reduce the risk of split votes is to use randomized \textit{election timeouts}.
+However, this does not prevent split votes from happen at all.
+Therefore, in this implementation, the \textit{election timeout} is made directly dependent on the replicas unique identification number, so that they never try to become leader at the same time.
+Although replicas with certain identification numbers are thereby preferred in the leader election process, this approach is not a disadvantage because, due to \abr{DDS}'s global data space, no replica is ever more suitable for becoming the new leader than some other.
+
+On the other hand, the cases of network delays or too few replicas in the system represent a safety risk and should be dealt with accordingly.
+
+\todo{There is also some more processing time}
+Altogether, when enough replica are present in the system and communication is possible without any delays, the system will not be without a leader for the maximum time of $\textit{election timeout} + \textit{leader ready timeout}$
+
+
+\subsection{Input Processing}
+\todo{find better title}
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/sequence/CollectResults}
+	\caption{Input messages from trackside components are recorded by the leader and replicated to its followers. Afterwards, the leader and each follower process the input and generate a decision based on the data and the global system state. The decisions are collected by the leader and a voting is performed on the collected decisions. Meanwhile, the leader ensures that time constraints are met using timeouts.}
+	\label{fig:SeqCollectResults}
+\end{figure}
+
+The purpose of the redundant application that is shown here is to process input messages from track-side components and generate a single reaction on the input for the entire system based on majority voting.
+A coarse overview about how input messages are distributed among the replicas and processed by the system is presented in~\autoref{fig:SeqCollectResults}.
+It is the leaders responsibility to record new inputs, replicate the input to each of its redundant followers, maintain the system's consistent state, and generate a final reaction to the input.
+All communication among the replicas takes place via \abr{DDS}.
+As soon as the leader receives an input messages, it starts to assign each follower to process the input.
+This is done through the \texttt{AppendEntries} topic and follows the log replication process from \texttt{Raft}.
+Afterwards, all replicas are generating a decision for the input message in parallel based on the global system state which is managed by \abr{DDS}.
+The followers publish their decisions on the \texttt{AppendEntriesReply} topic.
+When the leader has made its decision, it starts collecting the follower's decisions using a \texttt{WaitSet} and a \texttt{QueryCondition} on the \texttt{AppendEntriesReply} topic.
+A timeout is attached to this \texttt{WaitSet} to ensure that, after a certain timespan, the voting process can start.
+The leader performs a majority voting on all collected replica decisions and thereafter commits the final decision.
+During the commit phase, all changes that the input messages has on the system's state are applied to the global data space.
+Thereby, the decisions for all replicas are deterministic because they are all based on the same system state.
+Furthermore, the input message is marked as processed during the commit phase.
+This ensures that, if the leader crashed while processing the input message, a new leader recognizes the input messages as unprocessed and starts to process it again.
+\todo{Further explain how message is marked as processed}
+
+
+% TODO Further specify
+\iffalse
+
+However, without any further treatment, only crash faults can be tolerated for voters in this setup.
+Methods for detecting and handling time and omission faults exist but require additional hardware.
+However, since the leader has sole control about the system's output, it is impossible to tolerate computation faults in this way.
+Thus, it needs to be assured that neither a voter, nor a replica of type (B), have any ommision, timing, or computation fault.
+
+
+
+Using replicated voters with a consensus algorithm, \ChallengeVoter can be solved, because the voter is no single point of failure anymore.
+\fi
+
