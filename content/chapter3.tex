@@ -23,7 +23,7 @@ Thereby, crash faults (\textbf{F1}) for voters can be caught by the heartbeat me
 \\
 
 In this chapter, a practical realization is presented which implements a redundant architecture that applies a consensus algorithm based on the model of \texttt{Raft}.
-The aim of this implementation is to showcase the practicability and performance of a redundant architecture that applies \abr{DCPS} concepts for finding a consensus.
+The aim of this implementation is to showcase the practicability and performance of a redundant architecture that applies \abr{DCPS} concepts for finding a consensus in a \abr{ETCS} on-board unit.
 In addition, a minimal required subset of \abr{DDS} features will be carved out to solve the architecture.
 Although the implementation will follow the concept presented in~\autoref{fig:ThreeRepConsensusDDS}, only three physical components will be used that combine the logic from both replica type (A) and type (B), as well as a voter.
 However, the presented approach does not differ from~\autoref{fig:ThreeRepConsensusDDS} in any other ways than in the usage of three execution units instead of six.
@@ -39,10 +39,20 @@ The solution is implemented in the C programming language and makes use of the C
 The replicas are represented by \textit{Revolution Pis Connect}, an open source \abr{PLC} that builds upon a Raspberry Pi and is developed by \texttt{Kunbus}.
 As such, it features a Broadcom BCM2837 quad core ARM Cortex A53 1.2 GHz \abr{CPU} and 1 GB RAM.
 The used \abr{OS} is an extended \textit{Raspbian} \abr{OS} that has been patched with real-time support.
+\\
 
-%\todo{No active hardware redundancy??}
+At first in this chapter in~\autoref{sec:ImpScenarioDescription} a subset of \abr{ETCS} is mapped out that serves as the practical scenario for this implementation.
+Afterwards,~\autoref{sec:ImpConsensusAlgorithm} describes a consensus algorithm that builds on \abr{DDS} to ensure that the redundant system can agree on a certain result for each processed input telegram.
+Therefore, a leader election process is described, which follows the concepts of \texttt{Raft}, and timing requirements will be taken into accout to ensure safety in the redundant system.
+The leader election process lays the foundation for the way of how input telegrams are spread across the system and merged into a single final value, which is further described in~\autoref{subsec:ImpBaliseProcessing}.
+Finally in this chapter, an approach for implementing a hot standby scenario with \abr{DDS} features is described.
+
+\section{Scenario Description}
+\label{sec:ImpScenarioDescription}
+\todo{Add a description for the simulated/executed scenario}
 
 \section{Consensus Algorithm}
+\label{sec:ImpConsensusAlgorithm}
 
 In this section, a consensus algorithm that follows the concepts of \texttt{Raft} and applies the \abr{DDS} publish/subscribe communication pattern, is presented.
 In order for the application to notice available data samples, \texttt{WaitSets} are used.
@@ -145,12 +155,12 @@ Five requirements can be derived from the figure that must be met by an algorith
 In the following, it is described how these requirements are met by using \abr{DDS} features.
 Thereby, the functional correctness of the transcribed leader election algorithm is proven.
 
-\todo{entries}
 \lstset{language=C}
-\begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{AppendEntries} topic. The \texttt{term} variable represents the latest term that the replica has seen, while the \texttt{senderID} encodes which replica sent this message.}, label=code:appendEntries]
+\begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{AppendEntries} topic. The \texttt{term} variable represents the latest term that the replica has seen, while the \texttt{senderID} encodes which replica sent this message. With \texttt{entries}, a payload can be send via the topic. This is used by a leader for instructing its followers to process certain data. The \texttt{entries} field is left empty for heartbeat messages.}, label=code:appendEntries]
 struct AppendEntries {
     long term;
     long senderID;
+    sequence<Entry> entries;
 };
 #pragma keylist AppendEntries term
 \end{lstlisting}
@@ -207,13 +217,10 @@ Therefore, in this implementation, the \textit{election timeout} is made directl
 Although replicas with certain identification numbers are thereby preferred in the leader election process, this approach is not a disadvantage because, due to \abr{DDS}'s global data space, no replica is ever more suitable for becoming the new leader than some other.
 
 On the other hand, in the cases of network delays or too few active replicas are safety risks and should be dealt with accordingly.
+Altogether, when enough replica are present in the system and communication is possible without any delays, the system will not be without a leader for the maximum time of $\textit{election timeout} + \textit{leader ready timeout}$.
 
-\todo{There is also some more processing time}
-Altogether, when enough replica are present in the system and communication is possible without any delays, the system will not be without a leader for the maximum time of $\textit{election timeout} + \textit{leader ready timeout}$
-
-
-\subsection{Input Processing}
-\todo{find better title}
+\subsection{Balise Telegram Processing}
+\label{subsec:ImpBaliseProcessing}
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/sequence/CollectResults}
