@@ -2,18 +2,18 @@
 \label{chptr:concepts}
 
 Introducing redundancy to safety-critical systems is a popular approach to ensure that faults inside the system do not lead to failures that effect the system's environment~\cite{BarryFaultToleranceAnalysis}.
-Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy) or performing the same operation multiple times (time redundancy).
-Although being one of the most often used redundancy techniques, the addition of hardware components, called replicas for redundant computation, leads to multiple results which need to be consolidated to an individual system result.
+Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy), or performing the same operation multiple times (time redundancy).
+Although being one of the most often used redundancy techniques, the addition of hardware components, called replicas for redundant computation, leads to multiple results which need to be consolidated to an unique system result.
 Thus, the replicas need to communicate with each other and synchronize their results in order to act like a single unit in their environment.
 A promising approach to cope with the communication overhead is \gls*{DDS}, a \gls*{DCPS} system, since it allows reliable and real-time communication~\cite{omgDDSspec}.
 However, while hardware redundancy enhances a system's fault-tolerance, it also increases its costs and complexity.
 
 In this chapter, various redundancy techniques, as well as important terms and criteria for evaluating redundant systems, are described.
-Further, different redundancy concepts are weighted against each other with regards to reliability, safety and performance.
+Further, different redundancy concepts are weighted against each other with regards to reliability, safety, and performance.
 Afterwards, standards for building and designing safe and fault-tolerant systems are given and related works, that sucessfully applied \gls*{DCPS}-middleware in the railway context, are shown.
 At first, however, an overview about the \abr{ETCS}, as well as the \gls*{DDS} standard and its concepts, is exposed.
 
-\section{European Train Control System}
+\section{\glsentryfull{ETCS}}
 In order to facilitate interoperability between national railway systems throughout Europe, the signalling and speed control system has been standartized by the European Union under the term \abr{ERTMS}.
 \abr{ETCS} defines the signalling and train control component of \abr{ERTMS}~\cite{ETCS26}.
 As such, it is responsible for monitoring a train's speed, calculating the permissible speed restrictions, and coordinating the collaboration between track-side components, such as \abr{ETCS} eurobalises, and on-board systems.
@@ -26,18 +26,20 @@ The track-side components, as well as the on-board system are standardized accor
 \abrpl{MA} as well as route data and the maximum allowed speed are transmitted through fixed eurobalises.
 Parallel to that, a breaking curve is permanently calculated.
 
-For \abr{ETCS} level two, signalling and \abr{MA} data is transmitted via radio frequencies and displayed to the driver.
-While eurobalises are only used for aligning the calculated train position with its actual position, the train is constantly communicating its position, its speed, and its direction to a central interlocking.
+For \abr{ETCS} level two, signalling and \abr{MA} data is transmitted via mobile communication channels from the \abr{RBC} and displayed to the driver.
+The \abr{RBC} is a central unit that constantly collects and supervises train movements and track information.
+Although each train calculates its own position, it can come to inaccuracies, due to for example faulty sensor calibration.
+Therefore, track-side balises are applied, whose sole purpose in \abr{ETCS} level two is to align a train's actual position and rectify any inaccuracies.
 
 In the final \abr{ETCS} level three, any track-side component is abolished and the entire communication takes place via radio signals.
 This \abr{ETCS} level is not fully standardized yet.
 
-\section{Data Distribution Service}
+\section{\glsentryfull{DDS}}
 
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/DDSStructure}
-	\caption{\abr{DDS} is as data-centric communication model and follows the publish/subscribe pattern. The publishing and subscribing attendees do not communicate directly with each other, but make use of topics to read and write data objects.}
+	\caption{The \glsentryfull{DDS} is a data-centric communication model and follows the publish/subscribe pattern. The publishing and subscribing attendees do not communicate directly with each other, but make use of topics to read and write data objects.}
 	\label{fig:DDSStructure}
 \end{figure}
 
@@ -54,7 +56,7 @@ Any forecasting of when and how data is published to a \texttt{Topic} or receive
 This concept is illustrated in~\autoref{fig:DDSStructure}, which is based on the official \gls*{DDS} specification~\cite{omgDDSspec} and shows the information flow from the publishing to the subscribing side.
 
 An application can either rely on the middleware to asynchronously notify it about the presence of new data through so called \texttt{Listeners}, or actively wait for new data by utalizing \texttt{WaitSets}.
-A \texttt{WaitSet} can be attached with different \texttt{Conditions} and allows the application to wait until one or more of the attached conditions are satisfied, or until it times out.
+A \texttt{WaitSet} can be attached with different \texttt{Conditions}, for example \texttt{ReadConditions}, and allows the application to wait until either one or more of the attached conditions are satisfied, or until it times out.
 Examples for conditions are \texttt{ReadCondition} and \texttt{QueryCondition}.
 The \texttt{ReadCondition} object allows to designate specific data samples and is met when the specified type of data is present in a \texttt{DataReader}.
 A \texttt{QueryCondition} is a specified \texttt{ReadCondition} that further provides capabilities of filtering the data that is read through a \texttt{DataReader}.
@@ -161,7 +163,7 @@ For the state transition probabilities, the exponential failure law~\autoref{eq:
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/TriplexSystemNASA}
-	\caption{A reliability model for \gls*{TMR} using Markov chains. In state (1), three replicas are operating redundantly. Each state transition describes the failure of a replica together with the corresponding probability.}
+	\caption{A reliability model for \glsentryfull{TMR} using Markov chains. In state (1), three replicas are operating redundantly. Each state transition describes the failure of a replica together with the corresponding probability.}
 	\label{fig:NASATMR}
 \end{figure}
 
@@ -219,7 +221,7 @@ In addition, an expired timeout can indicate crashed replicas or network partiti
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/Classical2OO3}
-	\caption{Classical 3-out-of-2 redundancy, also known as \Gls*{TMR}. Three replicas are simultaneously reading and processing an input in a redundant way. A voter collects these redundant results and performs a majority voting to produce a final output.}
+	\caption{Classical 3-out-of-2 redundancy, also known as \glsentryfull{TMR}. Three replicas are simultaneously reading and processing an input in a redundant way. A voter collects these redundant results and performs a majority voting to produce a final output.}
 	\label{fig:Classical2OO3}
 \end{figure}
 
@@ -285,12 +287,14 @@ The concept of diverse software programs is summarized under the term N-version 
 \subsection{Information and Time Redundancy}
 The addition, adding redundant information can allow the detection, masking and recovery from faults~\cite{BarryFaultToleranceAnalysis}.
 Examples for information redundancy include Hamming codes~\cite{HammingCodes}, checksums or information duplication.
-All information redundancy concepts share that they somehow encode redundancy into some information that can later be decoded.
+In Hamming codes, multiple parity bits are attached to the data bits so that defects in the transmitted information can be detected.
+Aditionally, Hamming codes also allow to locate and correct errors in a bitstream.
+All information redundancy concepts share that they somehow encode redundancy into the transmitted data that can later be decoded.
 
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/ECC}
-	\caption{Error checking and correction applies both time and information redundancy. An encoder is used to encode both input and output of a system (time redundancy). This encoded information is used in addition to the actual data (information redundancy). The encoder function needs to be choosen to that possible outputs can be derived from it~\cite{Su2005ECC}.}
+	\caption{\glsentryfull{ECC} applies both time and information redundancy. An encoder is used to encode both input and output of a system (time redundancy). This encoded information is used in addition to the actual data (information redundancy). The encoder function needs to be choosen to that possible outputs can be derived from it~\cite{Su2005ECC}. An exemplary encoding that fulfills these characteristics are Hamming codes~\cite{HammingCodes}.}
 	\label{fig:ECC}
 \end{figure}
 
@@ -299,13 +303,12 @@ This concept is called \texttt{Time Redundancy} and has the benefit that it does
 Thereby, permanent faults in a system can be detected.
 
 \autoref{fig:ECC} depicts an example of a combination of information and time redundancy using \gls*{ECC} techniques.
-Therefore, an encoder encodes potential outputs for certain inputs and transmits this redundant information together with the input data.
+Therefore, an encoder encodes the input and transmits this redundant information together with the input data.
 After the system produces an output based on its input information, the output is also encoded and afterwards compared to the encoded input.
 When there are anomalies between the system's input and its output, safety operations can be initiated.
 The encoding function must be choosen so that it allows the detection of faults in the system, such as arithmetic shifting.
 
 \section{Related Work}
-
 \paragraph{Redundancy to enhance Safety.}
 Alapan Chakroborty demonstrates a development process of a reliable, safe and fault-tolerant system using redundancy methods by an example of railway signalling~\cite{ChakrabortyFaultTolerantRailway}.
 He argues, that every fault tolerant system needs to build upon real-time software solutions.
@@ -339,7 +342,7 @@ However, each software indended to be used in railway practice should pass the C
 
 \begin{table}[h!]
 	\begin{center}
-		\caption{\Gls*{QOS} policies that affect the communication overhead (o) or the communication time (t). Each \abr{QOS} policy can either be applied to \texttt{DataWriters} (DR), \texttt{DataReaders} (DR), \texttt{Topics} (T), or \texttt{Publishers} (P).}
+		\caption{\glsentryfull{QOS} policies that affect the communication overhead (o) or the communication time (t). Each \abr{QOS} policy can either be applied to \texttt{DataWriters} (DR), \texttt{DataReaders} (DR), \texttt{Topics} (T), or \texttt{Publishers} (P).}
 		\label{tab:qos_garciavalls}
 		\begin{tabularx}{\textwidth}{|l|l|X|}
 			\hline
@@ -363,7 +366,7 @@ However, each software indended to be used in railway practice should pass the C
 	\end{center}
 \end{table}
 
-\paragraph{\abr{DDS} in safety critical systems.}
+\paragraph{\abr{DDS} in safety-critical systems.}
 The \gls*{DDS} is already successfully deployed in distributed time- and safety critical environments.
 One example is given by Bijlsma \etal~\cite{DistributedSafety2020}, who extended the E-Gas layered monitoring concept to handle faults in a distributed and redundant system.
 \Gls*{DDS} is applied to facilitate a reliable communication among individual components in the system.
@@ -381,7 +384,7 @@ They used a design of reading and monitoring sensor data to benchmark the middle
 One of their findings is a summary of \gls*{QOS}-policies that effect the system's communication overhead and communication time.
 These are illustrated in~\autoref{tab:qos_garciavalls} and are especially important when examining real-time and mission-critical systems.
 The results from García-Valls \etal show that the communication performance remains stable even under heavy load.
-Even though they applied a different \gls*{DDS} implementation than in my work, the network topology and used hardware are comparable, which renders the results from García-Valls \etal useful for my work.
+Even though they applied a different \gls*{DDS} implementation than I did, the network topology and used hardware are comparable, which renders the results from García-Valls \etal useful for my work.
 
 \paragraph{Time and availability for consensus algorithms.}
 While redundant and distributed architectures are a typical approach to enhance a system's robustness, they also entail the demand to agree on certain data values, where the computations are based on.

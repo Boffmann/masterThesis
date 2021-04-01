@@ -1,12 +1,12 @@
-\chapter{Systems Evaluation}
-\label{chptr:evaluation}
+\chapter{Systems Comparison}
+\label{chptr:redundantSystemsCompare}
 
 As already stated, the actual system will be located within the context of the ~\gls*{ETCS}, more precisely within \abr{ETCS} level one.
 Information in \gls*{ETCS} can be quite diverse in terms of type, size, durability, actualization frequency, and priority.
 For example, a train's position is a periodically and frequently updated type of information, while a \gls*{MA} is valid for a longer time and may be updated unfrequently.
 There is also a difference in whether the information is kept as a state of the system, used as a message within the system, or if it is provided as system input, where system state is derived from.
 
-\section{Events and States in \abr{DDS}}
+\section{Events and States in the \glsentryfull{DDS}}
 In this section, an overview about different information types and possibilities for their representation in \gls*{DDS} topics is provided.
 
 \begin{table}[h!]
@@ -91,11 +91,14 @@ For investigating the technique's implementability with \gls*{DDS}, the required
 
 %------DDS-------
 All computing systems have in common, that they receive an input and produce an output.
-In the exemplary case that is considered in this thesis, the system's input can be trasmitted using \abr{DDS} topics.
+In the exemplary case that is considered in this thesis, the system's input can be transmitted using \abr{DDS} topics.
 Such an \texttt{Input}-topic should be defined as an event topic to make sure that every replica receives and eventually processes the inputs.
 Because inputs occur asynchronously, the deadline \gls*{QOS} is not applicable for the \texttt{Input} event topic.
 For real-time applications, as examined in this work, an output is expected to be delivered by the sytem withing a maximal timespan of $\Delta t$ after the system received an input.
-Therefore, the input topic's \texttt{Durability} should be set to volatile and the \texttt{Lifespan}-policy should be set to at least $\Delta t$ plus a network latency.
+Therefore, the input topic's \texttt{Durability} should be set to volatile and the \texttt{Lifespan}-policy can be set to at least $\Delta t$ plus a network latency.
+There are other ways for ensuring deadlines in \abr{DDS}, such as using \texttt{WaitSets} with timeouts.
+As mentioned by Sinha \etal, network latency can be measured with a looping technique that utilizes \abr{IP} \abr{TTL} or by an end-to-end approach using probing packets~\cite{SinhaMeasureNetworkLatency}.
+Latter is applied in~\autoref{cpt:evaluation} to determine network latencies in the practical approach.
 The input's \texttt{ResourceLimit} depends on the frequency the input is expected to be delivered and can be set to one when the input's frequency is higher than $\Delta t$.
 \\
 
@@ -114,7 +117,8 @@ This does not hold for redundant systems where \gls*{DDS} is used for the commun
 
 One of the most commonly used redundancy techniques is \gls*{TMR}~\cite{FaultToleranceViaNMR}, which will therefore constitute the foundation for further system investigations.
 
-\subsection{Triple Modular Redundancy}
+\todo{Check that gls abrevates this correctly}
+\subsection{\glsentryfull{TMR}}
 \Gls*{TMR} was already briefly discussed in~\autoref{sec:redundancyPatterns} and is depicted in~\autoref{fig:Classical2OO3}.
 The reliability and safety characteristics of \gls*{TMR} have been studied in depth, for example by Arifeen \etal~\cite{ArifeenFaultTolerantTMR}.
 Their findings show that the reliability of \gls*{TMR}-systems ($R_{TMR}(t)$) is given by the sum of the probability of all three components functioning and two components functioning.
@@ -151,9 +155,9 @@ Recapped, \abr{TMR} suffers four major challenges, which being
 \newcommand{\ChallengeComm}{\textbf{Single Communication Channel}\xspace}
 \newcommand{\ChallengeThrough}{\textbf{Throughput Cap}\xspace}
 \begin{itemize}
-\item \ChallengeWR When more than one replica produces a wrong result, \abr{TMR} is only safe if the wrong result happened because the affected replica was not internally consistent and the replica's internal consistency is monitored.
-\item \ChallengeVoter The voter marks a single point of failure.
 \item \ChallengeComm The communication channel marks a single point of failure.
+\item \ChallengeVoter The voter marks a single point of failure.
+\item \ChallengeWR When more than one replica produces a wrong result, \abr{TMR} is only safe if the wrong result happened because the affected replica was not internally consistent and the replica's internal consistency is monitored.
 \item \ChallengeThrough A system's throughput time needs to be smaller than the frequency in which inputs occur.
 \end{itemize}
 
@@ -167,7 +171,7 @@ However, this introduces new challenges such as the possibility of a split brain
 A solution for this are discussed later in~\autoref{subsec:consensusArchitecture}.
 \\
 
-In order to achieve \ChallengeWR, each replica's internal consistency needs to be monitored.
+In order to overcome \ChallengeWR, each replica's internal consistency needs to be monitored.
 This could be done in two ways, either each replica monitors itself and reports its internal consistency via periodic heartbeat messages, or each replica is monitored by another component in the system.
 When a replica monitors itself, it is also responsible to exclude itself from the voting process when its internal consistency is faulty.
 Further, the affected replicy needs to notify other components, e.g. the voter, about this fact.
@@ -176,11 +180,11 @@ Another way would be to store information about a replica's internal consistency
 It depends on the actual implementation, which method is more applicable.
 \\
 
-Another way to allow more replicas to fail and produce the same wrong result would be to add more replicas
+Another way to allow more replicas to fail and produce the same wrong result, without affecting the system's overall safety, would be to add more replicas.
 It can be shown via induction, that adding more replicas increases a system's reliability.
 
 \paragraph{Proof by induction}
-Let $M$ be contant and $M \leq N$, let $R_{c}$ the reliability of the system's components.
+Let $M$ be constant and $M \leq N$, let $R_{c}$ the reliability of the system's components.
 
 \subparagraph{Basis}
 \begin{align*}
@@ -201,11 +205,11 @@ R_{MooN+1} &= \sum_{i=M}^{N+1} {N + 1 \choose i} * R_{c}^i * (1 - R_c)^{N + 1 - 
 &\Rightarrow R{MooN} \leq R_{MooN+1} \quad \square
 \end{align*}
 
-\subsection{\Gls*{TMR} with spares}
+\subsection{\glsentrylong{TMR} with spares}
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/TMRWithSparesDDS}
-	\caption{A hot standby can be implemented using \abr{DDS} event topics. In this case, the voter is responsible for detecting when a replica crashed and activates a spare component in this case by sending a corresponding event.}
+	\caption{A hot standby can be implemented using \glsentryfull{DDS} event topics. In this case, the voter is responsible for detecting when a replica crashed and activates a spare component in this case by sending a corresponding event.}
 	\label{fig:TMRWithSparesDDS}
 \end{figure}
 
@@ -227,12 +231,13 @@ In an exemplary case, where one replica crashes, the voter would receive only tw
 When the spare replica (S) receives the activate event, is subscribes the the \texttt{Input} topic and registers to the \texttt{Replica Results} topic to publish data to it.
 In case the failed replica comes back to life and the voter recognizes this, the voter can reject the result from (S) and send a deactivate event.
 Thereafter, the spare replica ends its subscription to the input topic and stops publishing results.
-A precondition for this approach is, that a replica's result can be unambiguously assigned to a replica, for example by using IDs or by using an individual result topic for each replica. 
+A precondition for this approach is, that a replica's result can be unambiguously assigned to a replica, for example by using IDs or by using an individual result topic for each replica.
+Further, the spare replica's state needs to be synchronized with the other replicas to make pertinent decisions, which can be assured by managing a global system state thorugh \abr{DDS}.
 \\
 
-Although \abr{TMR} with spares improves the replicated system's reliability and addresses \ChallengeWR, the voter remains a single point of failure (\ChallengeVoter) and the system's throughput has not changed (\ChallengeThrough).
+Although \abr{TMR} with spares improves the replicated system's reliability and addresses the challenge of tolerating \ChallengeWR, the voter remains a single point of failure (\ChallengeVoter) and the system's throughput has not changed (\ChallengeThrough).
 
-\subsection{Pipelined \abr{TMR}}
+\subsection{Pipelined Triple Modular Redundancy}
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/InterconnectedVoterPipeline}
