@@ -18,20 +18,24 @@ In order to facilitate interoperability between national railway systems through
 \abr{ETCS} defines the signalling and train control component of \abr{ERTMS}~\cite{ETCS26}.
 As such, it is responsible for monitoring a train's speed, calculating the permissible speed restrictions, and coordinating the collaboration between track-side components, such as \abr{ETCS} eurobalises, and on-board systems.
 Any train requires a permission in form of a \abr{MA} to drive from its location to another point on track.
-A \abr{MA} not only encodes the train's permission to move, it also encodes track information, such as slopes or speed limitations, as well as information about other trains on track.
-Any \abr{MA} is provided by external entities, for example via track-side components or via radio frequencies, and monitored by a on-train system.
-The track-side components, as well as the on-board system are standardized according to three different \abr{ETCS} levels.
+Besides encoding a train's permission to move, a \abr{MA} also encodes information about other trains on the track, as well as track information such as slopes and speed limitation.
+Any \abr{MA} is supplied by an external entity, called \abr{RBC}, via track-side components or via radio frequencies, and monitored by an on-train system.
+The track-side components, as well as the on-board system, are standardized according to three different \abr{ETCS} levels.
 
+\paragraph{\abr{ETCS} level one}
 \abr{ETCS} level one has been designed to build upon existing signalling systems.
-\abrpl{MA} as well as route data and the maximum allowed speed are transmitted through fixed eurobalises.
-Parallel to that, a breaking curve is permanently calculated.
+\abrpl{MA} as well as route data and the maximum allowed speed are transmitted through fix positioned eurobalises.
+Parallel to that, a breaking curve and the train's position are permanently calculated.
 
+\paragraph{\abr{ETCS} level two}
 For \abr{ETCS} level two, signalling and \abr{MA} data is transmitted via mobile communication channels from the \abr{RBC} and displayed to the driver.
 The \abr{RBC} is a central unit that constantly collects and supervises train movements and track information.
 Although each train calculates its own position, it can come to inaccuracies, due to for example faulty sensor calibration.
-Therefore, track-side balises are applied, whose sole purpose in \abr{ETCS} level two is to align a train's actual position and rectify any inaccuracies.
+Therefore, track-side balises are applied, whose exact positions are provisioned before the train's journey during a linking phase.
+Thus, a train's actual position can be aligned when it encounters a linked balise.
 
-In the final \abr{ETCS} level three, any track-side component is abolished and the entire communication takes place via radio signals.
+\paragraph{\abr{ETCS} level three}
+Finally, in \abr{ETCS} level three, any track-side component is abolished and the entire communication takes place via radio signals.
 This \abr{ETCS} level is not fully standardized yet.
 
 \section{\glsentryfull{DDS}}
@@ -209,7 +213,7 @@ However, software voters operate slower and the approval process is more complic
 
 The benefit of hardware voters is, that they can operate faster and a minimal set of hardware needs to be approved, which reduces the time and cost expenses for approving the system.
 
-Both types of voters have in common, that they require some kind of time constraint synchronization with the replicas to collect their intermediate results, perform the voting, and recognize failed or delayed redundant results.
+Both types of voters have in common, that they require some kind of time constraint synchronization with the replicas to collect their intermediate results, perform a voting, and recognize failed or delayed redundant results.
 Therefore, the indivudual replicas communicate their results to the voter, which collects the results, performs the voting and thereby generates a single system result.
 The voting process facilitates the system to allow single replicas to produce wrong results without rendering the overall system result wrong.
 In an active hardware redundant system, where the individual components are independent and communicate via a shared communication medium, the synchronization process is further impeded by the impossibility of agreeing on values in asynchronous distributed systems with faulty components~\cite{FLPProblemConsensus}.
@@ -269,7 +273,11 @@ When the secondary component needs to be turned on before it can be used as the 
 \subsection{Software Redundancy}
 One speaks of software redundancy, when the redundancy concepts or error detection methods are implemented in software.
 Examples for software redundancy are heartbeat messages to validate a component's accessibility, component-checking, or software voters.
-In component-checking, a program is used to monitor and validate a component's hardware, for example its memory, its clock, or its \gls*{CPU}.
+In component-checking, a a software or hardware program is used to monitor and validate a component's hardware, for example its memory, its clock, or its \gls*{CPU}.
+\todo{principles of self-checking processor design}
+A \abr{CPU}, for example, can apply redundant hardware for self-testing and fault-secureness~\cite{}.
+
+
 Thereby, it can be qualified whether a specific component's output can be considered valid or not.
 This state is summarized into the term \texttt{internal consistency}.
 
@@ -285,10 +293,10 @@ Similar to homogeneous and diverse hardware redundancy, diverse implementations 
 The concept of diverse software programs is summarized under the term N-version programming, where a software program, which is based on the same specification, is developed by separate programmers~\cite{BarryFaultToleranceAnalysis}.
 
 \subsection{Information and Time Redundancy}
-The addition, adding redundant information can allow the detection, masking and recovery from faults~\cite{BarryFaultToleranceAnalysis}.
+The addition of redundant information can allow the detection, masking and recovery from faults~\cite{BarryFaultToleranceAnalysis}.
 Examples for information redundancy include Hamming codes~\cite{HammingCodes}, checksums or information duplication.
 In Hamming codes, multiple parity bits are attached to the data bits so that defects in the transmitted information can be detected.
-Aditionally, Hamming codes also allow to locate and correct errors in a bitstream.
+Additionally, Hamming codes also allow to locate and correct errors in a bitstream.
 All information redundancy concepts share that they somehow encode redundancy into the transmitted data that can later be decoded.
 
 \begin{figure}[!hb]
@@ -374,8 +382,8 @@ An other example is given by Hadiwardoyo and Gao, who proposed the use of \gls*{
 Song \etal have proposed a system architecture that integrates the \abr{DDS} middleware into real-time embedded systems as well as safety-critical systems and thereby achieved a stable communication time~\cite{SongDDSInRealTimeSystems}.
 Their approach has been varified by an \abr{UAV} combat scenario that operates in highly safety-critical scenarios.
 Results have shown that the worst case communication time for a one kilkobyte payload and a relibale communication \abr{QOS} is around 280 microseconds.
-For partitioned systems, 
-Since Song \etal exerted a topology which is similar to the one used in this work - namely a network switch with a 100Mpbs Ethernet link for communication and external nodes - their findings can be seen as a affirmation for the approach used in this work.
+
+Since Song \etal exerted a topology which is similar to the one used in this work - namely a network switch with a 100~Mpbs Ethernet link for communication and external nodes - their findings can be seen as a affirmation for the approach used in this work.
 However, they utilized a different \abr{DDS} implementation, so that their experiments need to be repeated in my case to approve their findings. 
 \\
 
@@ -386,7 +394,7 @@ These are illustrated in~\autoref{tab:qos_garciavalls} and are especially import
 The results from García-Valls \etal show that the communication performance remains stable even under heavy load.
 Even though they applied a different \gls*{DDS} implementation than I did, the network topology and used hardware are comparable, which renders the results from García-Valls \etal useful for my work.
 
-\paragraph{Time and availability for consensus algorithms.}
+\paragraph{Time and availability for consensus based redundant systems.}
 While redundant and distributed architectures are a typical approach to enhance a system's robustness, they also entail the demand to agree on certain data values, where the computations are based on.
 Consensus algorithms are a way for components to coordinate and come to an agreement.
 However, consensus algorithms also introduce a performance overhead, whose effects on the system's response time have been investigated by Sakic and Kellerer~\cite{SakicTimeInConsensus}.
@@ -395,4 +403,6 @@ Results show that a system's response time in case of a random replica failing i
 Eventually, in the studies from Sakic and Kellerer after one second, the cluster is almost guaranteed to deliver a response, even in the case of a random replica failing.
 The situation looks different for combined correlated hardware and software failures, where only around 20\% of the systems respond a result after one seconds, when more than half of the replicas are affected.
 In order to address this problem, Sakic and Kellerer propose a watchdog mechanism, which drastically increased the response probabilities in their experiments.
-\todo{Bring into relation to my work}
+
+Based on the work from Sakic and Kellerer, the availability and response time for an actual system need to be evaluated in this work.
+Further, the watchdog concepts should be kept in mind as it has a high impact on the system's response time in case of individual component failures.

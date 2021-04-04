@@ -1,7 +1,7 @@
 \chapter{Systems Comparison}
 \label{chptr:redundantSystemsCompare}
 
-As already stated, the actual system will be located within the context of the ~\gls*{ETCS}, more precisely within \abr{ETCS} level one.
+As already stated, the actual system will be located within the context of the \gls*{ETCS}, more precisely within \abr{ETCS} level one.
 Information in \gls*{ETCS} can be quite diverse in terms of type, size, durability, actualization frequency, and priority.
 For example, a train's position is a periodically and frequently updated type of information, while a \gls*{MA} is valid for a longer time and may be updated unfrequently.
 There is also a difference in whether the information is kept as a state of the system, used as a message within the system, or if it is provided as system input, where system state is derived from.
@@ -96,7 +96,7 @@ Such an \texttt{Input}-topic should be defined as an event topic to make sure th
 Because inputs occur asynchronously, the deadline \gls*{QOS} is not applicable for the \texttt{Input} event topic.
 For real-time applications, as examined in this work, an output is expected to be delivered by the sytem withing a maximal timespan of $\Delta t$ after the system received an input.
 Therefore, the input topic's \texttt{Durability} should be set to volatile and the \texttt{Lifespan}-policy can be set to at least $\Delta t$ plus a network latency.
-There are other ways for ensuring deadlines in \abr{DDS}, such as using \texttt{WaitSets} with timeouts.
+There are also other ways for ensuring deadlines in \abr{DDS}, such as using \texttt{WaitSets} with timeouts.
 As mentioned by Sinha \etal, network latency can be measured with a looping technique that utilizes \abr{IP} \abr{TTL} or by an end-to-end approach using probing packets~\cite{SinhaMeasureNetworkLatency}.
 Latter is applied in~\autoref{cpt:evaluation} to determine network latencies in the practical approach.
 The input's \texttt{ResourceLimit} depends on the frequency the input is expected to be delivered and can be set to one when the input's frequency is higher than $\Delta t$.
@@ -105,10 +105,10 @@ The input's \texttt{ResourceLimit} depends on the frequency the input is expecte
 The components in a redundant system are required to communicate with one another because at the end, the entire system needs to present a single result.
 In the course of this thesis, all communication in the system will be implemented using \abr{DDS} event topics because it should be ensured that, given a sufficient network, no information is lost in the system.
 Thus, the communication topic's \gls*{QOS}-settings can be the same as for the input topic.
-However, the \texttt{Lifespan}-policy needs further specification, because the replicas are independent and messages might be delayed due to network latency.
+However, the \texttt{Lifespan}-policy and timeouts require further specification, because the replicas are independent and messages might be delayed due to network latency.
 After a specific time, however, certain message might not be valid anymore.
 An example for this could be message concerning a \abr{MA} that has been expired by the time the delayed information was received.
-A component's message might therefore require a certain \texttt{Lifespan} that depends on the actual message.
+A component's message might therefore require a certain \texttt{Lifespan}-policy or timeout that depends on the actual message.
 \\
 
 The minimal communication overhead required in a redundant system is between the replicas and the voter.
@@ -117,23 +117,22 @@ This does not hold for redundant systems where \gls*{DDS} is used for the commun
 
 One of the most commonly used redundancy techniques is \gls*{TMR}~\cite{FaultToleranceViaNMR}, which will therefore constitute the foundation for further system investigations.
 
-\todo{Check that gls abrevates this correctly}
 \subsection{\glsentryfull{TMR}}
 \Gls*{TMR} was already briefly discussed in~\autoref{sec:redundancyPatterns} and is depicted in~\autoref{fig:Classical2OO3}.
 The reliability and safety characteristics of \gls*{TMR} have been studied in depth, for example by Arifeen \etal~\cite{ArifeenFaultTolerantTMR}.
-Their findings show that the reliability of \gls*{TMR}-systems ($R_{TMR}(t)$) is given by the sum of the probability of all three components functioning and two components functioning.
+Their findings show that the reliability of \gls*{TMR}-systems ($R_{TMR}(t)$) is given by the sum of the probability of all three components functioning and two components functioning as specified.
 
 \begin{equation}
 R_{TMR}(t) = 3e^{-2 \lambda t} - 2e^{-3 \lambda t}
 \end{equation}
 
 This equation only holds for homogeneous redundancy and when the components are independent.
-While the independence is is a precondition for the exponential failure law, a diverse system can be described in the same way by using a distinct $\lambda$ for each component.
+While the independence is a precondition for the exponential failure law, a diverse system can be described in the same way by using a distinct $\lambda$ for each component.
 \\
 
 The first four fault classes from~\autoref{sec:techniquesSafetyReliability} for at most one failing replica can be tolerated by a triple modular system.
 For example, if one replica produces a wrong result, the voter still receives two correct results and can mask the wrong result using a majority voting.
-However, if two or more replicas produce the same, but wrong result, the voter erroneously accepts the wrong result as the majority.
+However, if two or more replicas produce the same, but wrong, result the voter erroneously accepts the wrong result as the majority.
 On the other hand, if two or more replicas fail to produce on output within a certain time span, the voter can detect this as a deadline violation and can transfer the system into a safe state, e.g. by stopping the train.
 Therefore, only \textbf{F1}, \textbf{F2}, and \textbf{F3} can be detected when more than one replica is affected in \abr{TMR}.
 
@@ -171,7 +170,7 @@ However, this introduces new challenges such as the possibility of a split brain
 A solution for this are discussed later in~\autoref{subsec:consensusArchitecture}.
 \\
 
-In order to overcome \ChallengeWR, each replica's internal consistency needs to be monitored.
+In order to overcome the \ChallengeWR challenge, each replica's internal consistency needs to be monitored.
 This could be done in two ways, either each replica monitors itself and reports its internal consistency via periodic heartbeat messages, or each replica is monitored by another component in the system.
 When a replica monitors itself, it is also responsible to exclude itself from the voting process when its internal consistency is faulty.
 Further, the affected replicy needs to notify other components, e.g. the voter, about this fact.
@@ -278,7 +277,7 @@ This can be achieved by applying a consensus algorithm.
 For a consensus, multiple components are involved in deciding about redundant information.
 An exemplary consensus algorithm is \texttt{Raft}, which has been proposed by Ongaro and Ousterhout~\cite{RaftConsensusPaper}.
 A component in \texttt{Raft} can take on one of three roles, namely \textit{leader}, \textit{follower}, or \textit{candidate}.
-While a leader has the entire responsibility, followers wait for instructions from the leader and can become candidates in order to promote to become the new leader.
+While a leader takes over the entire responsibility in the system, followers wait for instructions from the leader and can become candidates in order to promote to become the new leader.
 \texttt{Raft}'s leader election algorithm ensures that only one leader is active at a time and that the absence of a leader in the system is reliably detected.
 
 An example of how the three roles from \texttt{Raft} are used is depicted in~\autoref{fig:ThreeRepConsensus}.
