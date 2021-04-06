@@ -273,11 +273,9 @@ When the secondary component needs to be turned on before it can be used as the 
 \subsection{Software Redundancy}
 One speaks of software redundancy, when the redundancy concepts or error detection methods are implemented in software.
 Examples for software redundancy are heartbeat messages to validate a component's accessibility, component-checking, or software voters.
-In component-checking, a a software or hardware program is used to monitor and validate a component's hardware, for example its memory, its clock, or its \gls*{CPU}.
-\todo{principles of self-checking processor design}
-A \abr{CPU}, for example, can apply redundant hardware for self-testing and fault-secureness~\cite{}.
-
-
+In component-checking, a software or hardware program is used to monitor and validate a component's hardware, for example its memory, its clock, or its \gls*{CPU}.
+A \abr{CPU}, for example, can apply redundant hardware for self-testing and fault-secureness~\cite{SelfCheckingProcessorDesign}.
+While self-testing allows the detection of faults, self-secureness ensures that no fault can lead to an undetected error.
 Thereby, it can be qualified whether a specific component's output can be considered valid or not.
 This state is summarized into the term \texttt{internal consistency}.
 
@@ -297,6 +295,10 @@ The addition of redundant information can allow the detection, masking and recov
 Examples for information redundancy include Hamming codes~\cite{HammingCodes}, checksums or information duplication.
 In Hamming codes, multiple parity bits are attached to the data bits so that defects in the transmitted information can be detected.
 Additionally, Hamming codes also allow to locate and correct errors in a bitstream.
+Information- and time redundancy can be either implemented in software or in hardware using self-checking checker circuits.
+John F. Wakerly argues that, when when a system is non-transforming, the applied circuit is automatically self-checking~\cite{SelfCheckingProcessorDesign}.
+He further compares different error-detection codes and provides self-checking hardware designs.
+
 All information redundancy concepts share that they somehow encode redundancy into the transmitted data that can later be decoded.
 
 \begin{figure}[!hb]
@@ -314,7 +316,11 @@ Thereby, permanent faults in a system can be detected.
 Therefore, an encoder encodes the input and transmits this redundant information together with the input data.
 After the system produces an output based on its input information, the output is also encoded and afterwards compared to the encoded input.
 When there are anomalies between the system's input and its output, safety operations can be initiated.
-The encoding function must be choosen so that it allows the detection of faults in the system, such as arithmetic shifting.
+The encoding function must be choosen so that it allows the detection of faults in the system.
+In an exemplary case, where each input allows two possible outputs, the encoding function could generate two numbers for each input.
+These two numbers are redundantly transmitted with the input.
+The system's output is further encoded with the same enconding function, which generates an identification number for the generated output.
+In a final step, it is verified whether the output's identification number corresponds with one of the input's two possible outputs.
 
 \section{Related Work}
 \paragraph{Redundancy to enhance Safety.}

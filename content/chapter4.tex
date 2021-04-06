@@ -2,19 +2,19 @@
 \label{cpt:evaluation}
 In this section, the results for different analytical evaluations are presented.
 At first, an overview about the utilized \abr{DDS} subset is described and the necessity of each feature is justified.
-This is followed by an evaluation of the system, which is subdevided into an evaluation of the system's structure, composed of its components and network topology, as well as an implementation evaluation.
+This is followed by an system evaluation, which is subdevided into an evaluation of the system's hardware structure as well as an evaluation of the implemented software.
 Within the implementation evaluation, all characteristics that correspond with the manner of how the software is implemented, are considered.
 
 \section{DDS Subset Identification}
 
-For reducing system approving costs, it is important to limit the amount of utilized features and lines of code.
-Therefore, I identified a subset of \abr{DDS} features from OpenSplice DDS that is sufficient for building a redundant system, as done in~\autoref{cpt:Implementation}.
+For reducing costs incurred in the system approving process, it is important to limit the amount of utilized features and lines of code.
+Therefore, a subset of \abr{DDS} features from OpenSplice DDS, that is sufficient for building a redundant system, is identified.
 An overview about this subset is given and justified in the following.
 This overview only contains the methods and functionalities that are directly used by the application, the middleware, however, might utilize other functionalities to implement the features mentioned in this section.
 
 \paragraph{Domain Module}
-A \abr{DDS} applications main building blocks comprise a \texttt{Domain}, one or multiple \texttt{DomainParticipants}, as well as a \texttt{DomainParticipantFactory} for creating new \texttt{DomainParticipants}~\cite{omgDDSspec}.
-Next to these classes, the domain module contains various functionalities, from which only the following subset is used within the exemplary implementation.
+A \abr{DDS} application's main building blocks comprise a \texttt{Domain}, one or multiple \texttt{DomainParticipants}, as well as a \texttt{DomainParticipantFactory} for creating new \texttt{DomainParticipants}~\cite{omgDDSspec}.
+Besides these classes, the domain module contains various functionalities, from which only the following subset is used within the exemplary implementation.
 
 \begin{itemize}
 \item \textit{DDS\_Entity\_get\_instance\_handle} Is used for aquiring an instance handle to mark it as processed in the leader's commit phase.
@@ -29,7 +29,7 @@ Even though \textit{DDS\_DomainParticipant\_get\_default\_(publisher|subscriber|
 \paragraph{Topic-Definition Module}
 The topic definition module contains everything related to topics.
 The exemplary implementation utilizes \texttt{Topics}, for describing data in the application, and \texttt{TypeSupport} which describes a data type that is bound to a \texttt{Topic}.
-Next to these two classes, the following methods are used:
+Apart from these two classes, the following methods are used:
 
 \begin{itemize}
 \item \textit{DDS\_TypeSupport\_\_alloc} Used for creating a new \texttt{TypeSupport}.
@@ -52,13 +52,12 @@ Besides these two classes, the following functionality is required for the exemp
 
 \paragraph{Subscription Module}
 The subscription module resembles the publication module, but for reading and receiving data.
-However, besides \texttt{Subscribers} and \texttt{DataReaders}, it also contains \texttt{DataSample} ,\texttt{SampleInfo}, \texttt{ReadCondition}, and \texttt{QueryCondition}, which are utilized in the exemplary implementation.
+However, besides \texttt{Subscribers} and \texttt{DataReaders}, it also contains \texttt{DataSample}, \texttt{SampleInfo}, \texttt{ReadCondition}, and \texttt{QueryCondition}, which are utilized in the exemplary implementation.
 \texttt{Subscribers} and \texttt{DataReaders} are required for receiving data, which is represented by a \texttt{DataSample}.
 The \texttt{SampleInfo} data structure contains additional information for each \texttt{DataSample}, such as its instance handle or state, which makes it mandatory for the implementation as well.
 \texttt{ReadConditions} are used in combination with \texttt{WaitSets}, so that the application can react to certain middleware states.
 \texttt{QueryConditions} are extensions for \texttt{ReadConditions} that allow to filter the data samples that are covered by a \texttt{ReadCondition}.
-All filter operations could be implemented directly in the application code, whereby complexity could potential be reduced.
-However, \texttt{QueryConditions} are used in the exemplary implementation because of their direct integration into other \abr{DDS} features, such as \texttt{WaitSets}.
+All filter operations could be implemented directly in the application code, which would make \texttt{QueryConditions} redundant.
 
 Further, the following functionalities from the subscription module were used:
 
@@ -89,8 +88,6 @@ Further, the following \abr{QOS} are applied in the application:
 
 \section{System Evaluation}
 
-\todo{Compare with Song et al}
-
 \subsection{System Structure}
 \begin{figure}[!hb]
 	\centering
@@ -100,13 +97,13 @@ Further, the following \abr{QOS} are applied in the application:
 \end{figure}
 
 \paragraph{Data Transmission Time}
-A end-to-end probing approach has been choosen over a \abr{IP} \abr{TTL} technique because the applied network has the same diameter for each node.
+A end-to-end probing approach has been choosen over a \abr{IP} \abr{TTL} technique, which has been proposed by~\cite{SinhaMeasureNetworkLatency}, because the applied network has the same diameter for each node.
 When a component publishes data to a \abr{DDS} topic, the middleware ensures that the data is transmitted to all registered subscribers.
 In the system that is deployed for this thesis, data is trasmitted via \textit{Ethernet}.
 The replicas are interconnected via a network switch that allows up to 2000 Mbit per seconds for each port.
-In order to verify the applied topology, hardware and middleware, I measured the time that is required to send a message with a varying payload size between two replicas in the system.
-For bypassing clock skews in the system, I used a request/response approach, where one replica publishes a message with a certain payload size and waits until a receiving replica confirms the message's receipt.
-The receiving replica constantly checks for new messages on the system and, as soon as it receives some, publishes a confirmation messages on another topic.
+In order to verify the applied topology, hardware and middleware, the time that is required to send a message with a certain payload size between two replicas, is measured.
+For bypassing clock skews in the system, a request/response approach is used, where one replica publishes a message with a certain payload size and waits until a receiving replica confirms the message's receipt.
+The receiving replica constantly checks for new messages and, as soon as it receives some, publishes a confirmation messages on another topic.
 Any time that is required to send the confirmation message is negligable because it only consists of a 8-bit identification number, that assigns it to a payload carrying message.
 The results, which are shown in~\cite{fig:PlotSendingTimes}, were determined by measuring the time that elapsed between sending a message and receiving the corresponding confirmation.
 This process was repeated 200 times for each payload size and a mean was calculated.
@@ -127,7 +124,7 @@ What emerged is, that the transmission time is directly dependent on the publish
 \paragraph{Leader Election Time}
 When the system's leader crashes, the current \texttt{Raft} term ends and a new leader gets elected.
 The leader election process consists of requesting and collecting votes from all replicas in the system.
-In order to make a statement about how long the system is without a leader in this case, I measured the time that elapses from when the system recognizes a missing leader until a new has send its first heartbeat message.
+In order to make a statement about how long the system is without a leader in this case, the time that elapsed between recognizing a missing leader until the new leader sends a first heartbeat message is measured.
 The results, which are depicted in~\autoref{fig:PlotTimeWithoutLeader}, show that the leader election process takes around 5500µs.
 The worst election time lied aroung 7000µs.
 However, since the system utilizes a timeout to detect a missing leader, the total time that the system is without a leader arises from the sum of the applied election timeout and the election duration.

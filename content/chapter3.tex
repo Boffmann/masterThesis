@@ -7,7 +7,6 @@ In addition, a minimal required subset of \abr{DDS} features will be carved out 
 This has the potential to safe costs during implementation and system approval.
 \\
 
-\todo{Describe that network switch is a single point of failure, but only an emergency solution. What would be better?}
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.7\linewidth]{images/setup}
@@ -16,11 +15,17 @@ This has the potential to safe costs during implementation and system approval.
 \end{figure}
 
 The system setup is depicted in~\autoref{fig:SystemSetup}, where four replicas are interconnected via a network switch.
+Because of the network switch being a single point of failure in the applied star network, a fully connected network would be the better choice.
+A star network does not change the functionality of the setup and was therefore chosen for the demonstration for cost reasons.
+
 While three replicas are operating in a \abr{TMR} setup, the fourth is used as a spare unit that can be patched in on demand, for example when an other replica failed.
 
 Each replica is represented by a \textit{Revolution Pi Connect}, an open source \abr{PLC} that builds upon a Raspberry Pi and is developed by \texttt{Kunbus}.
-\todo{Add that they have a watchdog}
 As such, it features a Broadcom BCM2837 quad core ARM Cortex A53 1.2 GHz \abr{CPU} and 1 GB RAM.
+Further, a hardware watchdog is applied that can be configured to react when the program stops responding.
+For implementing this, a watchdog timer is deployed that needs to be manually resetted by an application.
+When this is not done for a certain period of time, the system assumes that the application crashed and the system is restarted.
+A watchdog is an important safety-feature and proposed by Sakic and Kellerer~\cite{SakicTimeInConsensus} to increase a system's probability to response when a component failed.
 The used \abr{OS} is an extended \textit{Raspbian} \abr{OS} that has been patched with real-time support.
 The solution is implemented in the C programming language and makes use of the C \abr{API} of \textit{Votex OpenSplice DDS} by \texttt{ADLINK}.
 
@@ -119,9 +124,9 @@ When a new leader is elected, it gains complete control over the output, subscri
 In the event of the previous leader coming back online again, it subscribes to \texttt{AppendEntries}, receives heartbeat messages and thereby takes over a follower role.
 Thereby, crash faults (\textbf{F1}) for voters can be caught by the heartbeat mechanism.
 
-\todo{Bring in relation to throughput Cap challenge}
 The implemented pipelined approach, as constituted in~\autoref{fig:ThreeRepConsensusDDS}, is deployed on three execution units for cost and space reasons.
-Nevertheless, it can be spread out to more replicas by distributing the logic modules accordingly.
+Further, the input frequency for the applied use-case is small compared to the system's throughput whereby a \ChallengeThrough is no problem.
+Nevertheless, the approach can be spread out to more replicas by distributing the logic modules accordingly.
 This is because the connecting \abr{DDS} topics allow free arrangement of the solution's logic modules.
 \\
 
