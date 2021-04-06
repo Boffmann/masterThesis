@@ -3,7 +3,7 @@
 
 As already stated, the actual system will be located within the context of the \gls*{ETCS}, more precisely within \abr{ETCS} level one.
 Information in \gls*{ETCS} can be quite diverse in terms of type, size, durability, actualization frequency, and priority.
-For example, a train's position is a periodically and frequently updated type of information, while a \gls*{MA} is valid for a longer time and may be updated unfrequently.
+For example, a train's position is a periodically and frequently updated type of information, while a \gls*{MA} is valid for a longer time and may be updated infrequently.
 There is also a difference in whether the information is kept as a state of the system, used as a message within the system, or if it is provided as system input, where system state is derived from.
 
 \section{Events and States in the \glsentryfull{DDS}}
@@ -21,11 +21,11 @@ In this section, an overview about different information types and possibilities
 			\hline
 			DestinationOrder & SourceTimestamp & SourceTimestamp & Using the source timestamp as ordering guarantees that always the most recent data is stored. \\
 			\hline
-			Durability & Volatile & Transient or Persistent & The more frequent the state changes, the less critical it is for late joining subscribers to see previouly published data. \\
+			Durability & Volatile & Transient or Persistent & The more frequent the state changes, the less critical it is for late joining subscribers to see previously published data. \\
 			\hline
 			History & KeepLast(1) & KeepLast(1) & Most of the time, only the last state matters. \\
 			\hline
-			LatencyBudget & Depends on actual implementation & Not required & The maximum acceptable delay for sending the data should be choosen so that deadlines are not missed. \\
+			LatencyBudget & Depends on actual implementation & Not required & The maximum acceptable delay for sending the data should be chosen so that deadlines are not missed. \\
 			\hline
 			Reliability & BestEffort & Reliable & For rapidly and periodically changing state, it is ok if some data gets lost. For enduring state however, data has to be transferred reliably. \\
 			\hline
@@ -36,7 +36,7 @@ In this section, an overview about different information types and possibilities
 \end{table}
 
 A train's speed or position data, as well as currently valid \abrpl{MA}, are examples for the system's state.
-A state could contain perodically changing data, or irregular changing data, respectively.
+A state could contain periodically changing data, or irregular changing data, respectively.
 A state whose data changes periodically is called a volatile state, while a state whose data changes slow and irregular is called an enduring state.
 Possible \gls*{QOS} settings for volatile and enduring states are presented in~\autoref{tab:stateQOS}.
 
@@ -56,11 +56,11 @@ Possible \gls*{QOS} settings for volatile and enduring states are presented in~\
 			\hline
 			History & KeepAll & All events shall eventually be send and processed. Therefore, the event samples should be stored on both the sender and the receiver side.  \\
 			\hline
-			Lifespan & Depends on actual implementation & A event may be only valid for a specific period of time. This timespan can be specified by assigning a ifespan to a DataWriter. \\
+			Lifespan & Depends on actual implementation & A event may be only valid for a specific period of time. This timespan can be specified by assigning a lifespan to a DataWriter. \\
 			\hline
 			Reliability & Reliable & The middleware will attempt to deliver all event data samples and actively checks if the receivers got them. In case the samples got lost, they are re-transmitted. \\
 			\hline
-			ResourceLimits & Depends on actual implementation & It might be appropriate to specify an upper bound for resouces to be allocated. Especially with History set to KeepAll. \\
+			ResourceLimits & Depends on actual implementation & It might be appropriate to specify an upper bound for resources to be allocated. Especially with History set to KeepAll. \\
 			\hline
 			WriterDataLifecycle & autodispose\_unregistered\-\_instances = False & Unregistered data instances should not be disposed because the events are required to be eventually processed. \\
 			\hline
@@ -68,7 +68,7 @@ Possible \gls*{QOS} settings for volatile and enduring states are presented in~\
 	\end{center}
 \end{table}
 
-Certain circumstances, such as the availablity of track-side information or the exceeding of speed limits, need to be processed as soon as possible.
+Certain circumstances, such as the availability of track-side information or the exceeding of speed limits, need to be processed as soon as possible.
 Such data is typically expressed as events and can be represented using event topics.
 \autoref{tab:eventQOS} provides an overview about \gls*{QOS}-policy settings for event topics.
 The presented combination of \abr{QOS}-settings ensures that events are eventually processed in the order they were issued and that no event is omitted.
@@ -94,7 +94,7 @@ All computing systems have in common, that they receive an input and produce an 
 In the exemplary case that is considered in this thesis, the system's input can be transmitted using \abr{DDS} topics.
 Such an \texttt{Input}-topic should be defined as an event topic to make sure that every replica receives and eventually processes the inputs.
 Because inputs occur asynchronously, the deadline \gls*{QOS} is not applicable for the \texttt{Input} event topic.
-For real-time applications, as examined in this work, an output is expected to be delivered by the sytem withing a maximal timespan of $\Delta t$ after the system received an input.
+For real-time applications, as examined in this work, an output is expected to be delivered by the system withing a maximal timespan of $\Delta t$ after the system received an input.
 Therefore, the input topic's \texttt{Durability} should be set to volatile and the \texttt{Lifespan}-policy can be set to at least $\Delta t$ plus a network latency.
 There are also other ways for ensuring deadlines in \abr{DDS}, such as using \texttt{WaitSets} with timeouts.
 As mentioned by Sinha \etal, network latency can be measured with a looping technique that utilizes \abr{IP} \abr{TTL} or by an end-to-end approach using probing packets~\cite{SinhaMeasureNetworkLatency}.
@@ -173,7 +173,7 @@ A solution for this are discussed later in~\autoref{subsec:consensusArchitecture
 In order to overcome the \ChallengeWR challenge, each replica's internal consistency needs to be monitored.
 This could be done in two ways, either each replica monitors itself and reports its internal consistency via periodic heartbeat messages, or each replica is monitored by another component in the system.
 When a replica monitors itself, it is also responsible to exclude itself from the voting process when its internal consistency is faulty.
-Further, the affected replicy needs to notify other components, e.g. the voter, about this fact.
+Further, the affected replica needs to notify other components, e.g. the voter, about this fact.
 The notification should be done via a \abr{DDS} event topic to ensure that the other components are informed.
 Another way would be to store information about a replica's internal consistency in an enduring \abr{DDS} state, so that it is retrievable by each subscriber at any time.
 It depends on the actual implementation, which method is more applicable.
@@ -225,13 +225,13 @@ R_{TMR\_S}(t) = 2 * {3 \choose 3} e^{-\lambda t} + {3 \choose 2} e^{-\lambda t}
 \end{equation}
 
 One way of implementing \abr{TMR} with a spare using \abr{DDS} is depicted in~\autoref{fig:TMRWithSparesDDS}.
-The input, as well as the replica's results and an activate event are modelled as \abr{DDS} event topics.
+The input, as well as the replica's results and an activate event are modeled as \abr{DDS} event topics.
 In an exemplary case, where one replica crashes, the voter would receive only two replica results and thereupon sends an activate event via the corresponding topic.
 When the spare replica (S) receives the activate event, is subscribes the the \texttt{Input} topic and registers to the \texttt{Replica Results} topic to publish data to it.
 In case the failed replica comes back to life and the voter recognizes this, the voter can reject the result from (S) and send a deactivate event.
 Thereafter, the spare replica ends its subscription to the input topic and stops publishing results.
 A precondition for this approach is, that a replica's result can be unambiguously assigned to a replica, for example by using IDs or by using an individual result topic for each replica.
-Further, the spare replica's state needs to be synchronized with the other replicas to make pertinent decisions, which can be assured by managing a global system state thorugh \abr{DDS}.
+Further, the spare replica's state needs to be synchronized with the other replicas to make pertinent decisions, which can be assured by managing a global system state through \abr{DDS}.
 \\
 
 Although \abr{TMR} with spares improves the replicated system's reliability and addresses the challenge of tolerating \ChallengeWR, the voter remains a single point of failure (\ChallengeVoter) and the system's throughput has not changed (\ChallengeThrough).
@@ -245,7 +245,7 @@ Although \abr{TMR} with spares improves the replicated system's reliability and 
 \end{figure}
 
 In order to improve a system's throughput, an often applied technique is pipelined computation~\cite{TanenbaumSteen07}.
-In a pipelined approach, intermediate voting should be used to reduce the effect of wrong intermediat results.
+In a pipelined approach, intermediate voting should be used to reduce the effect of wrong intermediate results.
 It is further possible that components function as both a voter and a data processing replica.
 A paradigmatic redundant and pipelined system with intermediate voting on replicas is depicted in~\autoref{fig:PipelineIntermediateVoters}, where voters (1), (2), and (3) each perform a majority voting based on the results from replicas (1), (3), and (5).
 Based on the voted intermediate results, replicas (2), (4), and (6) can perform their dedicated calculations and produce an individual output which is later reduced by voter (4).
@@ -254,8 +254,8 @@ However, this approach is still a two-out-of-three approach and therefore has th
 Further, the pipelined approach's reliability can be calculated in the same way as for \abr{TMR}, because in a worst case, two replicas of type A or type B could fail.
 \\
 
-Although the pipelined approach enhances the system's thoughput, it also enhances the computation and communication overhead, as well as the system's cost.
-Thus, a tradeoff needs to be made between the added throughput and the additional computation and communication overhead, as well as the increased cost for the system.
+Although the pipelined approach enhances the system's throughput, it also enhances the computation and communication overhead, as well as the system's cost.
+Thus, a trade off needs to be made between the added throughput and the additional computation and communication overhead, as well as the increased cost for the system.
 
 Again, the reliability evaluation can only be made without evaluating the voter - in the pipelined version voter (4) - which remains a single point of failure.
 As proposed previously, this can be solved by adding redundancy for the voter as well, like for voters (1), (2), and (3) in~\autoref{fig:PipelineIntermediateVoters}.
@@ -282,7 +282,7 @@ While a leader takes over the entire responsibility in the system, followers wai
 
 An example of how the three roles from \texttt{Raft} are used is depicted in~\autoref{fig:ThreeRepConsensus}.
 The replicas (1), (2), and (3) make up a \abr{TMR} system, while replicas (4), (5), and (6) together define a voter for the system.
-The replicas (4), (5), and (6) toghether implement the consensus protocol and each provide a designated voter.
+The replicas (4), (5), and (6) together implement the consensus protocol and each provide a designated voter.
 In the example of~\autoref{fig:ThreeRepConsensus}, replica (4) took over the leader role and thereby has complete control over the output, while (5) and (6) are followers.
 \\
 

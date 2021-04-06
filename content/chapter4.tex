@@ -2,7 +2,7 @@
 \label{cpt:evaluation}
 In this section, the results for different analytical evaluations are presented.
 At first, an overview about the utilized \abr{DDS} subset is described and the necessity of each feature is justified.
-This is followed by an system evaluation, which is subdevided into an evaluation of the system's hardware structure as well as an evaluation of the implemented software.
+This is followed by an system evaluation, which is subdivided into an evaluation of the system's hardware structure as well as an evaluation of the implemented software.
 Within the implementation evaluation, all characteristics that correspond with the manner of how the software is implemented, are considered.
 
 \section{DDS Subset Identification}
@@ -17,10 +17,10 @@ A \abr{DDS} application's main building blocks comprise a \texttt{Domain}, one o
 Besides these classes, the domain module contains various functionalities, from which only the following subset is used within the exemplary implementation.
 
 \begin{itemize}
-\item \textit{DDS\_Entity\_get\_instance\_handle} Is used for aquiring an instance handle to mark it as processed in the leader's commit phase.
+\item \textit{DDS\_Entity\_get\_instance\_handle} Is used for acquiring an instance handle to mark it as processed in the leader's commit phase.
 \item \textit{DDS\_DomainParticipant\_create\_(publisher|subscriber|topic)} Is used for creating \abr{DDS} publishers, subscribers or topics.
 \item \textit{DDS\_DomainParticipant\_delete\_(publisher|subscriber|topic)} Is used for deleting \abr{DDS} publishers, subscribers or topics.
-\item \textit{DDS\_DomainParticipantFactory\_get\_instance} Used for aquiring the \texttt{DomainParticipantFactory} singleton.
+\item \textit{DDS\_DomainParticipantFactory\_get\_instance} Used for acquiring the \texttt{DomainParticipantFactory} singleton.
 \item \textit{DDS\_DomainParticipantFactory\_(create|delete)\_participant} Used for creating a new participant in the \abr{DDS} domain.
 \end{itemize}
 
@@ -97,14 +97,14 @@ Further, the following \abr{QOS} are applied in the application:
 \end{figure}
 
 \paragraph{Data Transmission Time}
-A end-to-end probing approach has been choosen over a \abr{IP} \abr{TTL} technique, which has been proposed by~\cite{SinhaMeasureNetworkLatency}, because the applied network has the same diameter for each node.
+A end-to-end probing approach has been chosen over a \abr{IP} \abr{TTL} technique, which has been proposed by~\cite{SinhaMeasureNetworkLatency}, because the applied network has the same diameter for each node.
 When a component publishes data to a \abr{DDS} topic, the middleware ensures that the data is transmitted to all registered subscribers.
-In the system that is deployed for this thesis, data is trasmitted via \textit{Ethernet}.
+In the system that is deployed for this thesis, data is transmitted via \textit{Ethernet}.
 The replicas are interconnected via a network switch that allows up to 2000 Mbit per seconds for each port.
 In order to verify the applied topology, hardware and middleware, the time that is required to send a message with a certain payload size between two replicas, is measured.
 For bypassing clock skews in the system, a request/response approach is used, where one replica publishes a message with a certain payload size and waits until a receiving replica confirms the message's receipt.
 The receiving replica constantly checks for new messages and, as soon as it receives some, publishes a confirmation messages on another topic.
-Any time that is required to send the confirmation message is negligable because it only consists of a 8-bit identification number, that assigns it to a payload carrying message.
+Any time that is required to send the confirmation message is negligible because it only consists of a 8-bit identification number, that assigns it to a payload carrying message.
 The results, which are shown in~\cite{fig:PlotSendingTimes}, were determined by measuring the time that elapsed between sending a message and receiving the corresponding confirmation.
 This process was repeated 200 times for each payload size and a mean was calculated.
 What emerged is, that the transmission time is directly dependent on the published message's size.
@@ -126,7 +126,7 @@ When the system's leader crashes, the current \texttt{Raft} term ends and a new 
 The leader election process consists of requesting and collecting votes from all replicas in the system.
 In order to make a statement about how long the system is without a leader in this case, the time that elapsed between recognizing a missing leader until the new leader sends a first heartbeat message is measured.
 The results, which are depicted in~\autoref{fig:PlotTimeWithoutLeader}, show that the leader election process takes around 5500µs.
-The worst election time lied aroung 7000µs.
+The worst election time lied around 7000µs.
 However, since the system utilizes a timeout to detect a missing leader, the total time that the system is without a leader arises from the sum of the applied election timeout and the election duration.
 
 \iffalse

@@ -6,9 +6,9 @@
 Railway operation is undergoing rapid changes.
 %
 % General introduction to topic through general statements
-Contant improvements in computation, communication technologies, and railway applications laid the foundation for \abr{ATO} systems.
-At the same time, 41\% of all railway accidents were caused by human failures~\cite{TODO}, while \abr{SIL} 4 certified \abr{ATO} systems are possible.
-Further, the standardization of signalling and control components in the \abr{ETCS} facilitated train operation across borders and heightened the significance of \abr{ATO} systems~\cite{YIN2017RNDofATO}.
+Constant improvements in computation, communication technologies, and railway applications laid the foundation for \abr{SIL} 4 certified \abr{ATO} systems.
+Studies have shown that 41\% of all railway accidents were caused by human failures~\cite{StudyRailwayAccidents}, while \abr{SIL} 4 certified \abr{ATO} systems would be operating much safer~\cite{SallekSIL}.
+Further, the standardization of signaling and control components in the \abr{ETCS} facilitated train operation across borders and heightened the significance of \abr{ATO} systems~\cite{YIN2017RNDofATO}.
 
 % Describe problem statement
 However, with the railway being a safety-critical system, any component that is applied in the \abr{ETCS} context must comply with strict certification requirements to ensure its safety and reliability.
@@ -37,9 +37,9 @@ Through the \abrpl{QOS}, the communication can be defined to be reliable and rea
 In this work, it is investigated whether the \abr{DDS} standard is applicable for building redundant, distributed, real-time, and safety-critical systems.
 Further, a suitable minimal subset of \abr{DDS} features for achieving the desired properties, is determined.
 By finding a minimal subset, the amount of aspects to verify can be decreased and approval costs can be further reduced.
-Therefore, a redundant system, that comprises of four homogeneous and interconnected \textit{Revolution Pi} from Kunbus \todo{cite}, is build and assessed.
+Therefore, a redundant system, that comprises of four homogeneous and interconnected \textit{Revolution Pi} from Kunbus~\cite{Kunbus}, is build and assessed.
 The \textit{Revolution Pi} is a robust \abrpl{PLC} that is build upon a \textit{Raspberry Pi} and features a real-time capable operation system.
-On the middleware layer, OpenSplice \abr{DDS} from ADLINK \todo{cite} is applied, whose applicability for safety-critical railway applications has been proven~\cite{SchmidtMissionCriticalChallenges}.
+On the middleware layer, OpenSplice \abr{DDS} from ADLINK~\cite{VortexOpenSplice} is applied, whose applicability for safety-critical railway applications has been proven~\cite{SchmidtMissionCriticalChallenges}.
 \todo{Menion results and main realization}
 
 The further work is structured as follows:
@@ -58,7 +58,7 @@ Finally, a mixture of consensus- and voting-based approaches is identified as th
 
 \paragraph{\autoref{cpt:Implementation}}
 In this chapter, an exemplary implementation of a consensus algorithm, that follows the concepts of \texttt{Raft}~\cite{RaftConsensusPaper}, is presented.
-The implementation facililtates redundant computation and applies \abr{DDS} concepts for synchronizing the utilized execution units.
+The implementation facilitates redundant computation and applies \abr{DDS} concepts for synchronizing the utilized execution units.
 In addition, the system's applicability is demonstrated based on an \abr{ETCS} use-case.
 Therefore, an \abr{ETCS} subset is identified and its realization in the redundant system is presented.
 Finally, a way of exerting \abr{DDS} to implement a hot standby is described.
