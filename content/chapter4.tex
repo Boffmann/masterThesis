@@ -88,7 +88,39 @@ Further, the following \abr{QOS} are applied in the application:
 
 \section{System Evaluation}
 
-\subsection{System Structure}
+\subsection{Scenario Simulation}
+The simulated scenarios, that have been described in~\autoref{subsec:ScenarioSimulation}, are used for integration testing.
+For this purpose, a functionality that writes the system's reactions to external factors into an evaluation file was patched into the on-board unit.
+Said external factors include \abr{RBC} messages containing linking and \abr{MA} information, balise telegrams, as well as braking curve monitoring.
+Every time the system reacts, the current position, the performed action, the encountered balise, and the reason for the action are listed.
+A python script, that invokes the simulator and assesses the system's evaluation file, is used for automated integration testing.
+\\
+
+The following scenarios are supported and successfully processed by the replicated system:
+
+\begin{table}[h!]
+	\begin{center}
+		\caption{A Python program is used for automatic integration testing. The scenarios that are traversed in the process differ in the relation of linked and unlinked balises and their expected outcome.}
+		\label{tab:stateQOS}
+		\begin{tabularx}{\textwidth}{|X|X|X|X|}
+			\hline
+			\textbf{Name} & \textbf{Number of balises/linked balises} & \textbf{Expected behaviour}\\
+			\hline \hline
+			Reach End of \abr{MA} & Three/Three & All balise telegrams are evaluated correctly and the train stops before the \abr{MA} ends. \\
+			\hline
+			Unlinked Balise & Three/Two & The train stops when the unlinked balise is encountered. \\
+			\hline
+			Balise not where expected & Three/Three & The actual position of one balise does not correspond with its linked position. The train stops when this balise is encountered. \\
+			\hline
+		\end{tabularx}
+	\end{center}
+\end{table}
+
+Because the trips are simulated, a reproducible test environment is created.
+The only non-deterministic factor is the synchronization of the individual components.
+Therefore, the message exchange and the \abr{DDS} feature's correct usage need to be examined in particular.
+
+\subsection{Component Synchronization}
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/plots/sendingTimes}
@@ -111,6 +143,8 @@ What emerged is, that the transmission time is directly dependent on the publish
 \todo{Ins verhaeltnis zur maximalen Nachrichtengroesse in meinem System setzen}
 
 \subsection{Implementation}
+
+\paragraph{Leader Election Time}
 \todo{Redo measurements}
 \begin{figure}[!hb]
 	\centering
@@ -119,15 +153,67 @@ What emerged is, that the transmission time is directly dependent on the publish
 	\label{fig:PlotTimeWithoutLeader}
 \end{figure}
 
-\todo{Measure system utilization CPU}
-
-\paragraph{Leader Election Time}
 When the system's leader crashes, the current \texttt{Raft} term ends and a new leader gets elected.
 The leader election process consists of requesting and collecting votes from all replicas in the system.
 In order to make a statement about how long the system is without a leader in this case, the time that elapsed between recognizing a missing leader until the new leader sends a first heartbeat message is measured.
 The results, which are depicted in~\autoref{fig:PlotTimeWithoutLeader}, show that the leader election process takes around 5500µs.
 The worst election time lied around 7000µs.
 However, since the system utilizes a timeout to detect a missing leader, the total time that the system is without a leader arises from the sum of the applied election timeout and the election duration.
+
+\paragraph{CPU Usage}
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/CPUUsageIdleTime}
+	\caption{This plot shows the \glsentryfull{CPU} utilization in \% for both leader and follower in idle mode where only heartbeat messages are exchanged.}
+	\label{fig:PlotCPUUsageIdleTime}
+\end{figure}
+
+In this paragraph, the utilized \abr{CPU} resources for leaders and followers are examined in both idle mode and when the system receives input messages.
+Measurements were made with \textit{pidstat}, a tool that monitors individual tasks that are managed by the linux kernel.
+\\
+
+In idle mode, the train is not driving and only heartbeat messages are exchanged between the leader and its followers.
+The \abr{CPU} usage for both a leader and a follower in idle mode are depicted in~\autoref{fig:PlotCPUUsageIdleTime}.
+It can be seen that the utilization rate is consistently higher for the leader than for a follower.
+On average, the follower utilized 1.81\% in 90 seconds, while the leader utilized 2.42\% of the applied \abr{CPU}.
+In system mode, 0.21\% are used for the leader and 0.25\% for a follower on average.
+For user mode, the leader utilizes on average 1.0\%, while a follower uses 0.66\%.
+This can be explained by the fact that the leader has more responsibilities in idle mode.
+It not only periodically sends heartbeat messages, but also observes whether the train has a valid \abr{MA} and can start driving.
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/CPUUsage}
+	\caption{This plot shows the \glsentryfull{CPU} utilization in \% for both leader and follower while the system receives and evaluates input messages.}
+	\label{fig:PlotCPUUsage}
+\end{figure}
+
+The \abr{CPU} utilization when the system receives and evaluates input messages is depicted in~\autoref{fig:PlotCPUUsage}.
+For this measurement, three scenarios, namely \texttt{Reach End of \abr{MA}}, \texttt{Unlinked Balise}, and \texttt{Balise not where expected} where run and \abr{CPU} utilization has been measured with \texttt{pidstat}.
+On average, the leader utilizes 7.4\% of the applied \abr{CPU} resources, while a follower utilizes 12.675\% on average.
+In system mode, 1.65\% are used for the leader and 1.05\% for a follower on average.
+For user mode, the leader utilizes on average 5.73\%, while a follower uses 11.63\%.
+\todo{Explain why follower might have higher CPU utilization}
+
+The first scenario, \texttt{Reach End of \abr{MA}}, starts at 0 seconds.
+The leader's first peak after two seconds (S1) is due to the balise and linking information of the first scenario being evaluated.
+At the same time, the followers compare the train's braking curve with the new \abr{MA}, for which the \texttt{MovementAuthority} topic is accessed and the first peak on the follower side can be explained.
+After four seconds, the follower has another peak in \abr{CPU} utilization.
+At this point, the first balise is encountered and the train's position is compared to the linked balises.
+Therefore, the train's state and the linked balises are retrieved for the first time from the topic, which together with the decision making leads to a high computational overhead.
+The third and fourth peak (after nine and eleven seconds) are again due to an evaluated balise telegram.
+However, only the updated train state is retrieved.
+
+The seconds scenario \texttt{Unlinked Balise} (\textbf{S2}) starts after 15 seconds.
+The peaks, again, can be explained by data publication and retrieval.
+At 23 seconds after the measurements started, an unlinked balise is encountered and the train needs to stop.
+This leads to an increase in \abr{CPU} utilization for both the leader and the followers.
+
+The third scenario \texttt{Balise not where expected} (\textbf{S3}) starts at 26 seconds.
+At 35 seconds after the measurements were started, an unexpected balise has been encountered, which can be seen in the graph as well.
+
+
+
 
 \iffalse
 Do experiement and structure in way such as SakicTimeInConsensus

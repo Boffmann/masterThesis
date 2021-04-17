@@ -56,8 +56,7 @@ Afterwards,~\autoref{sec:ImpConsensusAlgorithm} describes a consensus algorithm,
 Therefore, a leader election process is described, which follows the concepts of \texttt{Raft}, and timing requirements will be taken into account to ensure safety in the redundant system.
 The leader election process lays the foundation for the way of how input telegrams are spread across the system and merged into a single final value, which is further described in~\autoref{subsec:ImpBaliseProcessing}.
 Thereafter, is is described how the \texttt{State Manager} component manages the system's state and how the state can be updated and queried.
-\todo{Add section about state manager}
-Finally in this chapter, an approach for implementing a hot standby scenario with \abr{DDS} features is described.
+Finally in this chapter, an approach for implementing a simulator is described before a hot standby scenario with \abr{DDS} features is presented.
 
 \section{Scenario Description}
 \label{sec:ImpScenarioDescription}
@@ -76,7 +75,16 @@ In \abr{ETCS} level two, \abrpl{MA} with speed and route information are continu
 
 It is the on-board unit's responsibility to supervise the train's position, speed, movement authorities and braking curve, as well as to evaluate balise telegrams and \abr{RBC} messages.
 
-\todo{Describe how breaking curve is monitored}
+An algorithm for calculating a train's braking curve in \abr{ERTMS} systems is presented by B. Friman~\cite{CalculateBrakeCurveFriman}.
+In general, three type of information are considered for supervising a train, namely speed restrictions, track gradients and a train's characteristic deceleration abilities.
+For calculating a train's braking distance $dbr$ for a train with a deceleration ability of $dec$ from one speed $v_1$ to another speed $v_2$, the following equation can be used:
+
+\begin{equation}
+dbr = \frac{{v_1}^2}{2*dec} - \frac{{v_2}^2}{2*dec}
+\end{equation}
+
+The train's speed is measured in $m/2$ and its deceleration ability is measured in $m/s^2$.
+\\
 
 In order to show the demonstrated redundant system's applicability, a subset of the on-board unit's \abr{ETCS} level two duties is implemented.
 This demonstration covers the compliance with a \abr{MA} by supervising the train's position, speed and braking curve, as well as the evaluation of \abr{RBC} messages and balise telegrams.
@@ -86,10 +94,12 @@ In order to adjust the train's position and reset the confidence interval, balis
 Therefore, a list of balises and their positions that the train will encounter during its journey is communicated at the journey's start.
 This is called the linking phase and the list of balises and balise position is referred to as linked balise groups.
 While the \abr{MA} and linked balise groups are transmitted to the system at the start of the journey, balise telegrams must be reliably evaluated at any time.
+In the course of this work, a flat track and a constant speed restriction is assumed.
+Therefore, any track gradient can be neglected and the train's deceleration only depends on its speed.
 From this, the following tasks can be derived for the showcases system to comply with the \abr{ETCS} subset:
 
 \begin{itemize}
-\item Receive and evaluate \abr{MA}, speed profile and track profile information pre-journey
+\item Receive and evaluate \abr{MA} with a start and an end position
 \item Receive and evaluate linking information pre-journey
 \item Continuously calculate the train's position and confidence interval
 \item Continuously calculate the train's braking curve based on its characteristics and the current \abr{MA}
@@ -97,6 +107,7 @@ From this, the following tasks can be derived for the showcases system to comply
 \item Stop the train when end of \abr{MA} is reached, a linked balise group is not encountered at its position, or an unlinked balise group is encountered
 \end{itemize}
 
+The system's practicability will be demonstrated within a simulated scenario, which is described in~\autoref{subsec:ScenarioSimulation}.
 
 \section{Consensus Algorithm}
 \label{sec:ImpConsensusAlgorithm}
@@ -338,8 +349,9 @@ On the other hand, network delays or too few active replicas are safety risks an
 For doing so, a maximal time that the system should be without a leader can be specified.
 Altogether, when enough replica are present in the system and communication is possible without any delays, the system will not be without a leader for the maximum time of $\textit{election timeout} + \textit{leader ready timeout}$.
 
-\subsection{Balise Telegram Processing}
-\label{subsec:ImpBaliseProcessing}
+\subsection{Input Processing}
+\todo{Describe in more detail like the leader election}
+\label{subsec:ImpInputProcessing}
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/sequence/CollectResults}
@@ -347,25 +359,152 @@ Altogether, when enough replica are present in the system and communication is p
 	\label{fig:SeqCollectResults}
 \end{figure}
 
-\todo{Add balise and rbc evaluation, braking curve calculation etc}
-
-The purpose of the redundant application that is shown here is to process input messages from track-side components and generate a single reaction on the input for the entire system based on majority voting.
+The purpose of the established redundant application is to process input messages from \abr{RBC} and track-side components and generate a single reaction on the input for the entire system based on majority voting.
 A coarse overview about how input messages are distributed among the replicas and processed by the system is presented in~\autoref{fig:SeqCollectResults}.
-It is the leaders responsibility to record new inputs, replicate the inputs to each follower, maintain the system's consistent state, and generate a final reaction to the input.
+It is the leaders responsibility to record new inputs, replicate the inputs to each follower, maintain the system's global state, and generate a final outpur to each input.
 All communication among the replicas takes place via \abr{DDS}.
 As soon as the leader receives an input messages, it starts to assign each follower to process the input.
 This is done through the \texttt{AppendEntries} topic and follows the log replication process from \texttt{Raft}.
 Afterwards, all replicas are generating a decision for the input message in parallel based on the global system state which is managed by \abr{DDS}.
 The followers publish their decisions on the \texttt{AppendEntriesReply} topic.
 When the leader has made its decision, it starts collecting the follower's decisions using a \texttt{WaitSet} and a \texttt{QueryCondition} on the \texttt{AppendEntriesReply} topic.
-A timeout is attached to this \texttt{WaitSet} to ensure that, after a certain time-span, the voting process can start.
+A timeout is attached to this \texttt{WaitSet} to ensure that, after a certain time-span, the voting process can start based on all results that reached the leader at that time.
 The leader performs a majority voting on all collected replica decisions and thereafter commits the final decision.
 During the commit phase, all changes that the input messages has on the system's state are applied to the global data space.
 Thereby, the decisions for all replicas are deterministic because they are all based on the same system state.
 Furthermore, the input message is marked as processed during the commit phase by disposing its corresponding \abr{DDS} instance.
-This ensures that, if the leader crashed while processing the input message, a new leader recognizes the input messages as unprocessed and starts to process it again.
+This ensures that, if the leader crashed while processing the input message, a new leader recognizes the input messages as unprocessed and restarts its processing.
 
-\subsection{Hot Standby}
+The tasks required to successfully complete the scenario are fulfilled as follows:
+
+\begin{itemize}
+\item The leader accepts linking and \abr{MA} information and incorporates them into the global system state
+\item The system updates the train's position and confidence interval with every heartbeat message
+\item The leader periodically initiates a braking curve analysis and comparison with the current \abr{MA}
+\item After reading a balise telegram message, the leader distributes it across the system and performs a voting whether the train should brake or continue driving
+\end{itemize}
+
+\subsection{State Manager}
+\todo{Describe in more detail like the leader election}
+
+\begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{LinkedBalises} topic. Each linked balise has an unique identifier and a position that is communicated to the system by the \abr{RBC}.}, label=code:linkedBalises]
+struct LinkedBalises {
+    short ID;
+    long position;
+};
+#pragma keylist LinkedBalises ID
+\end{lstlisting}
+
+\begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{MovementAuthority} topic. The \texttt{start\_position} encodes where the \abr{MA} starts and the \texttt{end\_position} encodes until where it is valid.}, label=code:movementAuthority]
+struct MovementAuthority {
+    long start_position;
+    long end_position;
+};
+#pragma keylist MovementAuthority
+\end{lstlisting}
+
+\begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{TrainState} topic. The train's state consists of a current position and a current speed. Due to inaccuracies of the position sensors, a train's position cannot be determined exactly. Therefore, a confidence interval is maintained that defines an area where the train certainly is. This area is bounded by \texttt{max\_position} and \texttt{min\_position}. With \texttt{is\_driving} it is encoded whether the virtual train drives or stands still. The \texttt{lastUpdateTime} variable is used to simulate the train's position based on its speed.}, label=code:trainState]
+struct TrainState {
+    double position;
+    double max_position;
+    double min_position;
+    float speed;
+    boolean is_driving;
+    unsigned long long lastUpdateTime;
+};
+#pragma keylist TrainState
+\end{lstlisting}
+\todo{Trainstate driving in text}
+
+It is mandatory for the replicas in the distributed system to produce deterministic results and to have access to the most recent global system state.
+The global system state consists, inter alia, of the current \abr{MA} and a set of linked balises.
+Although the train's position and speed are typically administered by other dedicated components in actual operation, they are simulated for the demonstrated system and therefore part of its global system state.
+\\
+
+\abr{DDS} can be used to manage the system's global state and ensure that any change is reliably trasmitted to all replicas.
+Three \texttt{Topics} are used, namely \texttt{LinkedBalises}, \texttt{MovementAuthority}, and \texttt{TrainState}.
+
+The \abr{IDL} representation for the \texttt{LinkedBalises} topic is shown in~\autoref{code:linkedBalises}.
+Multiple balise instances can be stored within the topic that are distinguished by a unique identification number.
+Since a set of linked balises is sent before journey and is not expected to change afterwards, an enduring \abr{DDS} state topic is used (see~\autoref{tab:stateQOS}).
+
+The currently valid \abr{MA} is stored in the \texttt{MovementAuthority} topic, whose \abr{IDL} is shown in~\autoref{code:movementAuthority}.
+As with the \texttt{LinkedBalises} topic, a movement authority is assigned once and valid for an entire journey so that it is stored in an enduring state topic.
+Only one \abr{MA} is expected to be stored in the topic at any time.
+
+The train's position and speed are stored in the \texttt{TrainState} topic, whose \abr{IDL} is shown in~\autoref{code:trainState}.
+Three variables are used for the position.
+One encodes the estimated position (\textit{position}) and two delimit an interval, the so called confidence interval, that certainly contains the train's true position.
+A confidence interval is required because position measuring instruments can have inaccuracies.
+The topic further contains a \texttt{is\_driving} variable that indicates whether the train moves or stands still and a \textit{lastUpdateTime} variable that determines when the position was updated for the last time.
+This \texttt{lastUpdateTime} variable is only used for simulation reasons.
+Because the state data is updated periodically and frequently, it should be managed as a volatile \abr{DDS} state topic.
+\\
+
+The topic's data is read and written like any other \abr{DDS} topic.
+However, when a train starts a new journey and the new track section's linked balises have identification numbers that correspond with identification numbers of linked balises from previous track sections, special treatment is required.
+In order to circumvent this situation beforehand, any data on the \texttt{LinkedBalises} topic is disposed before new data is written.
+
+\section{Scenario Simulation}
+\label{subsec:ScenarioSimulation}
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/SimulatorWorkflow}
+	\caption{The scenario simulation's workflow. Each simulation begins by creating a scenario from a file and sending \glsentryfull{MA} and linking information. Thereupon, the virtual train is set in motion and balise telegrams are send on its way. When the virtual train stops early or when the \abr{MA}'s end is reached, the simulation stops.}
+	\label{fig:SimulatorWorkflow}
+\end{figure}
+In order to demonstrate and evaluate the system's applicability, the \abr{ETCS} subset from~\autoref{sec:ImpScenarioDescription} is wrapped in a scenario and simulated.
+The \abr{ETCS} subset consists of a \abr{MA} and a list of balises that function as positional landmarks.
+Thus, a simulated scenario is bounded by a \abr{MA}'s start- and end-position and consits of one or multiple balises.
+A simulated scenario's workflow is depicted in~\autoref{fig:SimulatorWorkflow}.
+
+\begin{lstlisting}[caption={A JSON scenario representation. Each scenario consists of a \glsentryfull{MA} with a start and end point, as well as of a set of balises. Balises can be either linked or not and consist of an identification number, a linking position and an actual position. The linking position is transmitted to the on-board unit and is distinguished from its actual position to simulate a misplaced balise.}, label=code:scenarioJSON]
+{
+  "MA": {
+    "start": 0,
+    "end": 10
+  },
+  "balises": {
+
+    "balise": {
+      "id": 0,
+      "link_pos": 1,
+      "pos": 1,
+      "linked": true
+    },
+    "balise": {
+      "id": 1,
+      "link_pos": 5,
+      "pos": 5,
+      "linked": true
+    },
+    "balise": {
+      "id": 2,
+      "pos": 7,
+      "linked": false
+    }
+
+  }
+}
+
+\end{lstlisting}
+
+At first, a scenario is created from a \textit{json} file.
+An exemplary scenario in \textit{json} format is shown in~\autoref{code:scenarioJSON}.
+It contains a \abr{MA} that starts at the current position and is valid for 1000 meters.
+Further, three balises are simulated on the way, one at 100 meters, one at 500 meters, and one at 700 meters after the journey's start.
+The first two balises will be linked with the on-board unit while the third will not.
+Any linked balise further has a linking position field which is communicated to the on-board unit.
+The distinction between a balise's actual position and its linking position is used to simulate balise that are not where they should be.
+\\
+
+After the \abr{MA} and the two linked balises have been sent to the on-board unit, the simulator starts to simulate a trip by updating the virtual train's position.
+The position is continuously compared to the balise's positions and the \abr{MA}'s end.
+As soon as the simulated train passes a balise's position, the corresponding balise is send.
+In case that the balise lead to a braking action, for example because the balise was not linked or its position and linking position do not correspond, the simulation stops.
+Finally, when all balises are evaluated successfully, the simulation ends when the \abr{MA}'s end is reached.
+
+\section{Hot Standby}
 \begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{ActivateSpare} topic. This topic is used to activate or deactivate spare replicas. The \texttt{term} field encodes the term in which the activate or deactivate call has been made and \texttt{activate} gets interpreted as a boolean that encodes whether the spare should be activated or deactivated.}, label=code:activateSpare]
 struct ActivateSpare {
     long term;
