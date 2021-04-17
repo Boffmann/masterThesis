@@ -2,47 +2,53 @@
 \label{chptr:concepts}
 
 Introducing redundancy to safety-critical systems is a popular approach to ensure that faults inside the system do not lead to failures that effect the system's environment~\cite{BarryFaultToleranceAnalysis}.
-Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy) or performing the same operation multiple times (time redundancy).
-Although being one of the most often used redundancy techniques, the addition of hardware components, called replicas for redundant computation, leads to multiple results which need to be consolidated to an individual system result.
+Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy), or performing the same operation multiple times (time redundancy).
+Although being one of the most often used redundancy techniques, the addition of hardware components, called replicas for redundant computation, leads to multiple results which need to be consolidated to an unique system result.
 Thus, the replicas need to communicate with each other and synchronize their results in order to act like a single unit in their environment.
 A promising approach to cope with the communication overhead is \gls*{DDS}, a \gls*{DCPS} system, since it allows reliable and real-time communication~\cite{omgDDSspec}.
 However, while hardware redundancy enhances a system's fault-tolerance, it also increases its costs and complexity.
 
 In this chapter, various redundancy techniques, as well as important terms and criteria for evaluating redundant systems, are described.
-Further, different redundancy concepts are weighted against each other with regards to reliability, safety and performance.
-Afterwards, standards for building and designing safe and fault-tolerant systems are given and related works, that sucessfully applied \gls*{DCPS}-middleware in the railway context, are shown.
+Further, different redundancy concepts are weighted against each other with regards to reliability, safety, and performance.
+Afterwards, standards for building and designing safe and fault-tolerant systems are given and related works, that successfully applied \gls*{DCPS}-middleware in the railway context, are shown.
 At first, however, an overview about the \abr{ETCS}, as well as the \gls*{DDS} standard and its concepts, is exposed.
 
-\section{European Train Control System}
-In order to facilitate interoperability between national railway systems throughout Europe, the signalling and speed control system has been standartized by the European Union under the term \abr{ERTMS}.
-\abr{ETCS} defines the signalling and train control component of \abr{ERTMS}~\cite{ETCS26}.
-As such, it is responsible for monitoring a train's speed, calculating the permissible speed restrictions, and coordinating the collaboration between track-side components, such as \abr{ETCS} eurobalises, and on-board systems.
+\section{\glsentryfull{ETCS}}
+In order to facilitate interoperability between national railway systems throughout Europe, the signaling and speed control system has been standardized by the European Union under the term \abr{ERTMS}.
+\abr{ETCS} defines the signaling and train control component of \abr{ERTMS}~\cite{ETCS26}.
+As such, it is responsible for monitoring a train's speed, calculating the permissible speed restrictions, and coordinating the collaboration between track-side components, such as \abr{ETCS} euro-balises, and on-board systems.
 Any train requires a permission in form of a \abr{MA} to drive from its location to another point on track.
-A \abr{MA} not only encodes the train's permission to move, it also encodes track information, such as slopes or speed limitations, as well as information about other trains on track.
-Any \abr{MA} is provided by external entities, for example via track-side components or via radio frequencies, and monitored by a on-train system.
-The track-side components, as well as the on-board system are standardized according to three different \abr{ETCS} levels.
+Besides encoding a train's permission to move, a \abr{MA} also encodes information about other trains on the track, as well as track information such as slopes and speed limitation.
+Any \abr{MA} is supplied by an external entity, called \abr{RBC}, via track-side components or via radio frequencies, and monitored by an on-train system.
+The track-side components, as well as the on-board system, are standardized according to three different \abr{ETCS} levels.
 
-\abr{ETCS} level one has been designed to build upon existing signalling systems.
-\abrpl{MA} as well as route data and the maximum allowed speed are transmitted through fixed eurobalises.
-Parallel to that, a breaking curve is permanently calculated.
+\paragraph{\abr{ETCS} level one}
+\abr{ETCS} level one has been designed to build upon existing signaling systems.
+\abrpl{MA} as well as route data and the maximum allowed speed are transmitted through fix positioned euro-balises.
+Parallel to that, a breaking curve and the train's position are permanently calculated.
 
-For \abr{ETCS} level two, signalling and \abr{MA} data is transmitted via radio frequencies and displayed to the driver.
-While eurobalises are only used for aligning the calculated train position with its actual position, the train is constantly communicating its position, its speed, and its direction to a central interlocking.
+\paragraph{\abr{ETCS} level two}
+For \abr{ETCS} level two, signaling and \abr{MA} data is transmitted via mobile communication channels from the \abr{RBC} and displayed to the driver.
+The \abr{RBC} is a central unit that constantly collects and supervises train movements and track information.
+Although each train calculates its own position, it can come to inaccuracies, due to for example faulty sensor calibration.
+Therefore, track-side balises are applied, whose exact positions are provisioned before the train's journey during a linking phase.
+Thus, a train's actual position can be aligned when it encounters a linked balise.
 
-In the final \abr{ETCS} level three, any track-side component is abolished and the entire communication takes place via radio signals.
+\paragraph{\abr{ETCS} level three}
+Finally, in \abr{ETCS} level three, any track-side component is abolished and the entire communication takes place via radio signals.
 This \abr{ETCS} level is not fully standardized yet.
 
-\section{Data Distribution Service}
+\section{\glsentryfull{DDS}}
 
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/DDSStructure}
-	\caption{\abr{DDS} is as data-centric communication model and follows the publish/subscribe pattern. The publishing and subscribing attendees do not communicate directly with each other, but make use of topics to read and write data objects.}
+	\caption{The \glsentryfull{DDS} is a data-centric communication model and follows the publish/subscribe pattern. The publishing and subscribing attendees do not communicate directly with each other, but make use of topics to read and write data objects.}
 	\label{fig:DDSStructure}
 \end{figure}
 
 \Gls*{DDS} is a \gls*{DCPS} model for machine-to-machine communication, that is specified by the \gls*{OMG}~\cite{omgDDSspec}.
-It is stated that the model should, for practical use, be implemented as a middleware, to directly interface with the underlaying \gls*{OS}.
+It is stated that the model should, for practical use, be implemented as a middleware, to directly interface with the underlying \gls*{OS}.
 The model follows the concept of a global data space to facilitate data exchange among entities based on type and content.
 Central entities in the design are \texttt{Publishers} and \texttt{Subscribers}, while data exchange is based on \texttt{Topics}.
 A \texttt{Publisher} is used for sending data of different types.
@@ -53,8 +59,8 @@ A \texttt{Topic} acts as the connecting element between publishing entities on t
 Any forecasting of when and how data is published to a \texttt{Topic} or received by a \texttt{Subscriber} is made possible through so called \glspl*{QOS} policies.
 This concept is illustrated in~\autoref{fig:DDSStructure}, which is based on the official \gls*{DDS} specification~\cite{omgDDSspec} and shows the information flow from the publishing to the subscribing side.
 
-An application can either rely on the middleware to asynchronously notify it about the presence of new data through so called \texttt{Listeners}, or actively wait for new data by utalizing \texttt{WaitSets}.
-A \texttt{WaitSet} can be attached with different \texttt{Conditions} and allows the application to wait until one or more of the attached conditions are satisfied, or until it times out.
+An application can either rely on the middleware to asynchronously notify it about the presence of new data through so called \texttt{Listeners}, or actively wait for new data by utilizing \texttt{WaitSets}.
+A \texttt{WaitSet} can be attached with different \texttt{Conditions}, for example \texttt{ReadConditions}, and allows the application to wait until either one or more of the attached conditions are satisfied, or until it times out.
 Examples for conditions are \texttt{ReadCondition} and \texttt{QueryCondition}.
 The \texttt{ReadCondition} object allows to designate specific data samples and is met when the specified type of data is present in a \texttt{DataReader}.
 A \texttt{QueryCondition} is a specified \texttt{ReadCondition} that further provides capabilities of filtering the data that is read through a \texttt{DataReader}.
@@ -62,7 +68,7 @@ A \texttt{QueryCondition} is a specified \texttt{ReadCondition} that further pro
 
 The usefulness of \gls*{DDS} for containerization technologies in automotive architectures has been studied by Kugele \etal~\cite{KugeleDataCentricForAuto}.
 Although their findings are based on containerization technologies and are therefore not resilient for this work, Kugele \etal showed that the applicability of \gls*{DDS} with regards to safety, certification and security depends on the actual implementation's characteristics.
-Therefore, Vortex OpenSplice DDS is used thoughout this thesis, which is being developed and maintained by ADLINK.
+Therefore, Vortex OpenSplice DDS is used throughout this thesis, which is being developed and maintained by ADLINK.
 
 The applicability of the \gls*{DDS}-standard and of Vortex OpenSplice \gls*{DDS} for safety-critical railway applications has been demonstrated by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
 Their findings show, that OpenSplice \gls*{DDS}'s \gls*{QOS} policies allow predictable time and locality characteristics for data distribution.
@@ -80,7 +86,7 @@ When a fault becomes active, it manifests itself as an error, which marks an inc
 An failure occurs as soon as the error affects the system's environment.
 
 \begin{definition}
-A failure of a system or a system component is a state, where its actual behaviour deviates from the its specified behaviour.
+A failure of a system or a system component is a state, where its actual behavior deviates from the its specified behavior.
 \end{definition}
 
 The definition of reliability used in this work is the following:
@@ -91,13 +97,13 @@ A system's reliability is a function of time that expresses the probability for 
 
 In other words, reliability is a system's ability to not have any failure for a specific period of time.
 
-A system's safety is associated with its reliability, since it consitutes an extension of reliability~\cite{AvizienisDependability2001}.
+A system's safety is associated with its reliability, since it constitutes an extension of reliability~\cite{AvizienisDependability2001}.
 In general, safety defines the absence of catastrophic failures on a system's environment.
-When the presence of non-catastropic failures can be reliably detected and a safe state can be taken in case of failures, safety can be treated as reliability concerning catastropic failures.
+When the presence of non-catastrophic failures can be reliably detected and a safe state can be taken in case of failures, safety can be treated as reliability concerning catastrophic failures.
 In other words, safety can be expressed as a system's probability to not experience any fault that would lead to a catastrophic failure in a specific time span.
 
 Based on these definitions, it can be conducted that a system's safety and reliability can only be finally assessed when the system's environment, the reliability of the system's components and the operations performed by the system are known.
-In addition, the system's architecture and structure need to be aquainted.
+In addition, the system's architecture and structure need to be acquainted.
 Finally, in order to specifically evaluate a system's safety, possible faults and their consequences need to be known.
 In order to be able to evaluate and compare different architectural pattern towards their safety characteristics, independently of the subsequently conducted operations, the definition of \texttt{intrinsic safety}, made by~\cite{BoulangerStandards}, is used in this work.
 
@@ -110,7 +116,7 @@ In the railway context, a complete stoppage is generally the safest state.
 This definition requires that measures are taken to assure the system's safety even in the presence of failures.
 A system that provides the functionality to behave as specified even in the case of faults is said to be fault tolerant~\cite{AvizienisDependability2001}.
 Fault tolerance is generally obtained through error detection, which allows the system to determine the presence of errors and enables it to mitigate resulting failures.
-In the course of this thesis, a system is considered to be safe when it is reliable and utalizes error detection mechanisms to ensure its intrinsic safety.
+In the course of this thesis, a system is considered to be safe when it is reliable and utilizes error detection mechanisms to ensure its intrinsic safety.
 \begin{definition}
 A system, in the course of this thesis, is said to be safe when it operates reliably and applies error detection mechanisms in order to be fault tolerant.
 \label{def:safety}
@@ -139,7 +145,7 @@ It describes a component's reliability as an exponential function on time.
 R(t) = e^{-\lambda t}.
 \label{eq:expFailureLaw}
 \end{equation}
-The parameter $\lambda$ is called the failure rate and encodes the probability of failures occuring in a certain time span, typically in an hour.
+The parameter $\lambda$ is called the failure rate and encodes the probability of failures occurring in a certain time span, typically in an hour.
 For the exponential failure law it is, mathematically, assumed that the components fail independently.
 This might not always be the case in practice, as common core or power outage failures can affect multiple components at once.
 However, the probability of failures affecting multiple components at once can be reduced by various techniques, such as using independent power supplies or diverse redundancy, the latter of which being discussed below.
@@ -161,7 +167,7 @@ For the state transition probabilities, the exponential failure law~\autoref{eq:
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/TriplexSystemNASA}
-	\caption{A reliability model for \gls*{TMR} using Markov chains. In state (1), three replicas are operating redundantly. Each state transition describes the failure of a replica together with the corresponding probability.}
+	\caption{A reliability model for \glsentryfull{TMR} using Markov chains. In state (1), three replicas are operating redundantly. Each state transition describes the failure of a replica together with the corresponding probability.}
 	\label{fig:NASATMR}
 \end{figure}
 
@@ -172,7 +178,7 @@ However, there is still a change of $2\lambda$ that another component fails befo
 In state (4), there is again a $2\lambda$ change for one of the remaining components to fail, which would lead to a failure of the entire system.
 
 As experiments have shown, a system's recovery time is not necessarily exponential~\cite{TheoryAndPracticeReliableSystem}.
-Thus, it is expressed by $F(t)$ which is the probability that the system recovers within a timespan less than $t$.
+Thus, it is expressed by $F(t)$ which is the probability that the system recovers within a time-span less than $t$.
 
 In a diverse redundant system, each component failure is represented with an individual state.
 
@@ -183,7 +189,7 @@ Error masking is the concept of detecting and mitigating errors, so that they do
 For redundancy, additional resources or information are added to a system, that would not be required when errors where impossible to happen in the system.
 Barry Johnson defines redundancy in the following way~\cite{BarryFaultToleranceAnalysis}:
 \begin{definition}
-The concept of redundancy implies the addition of information, resources, or time beyound what is needed for normal system operation.
+The concept of redundancy implies the addition of information, resources, or time beyond what is needed for normal system operation.
 Redundancy can take one of several forms, including hardware, software, information, and time redundancy.
 \end{definition}
 
@@ -196,8 +202,8 @@ In general, a system's safety can be further improved when using components that
 Using different components in redundancy patterns is called diverse redundancy, while replicating the same components is called homogeneous redundancy~\cite{HomogeneousRedundancyOuzineb}.
 Using diverse redundancy has the benefit that it reduced the effect that common core errors have on a system's or component's safety.
 
-Johnson subdevides hardware redundancy into two parts, namely passive and active redundancy.
-In passive hardware redundancy, a voter or consensus algorithm is used to reduce a number of redundant outputs to a single output, in order to prevent individual internal failures from propergating out of the system.
+Johnson subdivides hardware redundancy into two parts, namely passive and active redundancy.
+In passive hardware redundancy, a voter or consensus algorithm is used to reduce a number of redundant outputs to a single output, in order to prevent individual internal failures from propagating out of the system.
 In active hardware redundancy, the system tries to detect and repair any internal failure, for example by replacing the faulty component.
 While \gls*{MOON} systems are a typical example of passive hardware redundancy, standby redundancy is often used as an example of active hardware redundancy.
 
@@ -207,11 +213,11 @@ However, software voters operate slower and the approval process is more complic
 
 The benefit of hardware voters is, that they can operate faster and a minimal set of hardware needs to be approved, which reduces the time and cost expenses for approving the system.
 
-Both types of voters have in common, that they require some kind of time constraint synchronization with the replicas to collect their intermediate results, perform the voting, and recognize failed or delayed redundant results.
-Therefore, the indivudual replicas communicate their results to the voter, which collects the results, performs the voting and thereby generates a single system result.
+Both types of voters have in common, that they require some kind of time constraint synchronization with the replicas to collect their intermediate results, perform a voting, and recognize failed or delayed redundant results.
+Therefore, the individual replicas communicate their results to the voter, which collects the results, performs the voting and thereby generates a single system result.
 The voting process facilitates the system to allow single replicas to produce wrong results without rendering the overall system result wrong.
 In an active hardware redundant system, where the individual components are independent and communicate via a shared communication medium, the synchronization process is further impeded by the impossibility of agreeing on values in asynchronous distributed systems with faulty components~\cite{FLPProblemConsensus}.
-Consequentely, a way for synchonizing the communication is required, which can be achieved through time constraints in form of timeouts.
+Consequently, a way for synchronizing the communication is required, which can be achieved through time constraints in form of timeouts.
 This can be, for example, achieved by starting a timer after a first replica sent its result, or by letting the voter request the result from each replica.
 In addition, an expired timeout can indicate crashed replicas or network partitions.
 
@@ -219,7 +225,7 @@ In addition, an expired timeout can indicate crashed replicas or network partiti
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/Classical2OO3}
-	\caption{Classical 3-out-of-2 redundancy, also known as \Gls*{TMR}. Three replicas are simultaneously reading and processing an input in a redundant way. A voter collects these redundant results and performs a majority voting to produce a final output.}
+	\caption{Classical 3-out-of-2 redundancy, also known as \glsentryfull{TMR}. Three replicas are simultaneously reading and processing an input in a redundant way. A voter collects these redundant results and performs a majority voting to produce a final output.}
 	\label{fig:Classical2OO3}
 \end{figure}
 
@@ -267,30 +273,38 @@ When the secondary component needs to be turned on before it can be used as the 
 \subsection{Software Redundancy}
 One speaks of software redundancy, when the redundancy concepts or error detection methods are implemented in software.
 Examples for software redundancy are heartbeat messages to validate a component's accessibility, component-checking, or software voters.
-In component-checking, a program is used to monitor and validate a component's hardware, for example its memory, its clock, or its \gls*{CPU}.
+In component-checking, a software or hardware program is used to monitor and validate a component's hardware, for example its memory, its clock, or its \gls*{CPU}.
+A \abr{CPU}, for example, can apply redundant hardware for self-testing and fault-secureness~\cite{SelfCheckingProcessorDesign}.
+While self-testing allows the detection of faults, self-secureness ensures that no fault can lead to an undetected error.
 Thereby, it can be qualified whether a specific component's output can be considered valid or not.
 This state is summarized into the term \texttt{internal consistency}.
 
 \begin{definition}
 A system or a component is said to be internally consistent, when any failure of this component is not based on a fault of its internal hardware.
-A system's or component's internal consitency can be determined by component checking mechanisms.
+A system's or component's internal consistency can be determined by component checking mechanisms.
 \end{definition}
 
-By implication, when a system is internally consitent, any system failures can only be introduced by external causes, such as network delays, errors during data transmission, or defects in the inputs.
+By implication, when a system is internally consistent, any system failures can only be introduced by external causes, such as network delays, errors during data transmission, or defects in the inputs.
 
 Further, voting or consensus algorithms can be implemented in software.
 Similar to homogeneous and diverse hardware redundancy, diverse implementations of the same software can be used to reduce the effect of faults in a software.
 The concept of diverse software programs is summarized under the term N-version programming, where a software program, which is based on the same specification, is developed by separate programmers~\cite{BarryFaultToleranceAnalysis}.
 
 \subsection{Information and Time Redundancy}
-The addition, adding redundant information can allow the detection, masking and recovery from faults~\cite{BarryFaultToleranceAnalysis}.
+The addition of redundant information can allow the detection, masking and recovery from faults~\cite{BarryFaultToleranceAnalysis}.
 Examples for information redundancy include Hamming codes~\cite{HammingCodes}, checksums or information duplication.
-All information redundancy concepts share that they somehow encode redundancy into some information that can later be decoded.
+In Hamming codes, multiple parity bits are attached to the data bits so that defects in the transmitted information can be detected.
+Additionally, Hamming codes also allow to locate and correct errors in a bitstream.
+Information- and time redundancy can be either implemented in software or in hardware using self-checking checker circuits.
+John F. Wakerly argues that, when when a system is non-transforming, the applied circuit is automatically self-checking~\cite{SelfCheckingProcessorDesign}.
+He further compares different error-detection codes and provides self-checking hardware designs.
+
+All information redundancy concepts share that they somehow encode redundancy into the transmitted data that can later be decoded.
 
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/ECC}
-	\caption{Error checking and correction applies both time and information redundancy. An encoder is used to encode both input and output of a system (time redundancy). This encoded information is used in addition to the actual data (information redundancy). The encoder function needs to be choosen to that possible outputs can be derived from it~\cite{Su2005ECC}.}
+	\caption{\glsentryfull{ECC} applies both time and information redundancy. An encoder is used to encode both input and output of a system (time redundancy). This encoded information is used in addition to the actual data (information redundancy). The encoder function needs to be chosen to that possible outputs can be derived from it~\cite{Su2005ECC}. An exemplary encoding that fulfills these characteristics are Hamming codes~\cite{HammingCodes}.}
 	\label{fig:ECC}
 \end{figure}
 
@@ -299,26 +313,29 @@ This concept is called \texttt{Time Redundancy} and has the benefit that it does
 Thereby, permanent faults in a system can be detected.
 
 \autoref{fig:ECC} depicts an example of a combination of information and time redundancy using \gls*{ECC} techniques.
-Therefore, an encoder encodes potential outputs for certain inputs and transmits this redundant information together with the input data.
+Therefore, an encoder encodes the input and transmits this redundant information together with the input data.
 After the system produces an output based on its input information, the output is also encoded and afterwards compared to the encoded input.
 When there are anomalies between the system's input and its output, safety operations can be initiated.
-The encoding function must be choosen so that it allows the detection of faults in the system, such as arithmetic shifting.
+The encoding function must be chosen so that it allows the detection of faults in the system.
+In an exemplary case, where each input allows two possible outputs, the encoding function could generate two numbers for each input.
+These two numbers are redundantly transmitted with the input.
+The system's output is further encoded with the same encoding function, which generates an identification number for the generated output.
+In a final step, it is verified whether the output's identification number corresponds with one of the input's two possible outputs.
 
 \section{Related Work}
-
 \paragraph{Redundancy to enhance Safety.}
-Alapan Chakroborty demonstrates a development process of a reliable, safe and fault-tolerant system using redundancy methods by an example of railway signalling~\cite{ChakrabortyFaultTolerantRailway}.
+Alapan Chakroborty demonstrates a development process of a reliable, safe and fault-tolerant system using redundancy methods by an example of railway signaling~\cite{ChakrabortyFaultTolerantRailway}.
 He argues, that every fault tolerant system needs to build upon real-time software solutions.
 This requires both logical, as well as timing correctness, which can only be achieved by correct redundancy management such as fault propagation, synchronization and consensus among replicas.
-At a fail-safe design's heart lies fault idenfication, masking and recovery.
-Therefore, in a first step, each redundant design should be subdevided into redundant elements that are not affected by any fault from outside the element.
+At a fail-safe design's heart lies fault identification, masking and recovery.
+Therefore, in a first step, each redundant design should be subdivided into redundant elements that are not affected by any fault from outside the element.
 Chakroborty calls these redundant elements \glspl*{FCR}.
 As a second step, he proposes to define interface between the \glspl*{FCR} so that they do not interfere with each other.
 These two steps form a necessary precondition to be able to predict the probability of failures in the system.
 
 In order for the system to reduce redundant results to a single result and to mask failures, the concept of voting is demanded.
 Voting, as Chakraborty claims, requires the \glspl*{FCR} to be in identical states, to provide all redundant hardware with the same input and to ensure a real-time concurrent operation of the same computations on each \gls*{FCR} for synchronization.
-Finally in the work, the shown method is performed on developing a railway signalling system.
+Finally in the work, the shown method is performed on developing a railway signaling system.
 
 An overview about possible redundancy concepts for the railway domain is provided by Bemment \etal~\cite{BemmentEvaluationOfRedundancy}.
 They further made a cost, benefit and performance analysis for each presented concept.
@@ -333,13 +350,13 @@ For further evaluations, an overview about about possible accidents in railway i
 \paragraph{Software development in the railway context.}
 The CENELEC 50128 standard is a norm for software creating processes for railway applications, so that the build software can be considered safe.
 The 2011 version of CENELEC 50128, as well as resources needed to achieve a set level of assurance, are presented by Jean-Louis Boulanger~\cite{BoulangerStandards}.
-Conducting a CENELEC 50128 conform design process for all software artefacts created in this thesis is outside of its scope.
-However, each software indended to be used in railway practice should pass the CENELEC 50128 norm.
+Conducting a CENELEC 50128 conform design process for all software artifacts created in this thesis is outside of its scope.
+However, each software intended to be used in railway practice should pass the CENELEC 50128 norm.
 \\
 
 \begin{table}[h!]
 	\begin{center}
-		\caption{\Gls*{QOS} policies that affect the communication overhead (o) or the communication time (t). Each \abr{QOS} policy can either be applied to \texttt{DataWriters} (DR), \texttt{DataReaders} (DR), \texttt{Topics} (T), or \texttt{Publishers} (P).}
+		\caption{\glsentryfull{QOS} policies that affect the communication overhead (o) or the communication time (t). Each \abr{QOS} policy can either be applied to \texttt{DataWriters} (DR), \texttt{DataReaders} (DR), \texttt{Topics} (T), or \texttt{Publishers} (P).}
 		\label{tab:qos_garciavalls}
 		\begin{tabularx}{\textwidth}{|l|l|X|}
 			\hline
@@ -363,16 +380,16 @@ However, each software indended to be used in railway practice should pass the C
 	\end{center}
 \end{table}
 
-\paragraph{\abr{DDS} in safety critical systems.}
+\paragraph{\abr{DDS} in safety-critical systems.}
 The \gls*{DDS} is already successfully deployed in distributed time- and safety critical environments.
 One example is given by Bijlsma \etal~\cite{DistributedSafety2020}, who extended the E-Gas layered monitoring concept to handle faults in a distributed and redundant system.
 \Gls*{DDS} is applied to facilitate a reliable communication among individual components in the system.
 An other example is given by Hadiwardoyo and Gao, who proposed the use of \gls*{DDS} in security cameras for subways using \glspl*{QOS}~\cite{DDSInSubways}.
 Song \etal have proposed a system architecture that integrates the \abr{DDS} middleware into real-time embedded systems as well as safety-critical systems and thereby achieved a stable communication time~\cite{SongDDSInRealTimeSystems}.
-Their approach has been varified by an \abr{UAV} combat scenario that operates in highly safety-critical scenarios.
-Results have shown that the worst case communication time for a one kilkobyte payload and a relibale communication \abr{QOS} is around 280 microseconds.
-For partitioned systems, 
-Since Song \etal exerted a topology which is similar to the one used in this work - namely a network switch with a 100Mpbs Ethernet link for communication and external nodes - their findings can be seen as a affirmation for the approach used in this work.
+Their approach has been verified by an \abr{UAV} combat scenario that operates in highly safety-critical scenarios.
+Results have shown that the worst case communication time for a one kilobyte payload and a reliable communication \abr{QOS} is around 280 microseconds.
+
+Since Song \etal exerted a topology which is similar to the one used in this work - namely a network switch with a 100~Mpbs Ethernet link for communication and external nodes - their findings can be seen as a affirmation for the approach used in this work.
 However, they utilized a different \abr{DDS} implementation, so that their experiments need to be repeated in my case to approve their findings. 
 \\
 
@@ -381,9 +398,9 @@ They used a design of reading and monitoring sensor data to benchmark the middle
 One of their findings is a summary of \gls*{QOS}-policies that effect the system's communication overhead and communication time.
 These are illustrated in~\autoref{tab:qos_garciavalls} and are especially important when examining real-time and mission-critical systems.
 The results from García-Valls \etal show that the communication performance remains stable even under heavy load.
-Even though they applied a different \gls*{DDS} implementation than in my work, the network topology and used hardware are comparable, which renders the results from García-Valls \etal useful for my work.
+Even though they applied a different \gls*{DDS} implementation than I did, the network topology and used hardware are comparable, which renders the results from García-Valls \etal useful for my work.
 
-\paragraph{Time and availability for consensus algorithms.}
+\paragraph{Time and availability for consensus based redundant systems.}
 While redundant and distributed architectures are a typical approach to enhance a system's robustness, they also entail the demand to agree on certain data values, where the computations are based on.
 Consensus algorithms are a way for components to coordinate and come to an agreement.
 However, consensus algorithms also introduce a performance overhead, whose effects on the system's response time have been investigated by Sakic and Kellerer~\cite{SakicTimeInConsensus}.
@@ -392,4 +409,6 @@ Results show that a system's response time in case of a random replica failing i
 Eventually, in the studies from Sakic and Kellerer after one second, the cluster is almost guaranteed to deliver a response, even in the case of a random replica failing.
 The situation looks different for combined correlated hardware and software failures, where only around 20\% of the systems respond a result after one seconds, when more than half of the replicas are affected.
 In order to address this problem, Sakic and Kellerer propose a watchdog mechanism, which drastically increased the response probabilities in their experiments.
-\todo{Bring into relation to my work}
+
+Based on the work from Sakic and Kellerer, the availability and response time for an actual system need to be evaluated in this work.
+Further, the watchdog concepts should be kept in mind as it has a high impact on the system's response time in case of individual component failures.
