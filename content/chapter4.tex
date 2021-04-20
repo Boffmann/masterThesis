@@ -11,87 +11,6 @@ Afterwards, metrics related to the execution of specific scenarios are examined.
 These include the utilization of system resources on the one hand and the number of messages sent and received on the other.
 From these metrics it can be seen at which points in time an increase in system performance can be expected and that enough resources are always available in the applied system.
 
-\section{DDS Subset Identification}
-
-For reducing costs incurred in the system approving process, it is important to limit the amount of utilized features and lines of code.
-Therefore, a subset of \abr{DDS} features from OpenSplice DDS, that is sufficient for building a redundant system, is identified.
-An overview about this subset is given and justified in the following.
-This overview only contains the methods and functionalities that are directly used by the application, the middleware, however, might utilize other functionalities to implement the features mentioned in this section.
-
-\paragraph{Domain Module}
-A \abr{DDS} application's main building blocks comprise a \texttt{Domain}, one or multiple \texttt{DomainParticipants}, as well as a \texttt{DomainParticipantFactory} for creating new \texttt{DomainParticipants}~\cite{omgDDSspec}.
-Besides these classes, the domain module contains various functionalities, from which only the following subset is used within the exemplary implementation.
-
-\begin{itemize}
-\item \textit{DDS\_Entity\_get\_instance\_handle} Is used for acquiring an instance handle to mark it as processed in the leader's commit phase.
-\item \textit{DDS\_DomainParticipant\_create\_(publisher|subscriber|topic)} Is used for creating \abr{DDS} publishers, subscribers or topics.
-\item \textit{DDS\_DomainParticipant\_delete\_(publisher|subscriber|topic)} Is used for deleting \abr{DDS} publishers, subscribers or topics.
-\item \textit{DDS\_DomainParticipantFactory\_get\_instance} Used for acquiring the \texttt{DomainParticipantFactory} singleton.
-\item \textit{DDS\_DomainParticipantFactory\_(create|delete)\_participant} Used for creating a new participant in the \abr{DDS} domain.
-\end{itemize}
-
-Even though \textit{DDS\_DomainParticipant\_get\_default\_(publisher|subscriber|topic)\_qos} is used in the implementation, it is not mandatory because one could set the default \abr{QOS} settings directly on the corresponding entity.
-
-\paragraph{Topic-Definition Module}
-The topic definition module contains everything related to topics.
-The exemplary implementation utilizes \texttt{Topics}, for describing data in the application, and \texttt{TypeSupport} which describes a data type that is bound to a \texttt{Topic}.
-Apart from these two classes, the following methods are used:
-
-\begin{itemize}
-\item \textit{DDS\_TypeSupport\_\_alloc} Used for creating a new \texttt{TypeSupport}.
-\item \textit{DDS\_TypeSupport\_get\_type\_name} Used for getting a data type's default name, which is required to register it later on.
-\item \textit{DDS\_TypeSupport\_register\_type} Used for registering a new data type name on a \texttt{DomainParticipant}.
-\end{itemize}
-
-
-\paragraph{Publication Module}
-\texttt{Publishers}, as well as \texttt{DataWriters}, which are used for data distribution, are located within the publication module.
-Besides these two classes, the following functionality is required for the exemplary implementation:
-
-\begin{itemize}
-\item \textit{DDS\_Publisher\_(create|delete)\_datawriter} Used for creating, respectively deleting, \texttt{DataWriter} objects.
-\item \textit{DDS\_DataWriter\_write} Used for writing new data to an instance on a \abr{DDS} topic.
-\item \textit{DDS\_DataWriter\_dispose} Used for marking processed inputs for deletion so that they are not processed twice.
-\end{itemize}
-
-\textit{DDS\_Publisher\_copy\_from\_topic\_qos} and \textit{DDS\_Publisher\_get\_default\_datawriter\_qos} are not necessarily required due to the same reasons stated above.
-
-\paragraph{Subscription Module}
-The subscription module resembles the publication module, but for reading and receiving data.
-However, besides \texttt{Subscribers} and \texttt{DataReaders}, it also contains \texttt{DataSample}, \texttt{SampleInfo}, \texttt{ReadCondition}, and \texttt{QueryCondition}, which are utilized in the exemplary implementation.
-\texttt{Subscribers} and \texttt{DataReaders} are required for receiving data, which is represented by a \texttt{DataSample}.
-The \texttt{SampleInfo} data structure contains additional information for each \texttt{DataSample}, such as its instance handle or state, which makes it mandatory for the implementation as well.
-\texttt{ReadConditions} are used in combination with \texttt{WaitSets}, so that the application can react to certain middleware states.
-\texttt{QueryConditions} are extensions for \texttt{ReadConditions} that allow to filter the data samples that are covered by a \texttt{ReadCondition}.
-All filter operations could be implemented directly in the application code, which would make \texttt{QueryConditions} redundant.
-
-Further, the following functionalities from the subscription module were used:
-
-\begin{itemize}
-\item \textit{DDS\_Subscriber\_(create|delete)\_datareader} Used for creating, respectively deleting, \texttt{DataReaders}.
-\item \textit{DDS\_DataReader\_(create|delete)\_readcondition} Used for creating, respectively deleting, \texttt{ReadConditions}.
-\item \textit{DDS\_DataReader\_create\_querycondition} Used for creating \texttt{QueryConditions}.
-\item \textit{DDS\_DataReader\_take\_w\_condition} Used for reading and removing data from a \texttt{DataReader}, filtered by a \texttt{ReadCondition}.
-\item \textit{DDS\_DataReader\_return\_loan} Required for indicating the middleware that the application finished accessing a sequence of data. This allows the middleware to work with the data again.
-\end{itemize}
-
-\paragraph{Infrastructure Module}
-The classes that are used from the infrastructure module include \texttt{QosPolicy} and \texttt{WaitSet}.
-The \texttt{QosPolicy} class implements \abr{DDS}'s \abr{QOS} functionalities and is therefore mandatory for the system's correctness.
-\texttt{WaitSets} are applied for ensuring the application's compliance with its time restrictions, because they allow the assignment of timeouts.
-In addition to that, the following functionalities from the infrastructure module are applied:
-
-\begin{itemize}
-\item \textit{DDS\_WaitSet\_\_alloc} Used for creating new \texttt{WaitSets}.
-\item \textit{DDS\_WaitSet\_attach\_condition} Used to attach a condition to the corresponding \texttt{WaitSet}.
-\item \textit{DDS\_WaitSet\_detach\_condition} Used to detach a condition from the corresponding \texttt{WaitSet}.
-\item \textit{DDS\_WaitSet\_wait} Stops the according thread until at least one of the attached conditions evaluates to true.
-\end{itemize}
-
-Further, the following \abr{QOS} are applied in the application:
-\todo{Add after deciding}
-
-
 \section{System Evaluation}
 At first in this section, general system metrics are analyzed.
 Afterwards, metrics related to concrete, simulated scenarios are considered.
@@ -207,20 +126,11 @@ It not only periodically sends heartbeat messages, but also observes whether the
 
 
 \subsection{Scenario Simulation}
-\todo{Redo all measurements in one scenario}
-The simulated scenarios, that have been described in~\autoref{subsec:ScenarioSimulation}, are used for integration testing.
-For this purpose, a functionality that writes the system's reactions to external factors into an evaluation file was patched into the on-board unit.
-Said external factors include \abr{RBC} messages containing linking and \abr{MA} information, balise telegrams, as well as braking curve monitoring.
-Every time the system reacts, the current position, the performed action, the encountered balise, and the reason for the action are listed.
-A python script, that invokes the simulator and assesses the system's evaluation file, is used for automated integration testing.
-\\
-
-The following scenarios are supported and successfully processed by the replicated system:
 
 \begin{table}[h!]
 	\begin{center}
 		\caption{A Python program is used for automatic integration testing. The scenarios that are traversed in the process differ in the relation of linked and unlinked balises and their expected outcome.}
-		\label{tab:stateQOS}
+		\label{tab:simulatedScenarios}
 		\begin{tabularx}{\textwidth}{|X|X|X|}
 			\hline
 			\textbf{Name} & \textbf{Number of balises/linked balises} & \textbf{Expected behaviour}\\
@@ -235,12 +145,32 @@ The following scenarios are supported and successfully processed by the replicat
 	\end{center}
 \end{table}
 
+For integration testing and evaluation, three scenarios are simulated using the simulator that was described in~\autoref{subsec:ScenarioSimulation}.
+All three scenarios include a \abr{MA} of equal size and three balises.
+However, they differ in the number and position of their linked balises.
+An overview about the simulated scenarios and the system's expected behaviour is given in~\autoref{tab:simulatedScenarios}.
+\\
+
+For evaluation purpose, a functionality that writes the system's reactions to external messages into an evaluation file was patched into the on-board unit software.
+Said external factors include \abr{RBC} messages containing linking and \abr{MA} information, balise telegrams, as well as braking curve monitoring.
+Every time the system reacts, the current position, the performed action, the encountered balise, and the reason for the action are listed.
+A python script, that invokes the simulator and assesses the system's evaluation file, is used for automated integration testing.
+Thereby, a data set is generated that contains a record for each data sample that was published to or written from a topic in the system.
+
+In a second experiment, the system's hardware resource utilization is recorded.
+This data set provides information on whether the used hardware components can withstand the demands of the implemented system.
+\\
+
 Because the trips are simulated, a reproducible test environment is created.
-The only non-deterministic factor is the synchronization of the individual components.
-Further, the replica's hardware resources might not meet the scenarios and system's requirements. 
-Therefore, the resource utilization, as well as message exchange and the \abr{DDS} feature's correct usage assessed.
+Nevertheless, the implemented system is asynchronous and thereby the component synchronization process is not deterministic.
+Further, the replica's hardware resources might not meet the scenarios and system's requirements.
+For identifying whether the applied hardware resources are sufficient, the system's resource utilization is assessed.
+Finally, the messages that were exchanged between system components during the scenario simulation are analyzed and visualize in order to show the system's behaviour.
+All following diagrams are based on measurements that were taken while the system processed simulated scenarios.
+The data was processed by a python script using \textit{matplotlib}.
 
 \paragraph{Resource Utilization in Operation}
+\todo{Add memory consumption}
 
 \begin{figure}[!hb]
 	\centering
@@ -275,6 +205,7 @@ At 35 seconds after the measurements were started, an unexpected balise has been
 
 \subsubsection{Message Exchanges}
 \todo{Mention that no spare activation happens in the measurements}
+\todo{Mention that Hauptlast is on leader (see total received and sended)}
 As the scenarios are run, messages are exchanged between the replicas via the different \abr{DDS} topics.
 For the message exchange evaluation, the leader has been manually stopped after the second scenario and before the third scenario is run.
 The third scenario has been run with only a leader and one follower.
@@ -387,6 +318,130 @@ Further, a message is received on the \texttt{RequestVote} and on the \texttt{Re
 From this it can be seen that a leader election occurred.
 Because there is only one follower left in the system, the number of received heartbeat messages is halved.
 
+\section{\glsentrylong{DDS} Evaluation}
+\abr{DCPS} systems, such as \abr{DDS}, are designed for machine-to-machine communication in real-time applications~\cite{omgDDSspec}.
+It builds upon a decoupling from senders and receivers to facilitate a flexible and scalable system.
+However, decoupling of senders and receivers is not always possible in a consensus-based and safety-critical redundant system because a follower replica that receives heartbeat messages can become sender of heartbeat messages at any time when the previous leader becomes unavailable.
+
+Further, \abr{DDS} is designed as a standard for distributed application communication and integration and therefore implements variety of features.
+Not all of these features are required for a system like the one that is assessed in this work.
+\\
+
+Therefore in this section, a feature subset of ADLINK's \texttt{OpenSplice DDS} is presented that is sufficient to implement the requirements placed on the system.
+Afterwards, the suitability of \abr{DDS} for safety-critical and consensus-based redundant systems is discussed.
+\subsection{\glsentrylong{DDS} Subset Identification}
+
+For reducing costs incurred in the system approving process, it is important to limit the amount of utilized features and lines of code.
+Therefore, a subset of \abr{DDS} features from OpenSplice DDS, that is sufficient for building a redundant system, is identified.
+An overview about this subset is given and justified in the following.
+This overview only contains the methods and functionalities that are directly used by the application, the middleware, however, might utilize other functionalities to implement the features mentioned in this section.
+
+\paragraph{Domain Module}
+A \abr{DDS} application's main building blocks comprise a \texttt{Domain}, one or multiple \texttt{DomainParticipants}, as well as a \texttt{DomainParticipantFactory} for creating new \texttt{DomainParticipants}~\cite{omgDDSspec}.
+Besides these classes, the domain module contains various functionalities, from which only the following subset is used within the exemplary implementation.
+
+\begin{itemize}
+\item \textit{DDS\_Entity\_get\_instance\_handle} Is used for acquiring an instance handle to mark it as processed in the leader's commit phase.
+\item \textit{DDS\_DomainParticipant\_create\_(publisher|subscriber|topic)} Is used for creating \abr{DDS} publishers, subscribers or topics.
+\item \textit{DDS\_DomainParticipant\_delete\_(publisher|subscriber|topic)} Is used for deleting \abr{DDS} publishers, subscribers or topics.
+\item \textit{DDS\_DomainParticipantFactory\_get\_instance} Used for acquiring the \texttt{DomainParticipantFactory} singleton.
+\item \textit{DDS\_DomainParticipantFactory\_(create|delete)\_participant} Used for creating a new participant in the \abr{DDS} domain.
+\end{itemize}
+
+Even though \textit{DDS\_DomainParticipant\_get\_default\_(publisher|subscriber|topic)\_qos} is used in the implementation, it is not mandatory because one could set the default \abr{QOS} settings directly on the corresponding entity.
+
+\paragraph{Topic-Definition Module}
+The topic definition module contains everything related to topics.
+The exemplary implementation utilizes \texttt{Topics}, for describing data in the application, and \texttt{TypeSupport} which describes a data type that is bound to a \texttt{Topic}.
+Apart from these two classes, the following methods are used:
+
+\begin{itemize}
+\item \textit{DDS\_TypeSupport\_\_alloc} Used for creating a new \texttt{TypeSupport}.
+\item \textit{DDS\_TypeSupport\_get\_type\_name} Used for getting a data type's default name, which is required to register it later on.
+\item \textit{DDS\_TypeSupport\_register\_type} Used for registering a new data type name on a \texttt{DomainParticipant}.
+\end{itemize}
+
+
+\paragraph{Publication Module}
+\texttt{Publishers}, as well as \texttt{DataWriters}, which are used for data distribution, are located within the publication module.
+Besides these two classes, the following functionality is required for the exemplary implementation:
+
+\begin{itemize}
+\item \textit{DDS\_Publisher\_(create|delete)\_datawriter} Used for creating, respectively deleting, \texttt{DataWriter} objects.
+\item \textit{DDS\_DataWriter\_write} Used for writing new data to an instance on a \abr{DDS} topic.
+\item \textit{DDS\_DataWriter\_dispose} Used for marking processed inputs for deletion so that they are not processed twice.
+\end{itemize}
+
+\textit{DDS\_Publisher\_copy\_from\_topic\_qos} and \textit{DDS\_Publisher\_get\_default\_datawriter\_qos} are not necessarily required due to the same reasons stated above.
+
+\paragraph{Subscription Module}
+The subscription module resembles the publication module, but for reading and receiving data.
+However, besides \texttt{Subscribers} and \texttt{DataReaders}, it also contains \texttt{DataSample}, \texttt{SampleInfo}, \texttt{ReadCondition}, and \texttt{QueryCondition}, which are utilized in the exemplary implementation.
+\texttt{Subscribers} and \texttt{DataReaders} are required for receiving data, which is represented by a \texttt{DataSample}.
+The \texttt{SampleInfo} data structure contains additional information for each \texttt{DataSample}, such as its instance handle or state, which makes it mandatory for the implementation as well.
+\texttt{ReadConditions} are used in combination with \texttt{WaitSets}, so that the application can react to certain middleware states.
+\texttt{QueryConditions} are extensions for \texttt{ReadConditions} that allow to filter the data samples that are covered by a \texttt{ReadCondition}.
+All filter operations could be implemented directly in the application code, which would make \texttt{QueryConditions} redundant.
+
+Further, the following functionalities from the subscription module were used:
+
+\begin{itemize}
+\item \textit{DDS\_Subscriber\_(create|delete)\_datareader} Used for creating, respectively deleting, \texttt{DataReaders}.
+\item \textit{DDS\_DataReader\_(create|delete)\_readcondition} Used for creating, respectively deleting, \texttt{ReadConditions}.
+\item \textit{DDS\_DataReader\_create\_querycondition} Used for creating \texttt{QueryConditions}.
+\item \textit{DDS\_DataReader\_take\_w\_condition} Used for reading and removing data from a \texttt{DataReader}, filtered by a \texttt{ReadCondition}.
+\item \textit{DDS\_DataReader\_return\_loan} Required for indicating the middleware that the application finished accessing a sequence of data. This allows the middleware to work with the data again.
+\end{itemize}
+
+\paragraph{Infrastructure Module}
+The classes that are used from the infrastructure module include \texttt{QosPolicy} and \texttt{WaitSet}.
+The \texttt{QosPolicy} class implements \abr{DDS}'s \abr{QOS} functionalities and is therefore mandatory for the system's correctness.
+\texttt{WaitSets} are applied for ensuring the application's compliance with its time restrictions, because they allow the assignment of timeouts.
+In addition to that, the following functionalities from the infrastructure module are applied:
+
+\begin{itemize}
+\item \textit{DDS\_WaitSet\_\_alloc} Used for creating new \texttt{WaitSets}.
+\item \textit{DDS\_WaitSet\_attach\_condition} Used to attach a condition to the corresponding \texttt{WaitSet}.
+\item \textit{DDS\_WaitSet\_detach\_condition} Used to detach a condition from the corresponding \texttt{WaitSet}.
+\item \textit{DDS\_WaitSet\_wait} Stops the according thread until at least one of the attached conditions evaluates to true.
+\end{itemize}
+
+Further, the following \abr{QOS} are applied in the application:
+\todo{Add after deciding}
+
+\subsection{Challenges of \glsentrylong{DDS} in Consensus-based Redundant Systems}
+In this section, the suitability of \abr{DCPS} systems, like \abr{DDS}, for consensus based redundant systems is discussed.
+
+\paragraph{Advantages}
+On the one hand, \abr{DDS} allows to utilize \abr{QOS} settings to specify what is expected from the system rather than how it should be done.
+Through \texttt{ReadConditions} and \texttt{QueryConditions}, messages can be filtered.
+Further, \texttt{WaitSets} and \abr{QOS}-settings can be used to declare time restriction and requirements.
+This facilitates a reliable and predictable machine-to-machine communication.
+
+In addition, the middleware supports automatic discovery of replicas to that the number of used replicas is dynamically scalable.
+For example, an active spare unit can be added to the system at any time and is automatically discovered and included.
+This would also allow to apply a three-out-of-five system rather than a two-out-of-three system and use the same software.
+
+Finally, \abr{DDS} supports fast transmission times and a manageable hardware utilization, as shown in measurements.
+
+\paragraph{Challenges}
+On the other hand, the \abr{DDS} standard has been designed around a loose coupling of publishing and subscribing components.
+This is not possible in dynamic systems like the system build in this work.
+Because the applied \abr{TMR} builds upon \texttt{Raft}'s leader and log replication concepts, any replica needs to be prepared to become leader or follower at any time.
+For example, the system's leader is responsible for publishing heartbeat messages to the \texttt{AppendEntries} topic, while a follower needs to subscribe and receive these heartbeats.
+Therefore, replicas are required to dynamically alternate between sending and receiving data.
+One way to solve this challenge is to create and delete objects for publishing and subscribing to topics dynamically.
+However, this can lead to a sudden allocation and deallocation of dynamic memory which can lead to unpredictable time performances.
+Thus, every replica allocates the objects that are required to publish and subscribe to every topic at program start, which leads to other challenges.
+
+When each replica is subscribed to a topic that applies a \texttt{History}- and \texttt{ResourceLimit} \abr{QOS}, the messages that are received by \texttt{DataReader} objects must be taken by the application.
+Hence, a leader that is subscribed to the \texttt{AppendEntries} topic in preparation of becoming a follower must take all heartbeat messages from the topic that were published by itself.
+This introduces a computational overhead, though a small one as the system's resource utilization in~\autoref{fig:PlotCPUUsageIdleTime} show.
+
+Lastly, a system that utilizes \abr{DDS} for communication needs to support concurrent computations when more that one message should be processable at any time.
+This introduces potential race conditions or deadlocks and can complicate the development and approval process.
+Since the developed system, for example, needs to react to vote requests and log replication messages at any time, a concurrent system design is unavoidable.
+As discussed in~\autoref{subsub:raceConditions} though, the implemented system applies a race condition free concurrent algorithm.
 
 \iffalse
 \paragraph{State Messages Received}
