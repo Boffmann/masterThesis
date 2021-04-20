@@ -1,9 +1,15 @@
 \chapter{Evaluation}
 \label{cpt:evaluation}
-In this section, the results for different analytical evaluations are presented.
+In this chapter, the developed system is evaluated with respect to various criteria.
 At first, an overview about the utilized \abr{DDS} subset is described and the necessity of each feature is justified.
-This is followed by an system evaluation, which is subdivided into an evaluation of the system's hardware structure as well as an evaluation of the implemented software.
+
+This is followed by an system evaluation where both the system's hardware structure as well as the implemented software are evaluated.
 Within the implementation evaluation, all characteristics that correspond with the manner of how the software is implemented, are considered.
+First, general system properties are analyzed, such as the time needed to send and receive messages or the maximum time the system can be without a leader.
+This allows to answer fundamental questions about the system's reliability because the average time to synchronize the components can be derived.
+Afterwards, metrics related to the execution of specific scenarios are examined.
+These include the utilization of system resources on the one hand and the number of messages sent and received on the other.
+From these metrics it can be seen at which points in time an increase in system performance can be expected and that enough resources are always available in the applied system.
 
 \section{DDS Subset Identification}
 
@@ -87,62 +93,17 @@ Further, the following \abr{QOS} are applied in the application:
 
 
 \section{System Evaluation}
+At first in this section, general system metrics are analyzed.
+Afterwards, metrics related to concrete, simulated scenarios are considered.
+For this purpose, three scenarios are processed one after the other by the redundant system and certain data are collected during this process.
 
-\subsection{Scenario Simulation}
-The simulated scenarios, that have been described in~\autoref{subsec:ScenarioSimulation}, are used for integration testing.
-For this purpose, a functionality that writes the system's reactions to external factors into an evaluation file was patched into the on-board unit.
-Said external factors include \abr{RBC} messages containing linking and \abr{MA} information, balise telegrams, as well as braking curve monitoring.
-Every time the system reacts, the current position, the performed action, the encountered balise, and the reason for the action are listed.
-A python script, that invokes the simulator and assesses the system's evaluation file, is used for automated integration testing.
-\\
-
-The following scenarios are supported and successfully processed by the replicated system:
-
-\begin{table}[h!]
-	\begin{center}
-		\caption{A Python program is used for automatic integration testing. The scenarios that are traversed in the process differ in the relation of linked and unlinked balises and their expected outcome.}
-		\label{tab:stateQOS}
-		\begin{tabularx}{\textwidth}{|X|X|X|X|}
-			\hline
-			\textbf{Name} & \textbf{Number of balises/linked balises} & \textbf{Expected behaviour}\\
-			\hline \hline
-			Reach End of \abr{MA} & Three/Three & All balise telegrams are evaluated correctly and the train stops before the \abr{MA} ends. \\
-			\hline
-			Unlinked Balise & Three/Two & The train stops when the unlinked balise is encountered. \\
-			\hline
-			Balise not where expected & Three/Three & The actual position of one balise does not correspond with its linked position. The train stops when this balise is encountered. \\
-			\hline
-		\end{tabularx}
-	\end{center}
-\end{table}
-
-Because the trips are simulated, a reproducible test environment is created.
-The only non-deterministic factor is the synchronization of the individual components.
-Therefore, the message exchange and the \abr{DDS} feature's correct usage need to be examined in particular.
-
-\subsection{Component Synchronization}
-\begin{figure}[!hb]
-	\centering
-	\includegraphics[width=0.75\linewidth]{images/plots/sendingTimes}
-	\caption{Time that is required to transmit messages with different payload sizes via a \abr{DDS} topic. The times were determined by calculating the mean sending time out of 200 messages.}
-	\label{fig:PlotSendingTimes}
-\end{figure}
-
-\paragraph{Data Transmission Time}
-A end-to-end probing approach has been chosen over a \abr{IP} \abr{TTL} technique, which has been proposed by~\cite{SinhaMeasureNetworkLatency}, because the applied network has the same diameter for each node.
-When a component publishes data to a \abr{DDS} topic, the middleware ensures that the data is transmitted to all registered subscribers.
-In the system that is deployed for this thesis, data is transmitted via \textit{Ethernet}.
-The replicas are interconnected via a network switch that allows up to 2000 Mbit per seconds for each port.
-In order to verify the applied topology, hardware and middleware, the time that is required to send a message with a certain payload size between two replicas, is measured.
-For bypassing clock skews in the system, a request/response approach is used, where one replica publishes a message with a certain payload size and waits until a receiving replica confirms the message's receipt.
-The receiving replica constantly checks for new messages and, as soon as it receives some, publishes a confirmation messages on another topic.
-Any time that is required to send the confirmation message is negligible because it only consists of a 8-bit identification number, that assigns it to a payload carrying message.
-The results, which are shown in~\cite{fig:PlotSendingTimes}, were determined by measuring the time that elapsed between sending a message and receiving the corresponding confirmation.
-This process was repeated 200 times for each payload size and a mean was calculated.
-What emerged is, that the transmission time is directly dependent on the published message's size.
-\todo{Ins verhaeltnis zur maximalen Nachrichtengroesse in meinem System setzen}
-
-\subsection{Implementation}
+\subsection{General System Characteristics}
+General system properties include those that are independent of environmental influences.
+This includes the time it takes the system to elect a new leader, from which the maximum time that the system without a leader can be derived.
+The election time is limited by the replica's computational resources and by the speed of data transmission.
+The latter is investigated in the next step by publishing and reading messages of different sizes through \abr{DDS} topics.
+Finally, the resource utilization of the system in idle mode is examined.
+Idle means that the train is at a standstill and the system is ready to start the journey.
 
 \paragraph{Leader Election Time}
 \todo{Redo measurements}
@@ -155,12 +116,75 @@ What emerged is, that the transmission time is directly dependent on the publish
 
 When the system's leader crashes, the current \texttt{Raft} term ends and a new leader gets elected.
 The leader election process consists of requesting and collecting votes from all replicas in the system.
-In order to make a statement about how long the system is without a leader in this case, the time that elapsed between recognizing a missing leader until the new leader sends a first heartbeat message is measured.
-The results, which are depicted in~\autoref{fig:PlotTimeWithoutLeader}, show that the leader election process takes around 5500µs.
-The worst election time lied around 7000µs.
-However, since the system utilizes a timeout to detect a missing leader, the total time that the system is without a leader arises from the sum of the applied election timeout and the election duration.
+In order to investigate how long the leader election process takes, the time for 20 elections was measured.
+This has been done by starting a timer when a missing leader got noticed until a heartbeat message from a new leader was received.
+The results can be seen in~\autoref{fig:PlotTimeWithoutLeader} and show that the process takes around 5500µs on average and at worst 7000µs.
+However, since the system utilizes a timeout to detect an absent leader, the total time that the system is without a leader arises from the sum of the applied election timeout and the election duration from~\autoref{fig:PlotTimeWithoutLeader}.
 
-\paragraph{CPU Usage}
+\paragraph{Data Transmission Time}
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/sendingTimes}
+	\caption{Time that is required to transmit messages with different payload sizes via a \abr{DDS} topic. The times were determined by calculating the mean sending time out of 200 messages.}
+	\label{fig:PlotSendingTimes}
+\end{figure}
+
+
+A end-to-end probing approach has been chosen over a \abr{IP} \abr{TTL} technique, which has been proposed by~\cite{SinhaMeasureNetworkLatency}, because the applied network has the same diameter for each node.
+When a component publishes data to a \abr{DDS} topic, the middleware ensures that the data is transmitted to all registered subscribers.
+In the system that is deployed for this thesis, data is transmitted via an \textit{Ethernet} connection.
+The replicas are interconnected via a network switch that allows up to 2000 Mbit per seconds for each port.
+In order to verify the applied topology the time that is required to send a message with a certain payload size between two replicas is measured.
+For bypassing clock skews in the system, a request/response approach is used, where one replica publishes a message with a certain payload size and waits until a receiving replica confirms the message's receipt.
+The receiving replica constantly checks for new messages and, as soon as it receives some, publishes a confirmation messages on another topic.
+Any time that is required to send the confirmation message is negligible because it only consists of a 8-bit identification number, that assigns it to a payload carrying message.
+The results, which are shown in~\cite{fig:PlotSendingTimes}, were determined by measuring the time that elapsed between sending a message and receiving the corresponding confirmation.
+This process was repeated 200 times for each payload size and a mean was calculated.
+What emerged is, that the transmission time is directly dependent on the published message's size.
+\\
+
+\begin{table}[h!]
+	\begin{center}
+		\caption{All topics that are utilized in the system have a certain data schema. From the resulting message size, the transmission time in the system can be calculated. The size and transmission time of the \texttt{AppendEntries} and \texttt{Input} depends on the length of the data sequence (\textbf{l}).}
+		\label{tab:topicSendingTimes}
+		\begin{tabularx}{\textwidth}{|X|X|X|}
+			\hline
+			\textbf{Topic} & \textbf{Message Size in Bytes} & \textbf{Expected Transmission Time in µs} \\
+			\hline \hline
+			AppendEntries & $12 + 4 * l$ & $0.402768 * l + 3219.11$ \\
+			\hline
+			AppendEntriesReply & 18 & 3219.7 \\
+			\hline
+			RequestVote & 8 & 3218.7 \\
+			\hline
+			RequestVoteReply & 13 & 3219.21 \\
+			\hline
+			Input & $4 + 4 * l$ & $0.402768 * l + 3218.3$ \\
+			\hline
+			ActivateSpare & 5 & 3218.40 \\
+			\hline
+			LinkedBalises & 6 & 3218.5 \\
+			\hline
+			TrainState & 41 & 3222 \\
+			\hline
+			MovementAuthority & 8 & 3218.7 \\
+			\hline
+		\end{tabularx}
+	\end{center}
+\end{table}
+
+By the data size of the messages for the topics used in the system, the expected transmission times can be calculated.
+These are listed in the~\autoref{tab:topicSendingTimes}.
+The sizes are based on the \textit{Revolution Pi}'s system characteristics.
+In ADLINK's \texttt{OpenSplice DDS}, the \textit{short} \abr{IDL} datatype resolves to a \textit{short int} C type, \textit{long} resolves to \textit{int} for the C programming language, \textit{unsigned long long} resolves to \textit{unsigned long long int}, and the \textit{boolean} datatype resolves to an \textit{unsigned char}.
+A \textit{double} \abr{IDL} datatype resolves to an \textbf{double} C type.
+The replica system's size characteristics for an \textit{short int} are two bytes, for an \textit{int} are four bytes, for an \textit{unsigned long long int} are eight bytes, for a \textit{double} are eight bytes, and for an \textit{unsigned char} is one byte.
+The transmission time was calculated via the equation $transmissionTime(size) = 0.1100692 * size + 3217.9$ that has been derived by regression from~\autoref{fig:PlotSendingTimes}.
+For the \texttt{AppendEntries} and \texttt{Input} topic, the actual data size and thereby the expected transmission time depend on the data sequence's length. 
+
+\todo{Was bedeutet das für das konkrete System}
+
+\paragraph{Idle Resource Utilization}
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/plots/CPUUsageIdleTime}
@@ -180,6 +204,43 @@ In system mode, 0.21\% are used for the leader and 0.25\% for a follower on aver
 For user mode, the leader utilizes on average 1.0\%, while a follower uses 0.66\%.
 This can be explained by the fact that the leader has more responsibilities in idle mode.
 It not only periodically sends heartbeat messages, but also observes whether the train has a valid \abr{MA} and can start driving.
+
+
+\subsection{Scenario Simulation}
+\todo{Redo all measurements in one scenario}
+The simulated scenarios, that have been described in~\autoref{subsec:ScenarioSimulation}, are used for integration testing.
+For this purpose, a functionality that writes the system's reactions to external factors into an evaluation file was patched into the on-board unit.
+Said external factors include \abr{RBC} messages containing linking and \abr{MA} information, balise telegrams, as well as braking curve monitoring.
+Every time the system reacts, the current position, the performed action, the encountered balise, and the reason for the action are listed.
+A python script, that invokes the simulator and assesses the system's evaluation file, is used for automated integration testing.
+\\
+
+The following scenarios are supported and successfully processed by the replicated system:
+
+\begin{table}[h!]
+	\begin{center}
+		\caption{A Python program is used for automatic integration testing. The scenarios that are traversed in the process differ in the relation of linked and unlinked balises and their expected outcome.}
+		\label{tab:stateQOS}
+		\begin{tabularx}{\textwidth}{|X|X|X|}
+			\hline
+			\textbf{Name} & \textbf{Number of balises/linked balises} & \textbf{Expected behaviour}\\
+			\hline \hline
+			Reach End of \abr{MA} & Three/Three & All balise telegrams are evaluated correctly and the train stops before the \abr{MA} ends. \\
+			\hline
+			Unlinked Balise & Three/Two & The train stops when the unlinked balise is encountered. \\
+			\hline
+			Balise not where expected & Three/Three & The actual position of one balise does not correspond with its linked position. The train stops when this balise is encountered. \\
+			\hline
+		\end{tabularx}
+	\end{center}
+\end{table}
+
+Because the trips are simulated, a reproducible test environment is created.
+The only non-deterministic factor is the synchronization of the individual components.
+Further, the replica's hardware resources might not meet the scenarios and system's requirements. 
+Therefore, the resource utilization, as well as message exchange and the \abr{DDS} feature's correct usage assessed.
+
+\paragraph{Resource Utilization in Operation}
 
 \begin{figure}[!hb]
 	\centering
@@ -212,10 +273,133 @@ This leads to an increase in \abr{CPU} utilization for both the leader and the f
 The third scenario \texttt{Balise not where expected} (\textbf{S3}) starts at 26 seconds.
 At 35 seconds after the measurements were started, an unexpected balise has been encountered, which can be seen in the graph as well.
 
+\subsubsection{Message Exchanges}
+\todo{Mention that no spare activation happens in the measurements}
+As the scenarios are run, messages are exchanged between the replicas via the different \abr{DDS} topics.
+For the message exchange evaluation, the leader has been manually stopped after the second scenario and before the third scenario is run.
+The third scenario has been run with only a leader and one follower.
+In the following, the number of messages that occur during the simulation of the three successive scenarios, that were described above, is analyzed.
+At first, the sent messages are examined.
+Therefore, the total number of sent messages, as well as the number of messages for the consensus topics and the state topics are analyzed.
+Afterwards, the same is done for the received messages.
+Besides the topics named above, the \texttt{Input} topic will be taken into account for the received messages.
 
+For each measurement, the heartbeat timer has been set to 100000µs so that ten messages per second can be attributed to heartbeat messages.
+
+\paragraph{Total Messages Sent}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/TotalMessagesSent}
+	\caption{Overview about sent messages in the system. A distinction is made between the messages that are send by the system's leader and the followers . In addition, the overall number of sent messages is shown.}
+	\label{fig:PlotTotalMessagesSent}
+\end{figure}
+
+The total number of messages that were sent by replicas in the system per seconds are shown in~\autoref{fig:PlotTotalMessagesSent}.
+Beginning and end of each of the three scenarios can be seen in the plot because the total number of sent messages increases to 20-25 messages per second while driving and reduces to twelve messages per second when the train stands still.
+A majority of messages is sent by the system's leader of which ten alone are due to heartbeat messages.
+The rest accrue from cluster-wide monitoring of the braking curve.
+While the train is driving, it is the leader's responsibility to update the system's global state which explains the big increase in sent messages during journey.
+
+\paragraph{Consensus Messages Sent}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/ConsensusMessagesSent}
+	\caption{The sent messages for all topics used for the consensus algorithm. \texttt{AppendEntries} is used for heartbeat messages and for log replication. \texttt{AppendEntriesReply} functions as a way to transmit decisions from followers to the leader. Via \texttt{RequestVote} and \texttt{RequestVoteReply}, the leader voting happens. After 25 seconds, the previous leader crashes, which results in a drop of heartbeat messages in the \texttt{AppendEntries} topic. After a new leader is elected, the amount of heartbeat messages goes back to the previous one.}
+	\label{fig:PlotConsensusMessagesSent}
+\end{figure}
+
+Consensus topics include \texttt{AppendEntries}, \texttt{AppendEntriesReply}, \texttt{RequestVote}, and \texttt{RequestVoteReply}.
+The number of messages published to the consensus topics are depicted in~\autoref{fig:PlotConsensusMessagesSent}.
+The majority of messages gets published to the \texttt{AppendEntries} topic, because the leader periodically published ten heartbeat messages per second.
+It can be seen that a leader election takes place at the beginning, because a vote request and two vote replies are sent.
+Another leader election happens after the second scenario has finished after 25 seconds.
+The fact that the previous leader crashed is reflected in the collapse of heartbeat messages on the \texttt{AppendEntries} topic.
+Again, a vote request is published to the corresponding topic by the first replica that notices the absent leader.
+This time, only one vote reply is published because only one other replica remains in the system.
+The new leader establishes itself afterwards because the amount of heartbeat messages goes back to the number it was before the previous leader crashed.
+
+
+\paragraph{State Messages Sent}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/StateMessagesSent}
+	\caption{The sent messages for the topics that store the system's global state. It can be seen that, at the beginning of each scenario, a new \glsentryfull{MA} and linked balises are stored. The train's position is simulated and updated every 100ms in the \texttt{TrainState} topic.}
+	\label{fig:PlotStateMessagesSent}
+\end{figure}
+
+State topics include \texttt{TrainState}, \texttt{MovementAuthority}, and \texttt{LinkedBalises}.
+The amount of messages published to these topics can be seen in~\autoref{fig:PlotStateMessagesSent}.
+These messages are all sent by the leader, because it is the only replica that is allowed to publish to these topics.
+It is noticeable that most state messages are published on the \texttt{TrainState} topic.
+This is because the position is simulated every 100000µs and written to \texttt{TrainState}.
+The small peaks for the \texttt{TrainState} topic indicate that the train's position is reset when the train encounters a linked balise.
+Messages to \texttt{MovementAuthority} and \texttt{LinkedBalises} are only published at the beginning of each scenario, because at this time the \abr{MA} and linked balises are communicated to the system.
+It can futher easily be seen that three balises are linked in the first and the third scenario but only two linked balises are added for the second.
+
+\paragraph{Total Messages Received}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/TotalMessagesReceive}
+	\caption{Overview about all messages that are received from replicas within the system.}
+	\label{fig:PlotTotalMessagesReceive}
+\end{figure}
+
+The total number of messages received through \abr{DDS} topics can be seen in~\autoref{fig:PlotTotalMessagesReceive}.
+What is interesting is, that the leader receives and reads more messages than the two followers combined.
+This is mostly because the leader is responsible for reading the input topic and because it receives and reads messages from both followers.
+Another interesting circumstance can be seen after 25 seconds - which is when the previous leader crashes - since the amount of messages that the followers received is halved.
+This is because only one, instead of two, followers remain in the system.
+
+\paragraph{Input Messages Received}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/InputMessagesReceive}
+	\caption{The number of input messages received by the system per second. Based on the distribution the scenarios procedure can be seen. At the beginning, two input messages contain the \glsentryfull{MA} and linked balises. One second later, the first balise telegram is received. The last two balise telegrams follow each other at an interval of two seconds. The distance between the last two balises is greater for the last scenario. This is because the last scenario, it is simulated that the balise is not at the position that was specified in the linking phase.}
+	\label{fig:PlotInputMessagesReceive}
+\end{figure}
+
+The individual scenarios' structures can be traced by the input messages that the sytem receives.
+This is depicted in~\autoref{fig:PlotInputMessagesReceive}.
+At the beginning of each scenario, one message with the \abr{MA} and one with the linked balises are sent.
+Because the train's speed is simulated to be constant, the intervals between the incoming balises telegrams are the equal for the first and the second scenario.
+In the third scenario it is simulated that the last balise is at a different position than specified in the linking phase.
+Therefore, the distance between the last two balises is greater in the third scenario.
+It can also be seen that although after 25 seconds the old leader crashes, the system does not miss any input message.
+However, unlike the first two scenarios, the input messages are buffered and therefore processed all at once, which is why the peak is higher.
+
+\paragraph{Consensus Messages Received}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/ConsensusMessagesReceive}
+	\caption{All messages that are received by a component on the topics used for finding a consensus. After 25 seconds, a new leader is elected and only one follower remains in the system. Therefore, messages are read from \texttt{RequestVote} and \texttt{RequestVoteReply}. Further, since the number of followers got reduced by half, also the number of received heartbeat messages got reduced.}
+	\label{fig:PlotConsensusMessagesReceive}
+\end{figure}
+
+The number of received messages on the consensus topics is shown in~\autoref{fig:PlotConsensusMessagesReceive}.
+It is noticeable that after 25 seconds the number of AppendEntries messages received drops.
+Further, a message is received on the \texttt{RequestVote} and on the \texttt{RequestVoteReply} topic, respectively.
+From this it can be seen that a leader election occurred.
+Because there is only one follower left in the system, the number of received heartbeat messages is halved.
 
 
 \iffalse
+\paragraph{State Messages Received}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/StateMessagesReceive}
+	\caption{}
+	\label{fig:PlotStateMessagesReceive}
+\end{figure}
+
+\todo{Do measurement with killing leader, but this time activate spare and show a topic selection that hot standby works}
+
 Do experiement and structure in way such as SakicTimeInConsensus
 
 Leader stable for 45 minutes with 500000x07x2

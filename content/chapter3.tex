@@ -107,7 +107,7 @@ From this, the following tasks can be derived for the showcases system to comply
 \item Stop the train when end of \abr{MA} is reached, a linked balise group is not encountered at its position, or an unlinked balise group is encountered
 \end{itemize}
 
-The system's practicability will be demonstrated within a simulated scenario, which is described in~\autoref{subsec:ScenarioSimulation}.
+The system's practicability will be demonstrated through a simulated scenario, which is described in~\autoref{subsec:ScenarioSimulation}.
 
 \section{Consensus Algorithm}
 \label{sec:ImpConsensusAlgorithm}
@@ -350,7 +350,6 @@ For doing so, a maximal time that the system should be without a leader can be s
 Altogether, when enough replica are present in the system and communication is possible without any delays, the system will not be without a leader for the maximum time of $\textit{election timeout} + \textit{leader ready timeout}$.
 
 \subsection{Input Processing}
-\todo{Describe in more detail like the leader election}
 \label{subsec:ImpInputProcessing}
 \begin{figure}[!hb]
 	\centering
@@ -361,31 +360,64 @@ Altogether, when enough replica are present in the system and communication is p
 
 The purpose of the established redundant application is to process input messages from \abr{RBC} and track-side components and generate a single reaction on the input for the entire system based on majority voting.
 A coarse overview about how input messages are distributed among the replicas and processed by the system is presented in~\autoref{fig:SeqCollectResults}.
-It is the leaders responsibility to record new inputs, replicate the inputs to each follower, maintain the system's global state, and generate a final outpur to each input.
+It is the leaders responsibility to record new inputs, replicate the inputs to each follower, maintain the system's global state, and generate a final output to each input.
 All communication among the replicas takes place via \abr{DDS}.
-As soon as the leader receives an input messages, it starts to assign each follower to process the input.
-This is done through the \texttt{AppendEntries} topic and follows the log replication process from \texttt{Raft}.
-Afterwards, all replicas are generating a decision for the input message in parallel based on the global system state which is managed by \abr{DDS}.
-The followers publish their decisions on the \texttt{AppendEntriesReply} topic.
-When the leader has made its decision, it starts collecting the follower's decisions using a \texttt{WaitSet} and a \texttt{QueryCondition} on the \texttt{AppendEntriesReply} topic.
-A timeout is attached to this \texttt{WaitSet} to ensure that, after a certain time-span, the voting process can start based on all results that reached the leader at that time.
-The leader performs a majority voting on all collected replica decisions and thereafter commits the final decision.
-During the commit phase, all changes that the input messages has on the system's state are applied to the global data space.
-Thereby, the decisions for all replicas are deterministic because they are all based on the same system state.
-Furthermore, the input message is marked as processed during the commit phase by disposing its corresponding \abr{DDS} instance.
-This ensures that, if the leader crashed while processing the input message, a new leader recognizes the input messages as unprocessed and restarts its processing.
 
-The tasks required to successfully complete the scenario are fulfilled as follows:
+New messages on the \texttt{Input} topic are recognized with a \texttt{ReadCondition} that is attached to a \texttt{WaitSet}.
+As soon as the leader receives an input messages, it publishes a new command via the \texttt{AppendEntries} topic and attaches the input message to the \texttt{entries} field.
+Thereupon, when the followers receive this message, they start to generate a decision for the input message based on the global system state which is managed by \abr{DDS} and publish their decisions to the \texttt{AppendEntriesReply} topic.
+Concurrently, the leader also generates a decision and starts collecting the follower's decisions using a \texttt{WaitSet} - called \texttt{AppendEntriesReply\_WaitSet} - and a \texttt{QueryCondition}.
+As soon as all followers answered, the leader performs a voting on the collected decisions.
 
-\begin{itemize}
-\item The leader accepts linking and \abr{MA} information and incorporates them into the global system state
-\item The system updates the train's position and confidence interval with every heartbeat message
-\item The leader periodically initiates a braking curve analysis and comparison with the current \abr{MA}
-\item After reading a balise telegram message, the leader distributes it across the system and performs a voting whether the train should brake or continue driving
-\end{itemize}
+Further, a timeout is attached to the \texttt{AppendEntriesReply\_WaitSet} to ensure that the voting process is not deferred indefinately.
+A voting can be conducted when half of the followers or more answered during this time-span.
+As an example, when one follower answered in a \abr{TMR} setup, two decisions are available for the leader, namely his own and one follower decision.
+Both need to correspond in order to get a valid result.
+When these two differ, the more restrictive one needs to be choosen.
+When less than half of the followers answered during the time-span, the system needs to transition into a safe state.
+
+After the leader successfully performed a voting, it commits the final decision.
+This is mandatory because the decision can have an effect on the system's global state, for example when a balise has been crossed and the train's confidence interval is resetted.
+Furthermore, the input message is marked as processed by disposing the corresponding \abr{DDS} instance.
+This ensures that if the leader is deselected or crashed while processing the input, the input will be read and processed by the next leader.
+
+\paragraph{Decision Making}
+
+\todo{Detlich machen, dass man an Safety in verschiedenen Szenarien gedacht hat}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/DecisionMaking}
+	\caption{To decide whether the train should brake or can continue its journey, this algorithm is executed. When the train is not driving, it should brake. IF a balise telegram is evaluated, it is checked whether the balise is linked and whether the calculated train position corresponds with the balise's expected position. Finally, the train's braking curve is calculated and it is checked, whether the train would reach the current \glsentryfull{MA}'s end position when it would brake in this moment. Only if everything goes as planned may the train continue its journey.}
+	\label{fig:DecisionMaking}
+\end{figure}
+
+The exemplary \abr{ETCS} subset, as introduced in~\autoref{sec:ImpScenarioDescription}, requires processing of \abr{MA}-messages, linking information, and balise telegrams.
+Messages regarding \abrpl{MA} and linking information are directly processed by the leader without involving the followers.
+That is because these messages do not need a system-wide decision, the information they contain just needs to be added to the global state.
+The balise telegrams, however, require evaluations that can have safety-related effects and are therefore processed by all replicas in the system.
+To make these decisions, the algorithm that is depicted in~\autoref{fig:DecisionMaking} is executed.
+The algorithm includes various conditions that are processed one after the other.
+If the train is not driving at all, it should brake.
+When the decision should be made based on a balise telegram, it is checked whether the balise is linked and the train's calculated position corresponds with the balise's expected position.
+If both are the case, the train's braking curve is calculated based on its speed and deceleration properties.
+The braking distance is added to the train's most recent position and compared to the current \abr{MA}'s end position.
+If the train would reach this position, the braking process is initiated.
+
+In case only the periodic monitoring of the braking curve is due and therefore no balise telegram is available for evaluation, the calculation is continued directly with the braking curve evaluation.
+
+\subsubsection{Time Considerations}
+Two time-related issues are critical to input processing.
+First, a result is expected for each input after a certain period of time.
+Second, the leader expects the followers' decision after a certain time.
+
+\todo{Check how the first time requirement can be solved}
+The second time requirement can be solved by attaching a timeout to the \texttt{AppendEntriesReply\_WaitSet}.
+
+A third timeout is attached to the \texttt{Input} topic's \texttt{WaitSet} and does not solve time requirements, but is utilized to periodically trigger a system wide braking curve check.
+This ensures that if no input is ready, the braking curve is monitored periodically by sending a certain message via the \texttt{AppendEntries} topic when the timeout expires.
 
 \subsection{State Manager}
-\todo{Describe in more detail like the leader election}
 
 \begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{LinkedBalises} topic. Each linked balise has an unique identifier and a position that is communicated to the system by the \abr{RBC}.}, label=code:linkedBalises]
 struct LinkedBalises {
@@ -408,21 +440,20 @@ struct TrainState {
     double position;
     double max_position;
     double min_position;
-    float speed;
+    double speed;
     boolean is_driving;
     unsigned long long lastUpdateTime;
 };
 #pragma keylist TrainState
 \end{lstlisting}
-\todo{Trainstate driving in text}
 
 It is mandatory for the replicas in the distributed system to produce deterministic results and to have access to the most recent global system state.
 The global system state consists, inter alia, of the current \abr{MA} and a set of linked balises.
 Although the train's position and speed are typically administered by other dedicated components in actual operation, they are simulated for the demonstrated system and therefore part of its global system state.
 \\
 
-\abr{DDS} can be used to manage the system's global state and ensure that any change is reliably trasmitted to all replicas.
-Three \texttt{Topics} are used, namely \texttt{LinkedBalises}, \texttt{MovementAuthority}, and \texttt{TrainState}.
+\abr{DDS} is used to manage the system's global state and ensure that any change is reliably trasmitted to all replicas.
+Therefore, three \texttt{Topics} are used, namely \texttt{LinkedBalises}, \texttt{MovementAuthority}, and \texttt{TrainState}.
 
 The \abr{IDL} representation for the \texttt{LinkedBalises} topic is shown in~\autoref{code:linkedBalises}.
 Multiple balise instances can be stored within the topic that are distinguished by a unique identification number.
@@ -447,13 +478,15 @@ In order to circumvent this situation beforehand, any data on the \texttt{Linked
 
 \section{Scenario Simulation}
 \label{subsec:ScenarioSimulation}
+
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/SimulatorWorkflow}
 	\caption{The scenario simulation's workflow. Each simulation begins by creating a scenario from a file and sending \glsentryfull{MA} and linking information. Thereupon, the virtual train is set in motion and balise telegrams are send on its way. When the virtual train stops early or when the \abr{MA}'s end is reached, the simulation stops.}
 	\label{fig:SimulatorWorkflow}
 \end{figure}
-In order to demonstrate and evaluate the system's applicability, the \abr{ETCS} subset from~\autoref{sec:ImpScenarioDescription} is wrapped in a scenario and simulated.
+
+In order to demonstrate and evaluate the system's applicability, the \abr{ETCS} subset from~\autoref{sec:ImpScenarioDescription} is simulated in form of scenarios.
 The \abr{ETCS} subset consists of a \abr{MA} and a list of balises that function as positional landmarks.
 Thus, a simulated scenario is bounded by a \abr{MA}'s start- and end-position and consits of one or multiple balises.
 A simulated scenario's workflow is depicted in~\autoref{fig:SimulatorWorkflow}.
@@ -500,9 +533,19 @@ The distinction between a balise's actual position and its linking position is u
 
 After the \abr{MA} and the two linked balises have been sent to the on-board unit, the simulator starts to simulate a trip by updating the virtual train's position.
 The position is continuously compared to the balise's positions and the \abr{MA}'s end.
-As soon as the simulated train passes a balise's position, the corresponding balise is send.
+As soon as the simulated train passes a balise's position, the corresponding balise's data is published to the \texttt{Input} topic.
 In case that the balise lead to a braking action, for example because the balise was not linked or its position and linking position do not correspond, the simulation stops.
 Finally, when all balises are evaluated successfully, the simulation ends when the \abr{MA}'s end is reached.
+\\
+
+\paragraph{Simulator Classification}
+In literature, simulators are distinguished on the basis of their mode of operation and categorized into \abr{DE}-, and \abr{CT}-based simulators~\cite{CoSimulationStateOfTheArt}.
+In a \abr{DE}-based simulation, communication with the environment is characterized by events that are triggered at certain times.
+For \abr{CT}-based simulations, the simulated state is expected to evolve continuously over time.
+Based on these properties, it can be argued that the simulator that is utilized in this work is a combination of a \abr{DE}- and a \abr{CT}-based simulation system.
+On the one hand, the train's movement is simulated in a way that is typical to \abr{CT}-bases simulations, because the train's position continuously evolves over time based on its speed.
+On the other hand, the track-side balise telegram simulation borrows features from \abr{DE}-based simulators, because it communicates via events.
+The events are ied to the simulated train's position and are thereby time-stamp based.
 
 \section{Hot Standby}
 \begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{ActivateSpare} topic. This topic is used to activate or deactivate spare replicas. The \texttt{term} field encodes the term in which the activate or deactivate call has been made and \texttt{activate} gets interpreted as a boolean that encodes whether the spare should be activated or deactivated.}, label=code:activateSpare]
