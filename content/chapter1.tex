@@ -92,6 +92,7 @@ A failure of a system or a system component is a state, where its actual behavio
 The definition of reliability used in this work is the following:
 
 \begin{definition}
+\label{def:reliability}
 A system's reliability is a function of time that expresses the probability for the system to operate as specified at a time $t_1$, given that it was operating as specified at time $t | t \leq t_1$.
 \end{definition}
 
@@ -118,6 +119,7 @@ A system that provides the functionality to behave as specified even in the case
 Fault tolerance is generally obtained through error detection, which allows the system to determine the presence of errors and enables it to mitigate resulting failures.
 In the course of this thesis, a system is considered to be safe when it is reliable and utilizes error detection mechanisms to ensure its intrinsic safety.
 \begin{definition}
+\todo{Better: Does not allow faults to lead to catastropic failures}
 A system, in the course of this thesis, is said to be safe when it operates reliably and applies error detection mechanisms in order to be fault tolerant.
 \label{def:safety}
 \end{definition}

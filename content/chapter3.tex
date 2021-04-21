@@ -1,7 +1,7 @@
 \chapter{Implementation}
 \label{cpt:Implementation}
 
-In this chapter, a practical realization is presented which implements a redundant architecture that applies a consensus algorithm based on the concepts of \texttt{Raft}.
+In this chapter, a practical implementation of a redundant architecture that applies a consensus algorithm based on the concepts of \texttt{Raft} is presented.
 The aim of this implementation is to showcase the practicability and performance of a redundant architecture that applies \abr{DCPS} concepts for finding a consensus in an \abr{ETCS} context, even in the presence of single component failures.
 In addition, a minimal required subset of \abr{DDS} features will be carved out to implement the architecture.
 This has the potential to safe costs during implementation and system approval.
@@ -332,7 +332,6 @@ The history \abr{QOS}-policy ensures that new requests are buffered in a \texttt
 This ensures that no request is neglected.
 Further, a continuously increasing term number enables the system to detect outdated requests or recognize when the replica itself is outdated.
 
-
 \subsubsection{Time Considerations}
 \label{subsub:timeConsiderations}
 Because each \texttt{WaitSet} in \abr{DDS} can be attached with a timeout, the maximal time that the system is without a leader can be determined.
@@ -382,7 +381,7 @@ This is mandatory because the decision can have an effect on the system's global
 Furthermore, the input message is marked as processed by disposing the corresponding \abr{DDS} instance.
 This ensures that if the leader is deselected or crashed while processing the input, the input will be read and processed by the next leader.
 
-\paragraph{Decision Making}
+\subsubsection{Decision Making}
 
 \todo{Detlich machen, dass man an Safety in verschiedenen Szenarien gedacht hat}
 
@@ -418,7 +417,7 @@ The second time requirement can be solved by attaching a timeout to the \texttt{
 A third timeout is attached to the \texttt{Input} topic's \texttt{WaitSet} and does not solve time requirements, but is utilized to periodically trigger a system wide braking curve check.
 This ensures that if no input is ready, the braking curve is monitored periodically by sending a certain message via the \texttt{AppendEntries} topic when the timeout expires.
 
-\subsection{State Manager}
+\section{State Manager}
 
 \begin{lstlisting}[caption={\abr{IDL} definition for the \texttt{LinkedBalises} topic. Each linked balise has an unique identifier and a position that is communicated to the system by the \abr{RBC}.}, label=code:linkedBalises]
 struct LinkedBalises {

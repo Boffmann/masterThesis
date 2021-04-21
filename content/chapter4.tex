@@ -162,6 +162,11 @@ This data set provides information on whether the used hardware components can w
 \\
 
 Because the trips are simulated, a reproducible test environment is created.
+This has the benefit, that it allows the system to be automatically tested and facilitates to measure characteristics under equal circumstances.
+Further, data reproducibility allows to make changes to the system and evaluate how it performs compared to previous version.
+An automatic test and evaluation enables to validate the system under varying circumstances and to replicate tests.
+Thus, the system's correctness and reliability can be shown because it reduces the chance of mistakes.
+Although it is difficult to to approve the system's \abr{SIL}, its reproducibility of data and behaviour can be shown.
 Nevertheless, the implemented system is asynchronous and thereby the component synchronization process is not deterministic.
 Further, the replica's hardware resources might not meet the scenarios and system's requirements.
 For identifying whether the applied hardware resources are sufficient, the system's resource utilization is assessed.
@@ -318,7 +323,28 @@ Further, a message is received on the \texttt{RequestVote} and on the \texttt{Re
 From this it can be seen that a leader election occurred.
 Because there is only one follower left in the system, the number of received heartbeat messages is halved.
 
+\subsection{Safety and Reliability}
+The redundant and distributed system has been designed to be reliable and safe.
+Reliability has been defined as a probability that a system functions as specified over a period of time (see~\autoref{def:reliability}).
+It has been increased using \abr{TMR}, which enhances a system's fault-tolerance though error masking, and with active hardware redundancy to replace faulty components.
+Thereby, transient and permanent hardware faults, the main source of hardware malfunctions, are covered~\cite{MULAZZANIReliabilityVsSafety}.
+
+However, software fails due to design faults.
+The software system's reliability has been shown through acceptance tests via simulation and replication of reproducable test scenarios.
+
+In contrast to reliability, safety aims at the avoidance of catastropic failures (\autoref{def:safety}).
+Throughout this thesis, all safety considerations have been made with the assumption of a functioning and safe communication layer.
+The system's safety has been enhanced by applying a hybrid of consensus and voting based approaches to prevent the voter from being a single point of failure.
+Further, the presence of a leader is guaranteed because the system counts the number of failed leader election cycles and every leader permanently listens for heartbeat messages from other leaders.
+Thereby, the train can be stopped when the system is without a leader for too long and a split brain situation can be detected.
+The situation of a system wide power outage can be diminished by using a distingt power source for each replica.
+If a power failure does occur, physical components such as gravity switches could be used to prevent the system's environment to be harmed.
+
+A balise in the wrong place or an unlinked balise can also be a safety hazard.
+These threats are be addressed by the system's functional logic and are proven to be prevented in the acceptance tests, even in case of individual component failures.
+
 \section{\glsentrylong{DDS} Evaluation}
+\todo{Summarize how the subset looks like}
 \abr{DCPS} systems, such as \abr{DDS}, are designed for machine-to-machine communication in real-time applications~\cite{omgDDSspec}.
 It builds upon a decoupling from senders and receivers to facilitate a flexible and scalable system.
 However, decoupling of senders and receivers is not always possible in a consensus-based and safety-critical redundant system because a follower replica that receives heartbeat messages can become sender of heartbeat messages at any time when the previous leader becomes unavailable.
