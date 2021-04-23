@@ -1,38 +1,45 @@
-\chapter{Background and Related Work}
+ \chapter{Background and Related Work}
 \label{chptr:concepts}
 
-Introducing redundancy to safety-critical systems is a popular approach to ensure that faults inside the system do not lead to failures that effect the system's environment~\cite{BarryFaultToleranceAnalysis}.
+Introducing redundancy to safety-critical systems is a popular approach to ensure that faults inside the system do not lead to failures that effect the system's environment.
+A system that is able to continue its intended work even in the presence of faults is said to be fault-tolerant~\cite{BarryFaultToleranceAnalysis}.
 Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy), or performing the same operation multiple times (time redundancy).
-Although being one of the most often used redundancy techniques, the addition of hardware components, called replicas for redundant computation, leads to multiple results which need to be consolidated to an unique system result.
+Although being one of the most often used redundancy techniques, the addition of hardware components, called replicas for redundant computation, leads to multiple results which need to be consolidated to a final system result.
 Thus, the replicas need to communicate with each other and synchronize their results in order to act like a single unit in their environment.
 A promising approach to cope with the communication overhead is \gls*{DDS}, a \gls*{DCPS} system, since it allows reliable and real-time communication~\cite{omgDDSspec}.
 However, while hardware redundancy enhances a system's fault-tolerance, it also increases its costs and complexity.
 
+\todo{Wirklich?}
 In this chapter, various redundancy techniques, as well as important terms and criteria for evaluating redundant systems, are described.
 Further, different redundancy concepts are weighted against each other with regards to reliability, safety, and performance.
 Afterwards, standards for building and designing safe and fault-tolerant systems are given and related works, that successfully applied \gls*{DCPS}-middleware in the railway context, are shown.
 At first, however, an overview about the \abr{ETCS}, as well as the \gls*{DDS} standard and its concepts, is exposed.
 
 \section{\glsentryfull{ETCS}}
-In order to facilitate interoperability between national railway systems throughout Europe, the signaling and speed control system has been standardized by the European Union under the term \abr{ERTMS}.
+In order to facilitate interoperability between national railway systems throughout Europe, the signaling and speed control system has been standardized by the European Union under the term of \abr{ERTMS}.
 \abr{ETCS} defines the signaling and train control component of \abr{ERTMS}~\cite{ETCS26}.
-As such, it is responsible for monitoring a train's speed, calculating the permissible speed restrictions, and coordinating the collaboration between track-side components, such as \abr{ETCS} euro-balises, and on-board systems.
-Any train requires a permission in form of a \abr{MA} to drive from its location to another point on track.
-Besides encoding a train's permission to move, a \abr{MA} also encodes information about other trains on the track, as well as track information such as slopes and speed limitation.
-Any \abr{MA} is supplied by an external entity, called \abr{RBC}, via track-side components or via radio frequencies, and monitored by an on-train system.
-The track-side components, as well as the on-board system, are standardized according to three different \abr{ETCS} levels.
+As such, \abr{ETCS} defines concepts for monitoring a train's speed, calculating the permissible speed restrictions, and coordinating the collaboration between track-side components, such as \abr{ETCS} euro-balises and on-board systems.
+Any train requires a \abr{MA} to be allowed to drive from one location to another.
+Besides encoding a train's permission to move, a \abr{MA} also encodes information about the track's conditions such as gradient proviles and speed limitation.
+Any \abr{MA} is supplied by an external entity, called \abr{RBC}, via track-side components or via radio frequencies
+A system that is located on the operating train - called on-board unit - monitors compliance with the current \abr{MA}.
+The track-side components, as well as the on-board unit, are standardized according to three different \abr{ETCS} levels.
 
 \paragraph{\abr{ETCS} level one}
 \abr{ETCS} level one has been designed to build upon existing signaling systems.
 \abrpl{MA} as well as route data and the maximum allowed speed are transmitted through fix positioned euro-balises.
-Parallel to that, a breaking curve and the train's position are permanently calculated.
+Parallel to that, a breaking curve and the train's position are permanently calculated and compared to the \abr{MA}'s limitations by an on-board unit.
 
 \paragraph{\abr{ETCS} level two}
 For \abr{ETCS} level two, signaling and \abr{MA} data is transmitted via mobile communication channels from the \abr{RBC} and displayed to the driver.
 The \abr{RBC} is a central unit that constantly collects and supervises train movements and track information.
-Although each train calculates its own position, it can come to inaccuracies, due to for example faulty sensor calibration.
-Therefore, track-side balises are applied, whose exact positions are provisioned before the train's journey during a linking phase.
-Thus, a train's actual position can be aligned when it encounters a linked balise.
+Although each train observes its own position, it can come to inaccuracies, due to for example faulty sensor calibration.
+Hence, a train operating under \abr{ETCS} level two does not know its exact position but can only locate itself within a certain range.
+This range is called \textit{confidence interval} and consists of an upper and lower limit of an area.
+The train's actual position in located within this area.
+In order for the on-board unit to determine a train's exact position, track-side balises are used.
+Before the train starts its journey, the positions of the balises that it will encounter on its journey are provided during linking phase.
+Thus, when a train crosses a linked balise and receives the balise telegram, the on-board unit can reset the train's position to the balises position.
 
 \paragraph{\abr{ETCS} level three}
 Finally, in \abr{ETCS} level three, any track-side component is abolished and the entire communication takes place via radio signals.
@@ -48,11 +55,11 @@ This \abr{ETCS} level is not fully standardized yet.
 \end{figure}
 
 \Gls*{DDS} is a \gls*{DCPS} model for machine-to-machine communication, that is specified by the \gls*{OMG}~\cite{omgDDSspec}.
-It is stated that the model should, for practical use, be implemented as a middleware, to directly interface with the underlying \gls*{OS}.
-The model follows the concept of a global data space to facilitate data exchange among entities based on type and content.
-Central entities in the design are \texttt{Publishers} and \texttt{Subscribers}, while data exchange is based on \texttt{Topics}.
+It is stated that the model should, for practical use, be implemented as a middleware in order to interface with the underlying \gls*{OS}.
+The model follows the concept of a global data space and facilitates data exchange among entities based on type and content.
+Central entities are \texttt{Publishers} and \texttt{Subscribers}, while data exchange is based on \texttt{Topics}.
 A \texttt{Publisher} is used for sending data of different types.
-In order to send specifically typed data, a \texttt{DataWriter} object is used, which acts as a typed interface to a \texttt{Publisher}.
+In order to send specifically typed data, a \texttt{DataWriter} object is used which acts as a typed interface to a \texttt{Publisher}.
 On the other side, a \texttt{Subscriber} is used to receive data and to make it accessible to the receiving application.
 The equivalent of the \texttt{DataWriter} for the \texttt{Subscriber} is the \texttt{DataReader} object.
 A \texttt{Topic} acts as the connecting element between publishing entities on the one side and subscribing entities on the other.
@@ -60,9 +67,9 @@ Any forecasting of when and how data is published to a \texttt{Topic} or receive
 This concept is illustrated in~\autoref{fig:DDSStructure}, which is based on the official \gls*{DDS} specification~\cite{omgDDSspec} and shows the information flow from the publishing to the subscribing side.
 
 An application can either rely on the middleware to asynchronously notify it about the presence of new data through so called \texttt{Listeners}, or actively wait for new data by utilizing \texttt{WaitSets}.
-A \texttt{WaitSet} can be attached with different \texttt{Conditions}, for example \texttt{ReadConditions}, and allows the application to wait until either one or more of the attached conditions are satisfied, or until it times out.
+A \texttt{WaitSet} can be attached with different \texttt{Conditions}, for example \texttt{ReadConditions}, and allows the application to wait until either one or more of the attached conditions are satisfied, or until the waiting times out.
 Examples for conditions are \texttt{ReadCondition} and \texttt{QueryCondition}.
-The \texttt{ReadCondition} object allows to designate specific data samples and is met when the specified type of data is present in a \texttt{DataReader}.
+The \texttt{ReadCondition} object allows to name specific data samples and is met when the specified type of data is present in a \texttt{DataReader}.
 A \texttt{QueryCondition} is a specified \texttt{ReadCondition} that further provides capabilities of filtering the data that is read through a \texttt{DataReader}.
 \\
 
@@ -86,7 +93,7 @@ When a fault becomes active, it manifests itself as an error, which marks an inc
 An failure occurs as soon as the error affects the system's environment.
 
 \begin{definition}
-A failure of a system or a system component is a state, where its actual behavior deviates from the its specified behavior.
+A failure of a system or a system component is a state where its actual behavior deviates from the its specified behavior.
 \end{definition}
 
 The definition of reliability used in this work is the following:
@@ -117,10 +124,11 @@ In the railway context, a complete stoppage is generally the safest state.
 This definition requires that measures are taken to assure the system's safety even in the presence of failures.
 A system that provides the functionality to behave as specified even in the case of faults is said to be fault tolerant~\cite{AvizienisDependability2001}.
 Fault tolerance is generally obtained through error detection, which allows the system to determine the presence of errors and enables it to mitigate resulting failures.
-In the course of this thesis, a system is considered to be safe when it is reliable and utilizes error detection mechanisms to ensure its intrinsic safety.
+In the course of this thesis, the following definition is used for safety:
+
 \begin{definition}
 \todo{Better: Does not allow faults to lead to catastropic failures}
-A system, in the course of this thesis, is said to be safe when it operates reliably and applies error detection mechanisms in order to be fault tolerant.
+A system is said to be safe when the fault of the system or any of its components does not lead to a catastrophic failure.
 \label{def:safety}
 \end{definition}
 
@@ -140,7 +148,7 @@ In the course of this thesis, the fault classes \textbf{F1} to \textbf{F4} are a
 
 \subsection{Safety Evaluation}
 \label{sec:safetyEvaluation}
-A required condition for a system to be safe is that the system is reliable (definition~\autoref{def:safety}).
+A required condition for a system to be safe is that the system is reliable.
 One method of analyzing a system's reliability is through mathematical functions of time, for example the \texttt{exponential failure law}~\cite{GeffroyMotetDependableComputing}.
 It describes a component's reliability as an exponential function on time.
 \begin{equation}
@@ -186,9 +194,9 @@ In a diverse redundant system, each component failure is represented with an ind
 
 \section{Redundancy Patterns}
 \label{sec:redundancyPatterns}
-Redundancy is a typically applied technique for handling and masking errors in a system~\cite{TanenbaumSteen07}.
+Redundancy is a typically applied technique for handling and masking errors in a system and thereby enhancing a system's reliability~\cite{TanenbaumSteen07}.
 Error masking is the concept of detecting and mitigating errors, so that they do not become failures and effect the system's environment.
-For redundancy, additional resources or information are added to a system, that would not be required when errors where impossible to happen in the system.
+For redundancy, additional resources or information are added to a system, that would not be required when errors where impossible to happen.
 Barry Johnson defines redundancy in the following way~\cite{BarryFaultToleranceAnalysis}:
 \begin{definition}
 The concept of redundancy implies the addition of information, resources, or time beyond what is needed for normal system operation.
@@ -199,7 +207,7 @@ Each form of redundancy has its unique characteristics and patterns, which are p
 
 \subsection{Hardware Redundancy}
 In hardware redundancy, additional replications of physical components are added to the system.
-This typically increases the system's safety by masking internal failures, but also increases the system's cost.
+This typically increases the system's reliability by masking internal failures, but also increases the system's cost.
 In general, a system's safety can be further improved when using components that are based on different internal components.
 Using different components in redundancy patterns is called diverse redundancy, while replicating the same components is called homogeneous redundancy~\cite{HomogeneousRedundancyOuzineb}.
 Using diverse redundancy has the benefit that it reduced the effect that common core errors have on a system's or component's safety.
@@ -209,16 +217,17 @@ In passive hardware redundancy, a voter or consensus algorithm is used to reduce
 In active hardware redundancy, the system tries to detect and repair any internal failure, for example by replacing the faulty component.
 While \gls*{MOON} systems are a typical example of passive hardware redundancy, standby redundancy is often used as an example of active hardware redundancy.
 
-A voter can be realized in software and in hardware.
-The benefits of software voters are, that they typically cost less and are easier to develop, because no special hardware is required.
-However, software voters operate slower and the approval process is more complicated, because additional hardware and software is used, that does not contribute to the voting.
+A voter can be realized in both software and hardware.
+The benefits of software voters are that they typically cost less and are easier to develop, because no special hardware is required.
+However, software voters tend to operate slower.
 
 The benefit of hardware voters is, that they can operate faster and a minimal set of hardware needs to be approved, which reduces the time and cost expenses for approving the system.
 
-Both types of voters have in common, that they require some kind of time constraint synchronization with the replicas to collect their intermediate results, perform a voting, and recognize failed or delayed redundant results.
+Both types of voters have in common that they require some kind of time constraint synchronization with the replicas to collect their intermediate results, perform a voting, and recognize failed or delayed redundant results.
 Therefore, the individual replicas communicate their results to the voter, which collects the results, performs the voting and thereby generates a single system result.
 The voting process facilitates the system to allow single replicas to produce wrong results without rendering the overall system result wrong.
-In an active hardware redundant system, where the individual components are independent and communicate via a shared communication medium, the synchronization process is further impeded by the impossibility of agreeing on values in asynchronous distributed systems with faulty components~\cite{FLPProblemConsensus}.
+In an active hardware redundant system - where the individual components are independent and communicate via a shared communication medium - the synchronization process is further impeded.
+This is due to the impossibility of agreeing on values in asynchronous distributed systems with possibly faulty components~\cite{FLPProblemConsensus}.
 Consequently, a way for synchronizing the communication is required, which can be achieved through time constraints in form of timeouts.
 This can be, for example, achieved by starting a timer after a first replica sent its result, or by letting the voter request the result from each replica.
 In addition, an expired timeout can indicate crashed replicas or network partitions.
@@ -231,7 +240,7 @@ In addition, an expired timeout can indicate crashed replicas or network partiti
 	\label{fig:Classical2OO3}
 \end{figure}
 
-One of the most common versions of \gls*{MOON} systems is \gls*{TMR}~\autoref{fig:Classical2OO3}.
+One of the most common versions of \gls*{MOON} systems is \gls*{TMR} as shown in~\autoref{fig:Classical2OO3}.
 In \gls*{TMR}, three replicas are receiving the same input and performing the same work in parallel.
 A voter collects the individual outputs and reduces them to a single system output based on majority voting.
 The system output must qualify the characteristic that at least two out of the three replicas agree on this output.
@@ -265,15 +274,15 @@ While not having a single point of failure anymore, consensus approaches typical
 \end{figure}
 
 As stated above, standby redundancy is an example of active hardware redundancy and builds on the concept of error detection, location and recovery.
-When, in an exemplary case, an individual component experiences a fault, the resulting error needs to be detected and the faulty component needs to be located, so that the system can recover from the error by replacing the faulty component by an identical spare component.
-This concept is depicted in~\autoref{fig:StandbyRedundancy}, where two identical replicas are used, one as a primary and one as a secondary component.
-A switching element observes the active component and, when no error is detected, provides control about the system's output to the active components.
+If an individual component experiences a fault, the resulting error and faulty component would need to be located so that the system can recover from the error by replacing the faulty component with a spare.
+This concept is depicted in~\autoref{fig:StandbyRedundancy}, where two replicas are used, one as a primary and one as a secondary component.
+A switching element observes the active component and, when no error is detected, provides control about the system's output to the active component.
 As soon as the switching element detects an error, it excludes the active component from the system and transfers control about the system's output to the secondary component, which thereby becomes the active component.
 When the secondary component is already running when the switching happens, this is called hot standby redundancy.
 When the secondary component needs to be turned on before it can be used as the active component, this is called cold standby redundancy.
 
 \subsection{Software Redundancy}
-One speaks of software redundancy, when the redundancy concepts or error detection methods are implemented in software.
+One speaks of software redundancy when the redundancy concepts or error detection methods are implemented in software.
 Examples for software redundancy are heartbeat messages to validate a component's accessibility, component-checking, or software voters.
 In component-checking, a software or hardware program is used to monitor and validate a component's hardware, for example its memory, its clock, or its \gls*{CPU}.
 A \abr{CPU}, for example, can apply redundant hardware for self-testing and fault-secureness~\cite{SelfCheckingProcessorDesign}.
@@ -286,22 +295,13 @@ A system or a component is said to be internally consistent, when any failure of
 A system's or component's internal consistency can be determined by component checking mechanisms.
 \end{definition}
 
-By implication, when a system is internally consistent, any system failures can only be introduced by external causes, such as network delays, errors during data transmission, or defects in the inputs.
+By implication, when a system is internally consistent any system failures can only be introduced by external causes - such as network delays, errors during data transmission, or defects in the inputs.
 
 Further, voting or consensus algorithms can be implemented in software.
 Similar to homogeneous and diverse hardware redundancy, diverse implementations of the same software can be used to reduce the effect of faults in a software.
 The concept of diverse software programs is summarized under the term N-version programming, where a software program, which is based on the same specification, is developed by separate programmers~\cite{BarryFaultToleranceAnalysis}.
 
 \subsection{Information and Time Redundancy}
-The addition of redundant information can allow the detection, masking and recovery from faults~\cite{BarryFaultToleranceAnalysis}.
-Examples for information redundancy include Hamming codes~\cite{HammingCodes}, checksums or information duplication.
-In Hamming codes, multiple parity bits are attached to the data bits so that defects in the transmitted information can be detected.
-Additionally, Hamming codes also allow to locate and correct errors in a bitstream.
-Information- and time redundancy can be either implemented in software or in hardware using self-checking checker circuits.
-John F. Wakerly argues that, when when a system is non-transforming, the applied circuit is automatically self-checking~\cite{SelfCheckingProcessorDesign}.
-He further compares different error-detection codes and provides self-checking hardware designs.
-
-All information redundancy concepts share that they somehow encode redundancy into the transmitted data that can later be decoded.
 
 \begin{figure}[!hb]
 	\centering
@@ -310,12 +310,22 @@ All information redundancy concepts share that they somehow encode redundancy in
 	\label{fig:ECC}
 \end{figure}
 
+The addition of redundant information can allow the detection, masking and recovery from faults~\cite{BarryFaultToleranceAnalysis}.
+Examples for information redundancy include Hamming codes~\cite{HammingCodes}, checksums or information duplication.
+In Hamming codes, one or multiple parity bits are attached to the data bits so that defects in the transmitted information can be detected.
+Additionally, Hamming codes also allow to locate and correct errors in a bitstream.
+Information- and time redundancy can be either implemented in software or in hardware using self-checking circuits.
+John F. Wakerly argues that, when a system is non-transforming, the applied circuit is automatically self-checking~\cite{SelfCheckingProcessorDesign}.
+He further compares different error-detection codes and provides self-checking hardware designs.
+All information redundancy concepts share that they somehow encode redundancy into the transmitted data that can later be decoded.
+\\
+
 Another way of adding redundancy is to perform the same operation multiple times at different points in time.
 This concept is called \texttt{Time Redundancy} and has the benefit that it does not necessarily require additional physical components.
 Thereby, permanent faults in a system can be detected.
 
 \autoref{fig:ECC} depicts an example of a combination of information and time redundancy using \gls*{ECC} techniques.
-Therefore, an encoder encodes the input and transmits this redundant information together with the input data.
+Hereby, an encoder encodes the input and transmits this redundant information together with the input data.
 After the system produces an output based on its input information, the output is also encoded and afterwards compared to the encoded input.
 When there are anomalies between the system's input and its output, safety operations can be initiated.
 The encoding function must be chosen so that it allows the detection of faults in the system.

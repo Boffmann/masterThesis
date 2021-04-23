@@ -61,59 +61,6 @@ Thereafter, it is described how the \texttt{State Manager} component manages the
 In order to increase the system's reliability, a way of using \abr{DDS} features to implement a hot standby is presented in~\autoref{sec:HotStandby}.
 Finally in this chapter, a hardware watchdog device is utilized.
 
-\section{Scenario Description}
-\label{sec:ImpScenarioDescription}
-The exemplary implementation, that is described in the following of this chapter, shall comply with \abr{ETCS} level two and receive, evaluate, as well as react to certain \abr{RBC} and track-side balise telegram inputs.
-In \abr{ETCS} level two, track-side balises are solely used for detecting and correcting the train's exact position.
-As stated in the \abr{ETCS} specification, track-side balises are organized in groups and the combination of all telegrams from balises that belong to a group form a balise group telegram~\cite{ETCS26}.
-Each balise group contains at least one and maximal eight balises.
-Besides telegrams, each balise group is assigned with a coordinate system that encodes its orientation, and a position.
-Therefore, track-side balises can be used both for transmitting information to a on-board unit and for correcting the confidence interval, which means adjusting a trains calculated position.
-In order to do so, the expected position of each balise group, which the operating train will encounter on its route, is communicated pre-journey during a linking step.
-When a train does not locate a balise group where it is expected, or registers an unlinked balise group, appropriate actions must be taken to ensure safety.
-
-Another important information for a safe train operation is a \abr{MA}, which indicates a location up to which a train is authorized to move, as well as a speed profile and a gradient profile.
-In order to ensure compliance with a \abr{MA}, the on-board unit must continuously monitor the train's speed, position, and breaking curve so that it does not disregard the track's profiles or pass the \abr{MA}'s end location.
-In \abr{ETCS} level two, \abrpl{MA} with speed and route information are continuously transmitted to the train via wireless communication technologies, such as \abr{GSMR}, from the \abr{RBC}.
-
-It is the on-board unit's responsibility to supervise the train's position, speed, movement authorities and braking curve, as well as to evaluate balise telegrams and \abr{RBC} messages.
-
-An algorithm for calculating a train's braking curve in \abr{ERTMS} systems is presented by B. Friman~\cite{CalculateBrakeCurveFriman}.
-In general, three type of information are considered for supervising a train, namely speed restrictions, track gradients and a train's characteristic deceleration abilities.
-For calculating a train's braking distance $dbr$ for a train with a deceleration ability of $dec$ from one speed $v_1$ to another speed $v_2$, the following equation can be used:
-
-\begin{equation}
-dbr = \frac{{v_1}^2}{2*dec} - \frac{{v_2}^2}{2*dec}
-\end{equation}
-
-The train's speed is measured in $m/2$ and its deceleration ability is measured in $m/s^2$.
-\\
-
-In order to show the demonstrated redundant system's applicability, a subset of the on-board unit's \abr{ETCS} level two duties is implemented.
-This demonstration covers the compliance with a \abr{MA} by supervising the train's position, speed and braking curve, as well as the evaluation of \abr{RBC} messages and balise telegrams.
-The on-board unit estimates the train's position based on on-board sensors and manages a confidence interval besides the estimated position.
-A confidence interval specifies a range in which the train is located.
-It is required because of possible inaccuracy in the utilized position sensors.
-In order to adjust the train's position and reset the confidence interval, balise telegrams are used.
-Therefore, a list of balises and their positions that the train will encounter during its journey is communicated at the journey's start.
-This is called the linking phase and the list of balises and balise position is referred to as linked balise groups.
-While the \abr{MA} and linked balise groups are transmitted to the system at the start of the journey, balise telegrams must be reliably evaluated at any time.
-In the course of this work, a flat track and a constant speed restriction is assumed.
-Therefore, any track gradient can be neglected and the train's deceleration only depends on its speed.
-From this, the following tasks can be derived for the showcases system to comply with the \abr{ETCS} subset:
-
-\begin{itemize}
-\item Receive and evaluate \abr{MA} with a start and an end position
-\item Receive and evaluate linking information pre-journey
-\item Continuously calculate the train's position and confidence interval
-\item Continuously calculate the train's braking curve based on its characteristics and the current \abr{MA}
-\item Receive and evaluate balise telegrams during journey to adjust the train's position and confidence interval
-\item Stop the train when end of \abr{MA} is reached, a linked balise group is not encountered at its position, or an unlinked balise group is encountered
-\end{itemize}
-
-For demonstrating and evaluating the final system's practicability, the described \abr{ETCS} subset will be simulated in form of scenarios.
-Therefore, a simulator will be used.
-
 \subsection{Scenario Simulation}
 \label{subsec:ScenarioSimulation}
 

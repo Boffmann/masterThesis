@@ -49,12 +49,22 @@ However, since the system utilizes a timeout to detect an absent leader, the tot
 	\label{fig:PlotSendingTimes}
 \end{figure}
 
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/dataThroughput}
+	\caption{Maximum supported data throughput. The throughput was measured with a program by ADLINK. On average, 56.5 Mbit/s is reached.}
+	\label{fig:PlotDataThroughput}
+\end{figure}
+
 A end-to-end probing approach has been chosen to measure data transmission times, although a \abr{IP} \abr{TTL} technique has been proposed by~\cite{SinhaMeasureNetworkLatency}.
 This is because the applied network has the same diameter for each node.
 When a component publishes data to a \abr{DDS} topic, the middleware ensures that the data is transmitted to all registered subscribers.
 In the system that is deployed for this thesis, data is transmitted via an \textit{Ethernet} connection.
 The replicas are interconnected via a network switch that allows up to 2000 Mbit per seconds for each port.
-Based on the applied system topology, the time that is required to publish and process a message with a certain payload size between two replicas via a \abr{DDS} topic is measured.
+On average, a data throughput of 56.5 Mbit/s is reached in the system, as depicted in~\autoref{fig:PlotDataThroughput}.
+The data throughput has been measured with a dedicated program by ADLINK.
+
+Further, the time that is required to publish and process a message with a certain payload size between two replicas via a \abr{DDS} topic is measured.
 For bypassing clock skews in the system, a request/response approach is used, where one replica publishes a message with a certain payload size and waits until another replica confirms the message's receipt.
 The receiving replica constantly checks for new messages and, as soon as it receives one, publishes a confirmation messages on another topic.
 Any time that is required to send the confirmation message is negligible because it only consists of a 8-bit identification number that assigns it to a payload carrying message.
@@ -229,7 +239,7 @@ Thus, the third scenario has been run only with a leader and one follower, inste
 For the message exchange evaluation, the leader has been manually stopped after the second scenario and before the third scenario is run.
 The third scenario has been run with only a leader and one follower.
 Any active hardware redundancy mechanisms have been disabled to show how the system elects a new leader, continues its operation, and fulfills the desired behaviour with two instead of three replicas.
-In a later section, the active hardware redundancy features will be reactivated to show the difference.
+In a later section, the active hardware redundancy features will be reactivated to show its effects on the system's reliability.
 For each measurement, the heartbeat timer has been set to 100000µs so that ten messages per second can be attributed to heartbeat messages.
 
 \paragraph{Total Messages Sent}
@@ -335,6 +345,22 @@ It is noticeable that after 25 seconds the number of AppendEntries messages rece
 Further, a message is received on the \texttt{RequestVote} and on the \texttt{RequestVoteReply} topic, respectively.
 From this it can be seen that a leader election occurred.
 Because there is only one follower left in the system, the number of received heartbeat messages is halved.
+
+\paragraph{Active Hardware Redundancy}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/plots/ConsensusMessagesReceiveAHR}
+	\caption{All messages that are received by components used by the input processing and consensus module with applied active hardware redundancy. After 27 seconds, the previous leader crashed, a new one is elected and the spare is activated. Hence, the number of received heartbeat messages dropps and goes back the the previous value afterwards.}
+	\label{fig:PlotConsensusMessagesReceiveAHR}
+\end{figure}
+
+The total number of messages that are received via the consensus topics is depicted in~\autoref{fig:PlotConsensusMessagesReceiveAHR}.
+As for the experiment depicted in~\autoref{fig:PlotConsensusMessagesReceive}, the leader was terminated manually after editing the second scenario.
+This is evident from the collapse of the received heartbeat messages in the system.
+Shortly after, a new leader election takes place and the number of received messages on the \texttt{AppendEntries} topic stabilizes.
+Unlike in~\autoref{fig:PlotConsensusMessagesReceive}, the number goes back to the original received messages showing that there are three active replicas again.
+
 
 \subsection{Safety and Reliability}
 The redundant and distributed system has been designed to be reliable and safe.
