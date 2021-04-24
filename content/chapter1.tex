@@ -1,6 +1,7 @@
  \chapter{Background and Related Work}
 \label{chptr:concepts}
 
+All systems that are designed based on the \abr{ETCS} specification must be safety-critical~\cite{OnBoardUnitSafetyTesting}. 
 Introducing redundancy to safety-critical systems is a popular approach to ensure that faults inside the system do not lead to failures that effect the system's environment.
 A system that is able to continue its intended work even in the presence of faults is said to be fault-tolerant~\cite{BarryFaultToleranceAnalysis}.
 Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy), or performing the same operation multiple times (time redundancy).
@@ -8,12 +9,13 @@ Although being one of the most often used redundancy techniques, the addition of
 Thus, the replicas need to communicate with each other and synchronize their results in order to act like a single unit in their environment.
 A promising approach to cope with the communication overhead is \gls*{DDS}, a \gls*{DCPS} system, since it allows reliable and real-time communication~\cite{omgDDSspec}.
 However, while hardware redundancy enhances a system's fault-tolerance, it also increases its costs and complexity.
+\\
 
-\todo{Wirklich?}
-In this chapter, various redundancy techniques, as well as important terms and criteria for evaluating redundant systems, are described.
-Further, different redundancy concepts are weighted against each other with regards to reliability, safety, and performance.
-Afterwards, standards for building and designing safe and fault-tolerant systems are given and related works, that successfully applied \gls*{DCPS}-middleware in the railway context, are shown.
-At first, however, an overview about the \abr{ETCS}, as well as the \gls*{DDS} standard and its concepts, is exposed.
+In the first section of this chapter, an introduction to \abr{ETCS} and its three levels is provided.
+Afterwards, an overview about the \abr{DDS} standard and its concepts is exposed.
+In the third section, terms, criteria, and concepts for evaluating the safety and reliability of redundant systems are described.
+Then, different redundancy concepts are explained and weighted against each other with regards to reliability, safety, and performance.
+Finally, standards for building and designing safe and fault-tolerant systems are given and related works, that successfully applied \gls*{DCPS}-middleware in the railway context, are shown.
 
 \section{\glsentryfull{ETCS}}
 In order to facilitate interoperability between national railway systems throughout Europe, the signaling and speed control system has been standardized by the European Union under the term of \abr{ERTMS}.
@@ -33,7 +35,7 @@ Parallel to that, a breaking curve and the train's position are permanently calc
 \paragraph{\abr{ETCS} level two}
 For \abr{ETCS} level two, signaling and \abr{MA} data is transmitted via mobile communication channels from the \abr{RBC} and displayed to the driver.
 The \abr{RBC} is a central unit that constantly collects and supervises train movements and track information.
-Although each train observes its own position, it can come to inaccuracies, due to for example faulty sensor calibration.
+Although each train observes its own position, it can come to inaccuracies, for example due to a faulty sensor calibration.
 Hence, a train operating under \abr{ETCS} level two does not know its exact position but can only locate itself within a certain range.
 This range is called \textit{confidence interval} and consists of an upper and lower limit of an area.
 The train's actual position in located within this area.
@@ -127,7 +129,6 @@ Fault tolerance is generally obtained through error detection, which allows the 
 In the course of this thesis, the following definition is used for safety:
 
 \begin{definition}
-\todo{Better: Does not allow faults to lead to catastropic failures}
 A system is said to be safe when the fault of the system or any of its components does not lead to a catastrophic failure.
 \label{def:safety}
 \end{definition}
@@ -145,9 +146,8 @@ Flaviu Cristian has established the following five fault classes for distributed
 
 It applies, that all fault classes \textbf{Fx} are included in \textbf{Fy}, given that $y \geq x$.
 In the course of this thesis, the fault classes \textbf{F1} to \textbf{F4} are analyzed and byzantine faults are not covered.
+\\
 
-\subsection{Safety Evaluation}
-\label{sec:safetyEvaluation}
 A required condition for a system to be safe is that the system is reliable.
 One method of analyzing a system's reliability is through mathematical functions of time, for example the \texttt{exponential failure law}~\cite{GeffroyMotetDependableComputing}.
 It describes a component's reliability as an exponential function on time.
@@ -189,7 +189,6 @@ In state (4), there is again a $2\lambda$ change for one of the remaining compon
 
 As experiments have shown, a system's recovery time is not necessarily exponential~\cite{TheoryAndPracticeReliableSystem}.
 Thus, it is expressed by $F(t)$ which is the probability that the system recovers within a time-span less than $t$.
-
 In a diverse redundant system, each component failure is represented with an individual state.
 
 \section{Redundancy Patterns}
@@ -220,7 +219,6 @@ While \gls*{MOON} systems are a typical example of passive hardware redundancy, 
 A voter can be realized in both software and hardware.
 The benefits of software voters are that they typically cost less and are easier to develop, because no special hardware is required.
 However, software voters tend to operate slower.
-
 The benefit of hardware voters is, that they can operate faster and a minimal set of hardware needs to be approved, which reduces the time and cost expenses for approving the system.
 
 Both types of voters have in common that they require some kind of time constraint synchronization with the replicas to collect their intermediate results, perform a voting, and recognize failed or delayed redundant results.

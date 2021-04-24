@@ -135,41 +135,19 @@ The events are ied to the simulated train's position and are thereby time-stamp 
 \label{sec:ImpConsensusAlgorithm}
 
 In this section, a consensus algorithm that follows the concepts of \texttt{Raft} and applies the \abr{DDS} publish/subscribe communication pattern is presented.
+Therefore, the system architecture that has been described in~\autoref{subsec:SystemArchitecture} will be implemented.
+The concept of how \texttt{Raft} can be implemented using \abr{DDS} is depicted in~\autoref{fig:ThreeRepConsensusDDS}.
 
-In \texttt{Raft}, it is the leader's responsibility to send periodic heartbeat messages to notify followers about its existence.
-The heartbeat messages, as well as all other messages in \texttt{Raft}, are expressed as \abrpl{RPC}.
-At least two \abrpl{RPC} need to be supported, namely \texttt{AppendEntries} and \texttt{RequestVote}.
-\texttt{AppendEntries} is used for sending heartbeat messages and other commands, called logs in \texttt{Raft}, while \texttt{RequestVote} is invoked by candidates to gather votes.
-
-\begin{figure}[!hb]
-	\centering
-	\includegraphics[width=0.9\linewidth]{images/ThreeEUConsensusDDS}
-	\caption{An approach for building a hybrid consensus- and voting-based \abr{TMR} system using \abr{DDS} event topics. The approach follows concepts of \texttt{Raft}. In \texttt{Raft}, replicas communicate via \abrpl{RBC}. At least two \abrpl{RBC} are required, namely \texttt{RequestVote} and \texttt{AppendEntries}. \texttt{RequestVote} is used for electing a system leader and is accessed by the consensus component. \texttt{AppendEntries} is used for sending heartbeat messages and for exchanging logs, such as inputs and decisions, between the input processing and the consensus component. The consensus component has an integrated voter for voting on decisions. The \abr{EU} with (1) and (4) took over the leader role and thereby read inputs and control the output.}
-	\label{fig:ThreeRepConsensusDDS}
-\end{figure}
-
-\autoref{fig:ThreeRepConsensusDDS} shows how the concept of \texttt{Raft}, with its roles and \abrpl{RPC}, can be implemented using \abr{DDS}.
-The logic is subdevided into an input processing, as well as a consensus unit and resembles a pipelined approach.
-One the one hand, input processing unit is responsible for reading inputs, making decisions, and communicating via the \texttt{AppendEntries} \abr{RPC} with the consensus component.
-On the other hand, the consensus component implements the leader election logic, exchanges votes via \texttt{RequestVote}, communicate via \texttt{AppendEntries}, perform votes on decisions, and control the system's output.
-In this example, the first \abr{EU} with (1) and (4) took over the leader role.
-Hence, (1) reads input data and requests a decision from (2) and (3) on the other \abrpl{EU} for this input by publishing a corresponding messages to \texttt{AppendEntires}.
-The input processing units (2) and (3) publish their decisions on \texttt{AppendEntries}, which are then read by (4) to perform a voting and outputs the voted result.
-
-\texttt{AppendEntries} is further used for heartbeat messages.
-When a heartbeat message stays out for a period, the remaining replicas assumes that the leader has crashed and the followers initiate a new leader election using the \texttt{RequestVote} topic.
-When a new leader is elected, it gains complete control over the output, reads input data, and starts sending heartbeat messages.
-In the event of the previous leader coming back online again, it receives heartbeat messages from \texttt{AppendEntries} and thereby takes over a follower role.
-Thereby, crash faults (\textbf{F1}) for voters can be caught by the heartbeat mechanism.
-
-Because data on \abr{DDS} topics requires to be in a certain format, distinct topics for requesting and answering to \abrpl{RBC} are used in the actual implementation.
+Although only one topic is depicted for each \abr{RPC}, distinct \abr{DDS} topics for requesting and answering to \abrpl{RPC} are needed.
+This is because topics in \abr{DDS} are required to be in a certain data format.
 For sending heartbeat messages and requesting decisions, the topic \texttt{AppendEntries} is used.
 Answers to decision requests are published to a topic named \texttt{AppendEntriesReply}.
 Same for \texttt{RequestVote}, whose answers are published to \texttt{RequestVoteReply}.
 
-As already mentioned, the approach presented in~\autoref{fig:ThreeRepConsensusDDS} resembles a pipelined approach.
-Unlinke in previous pipelined approaches, both the input processing, as well as the consensus component are executed on one \abr{EU}.
-Nevertheless, the approach allows for more replicas by distributing the logic modules accordingly.
+Even though the approach presented in~\autoref{fig:ThreeRepConsensusDDS} resembles a pipelined approach, each pipeline is executed on the same \abr{EU}.
+In order to benefit from throughput benefits, each pipeline step should be placed on a different \abr{EU}.
+Nevertheless, the presented approach does not suffer from a \ChallengeThrough so that a single \abr{EU} for each pipeline is sufficient.
+Further, the approach allows for more replicas by distributing the logic modules accordingly.
 This is because the components communicate via \abr{DDS} topics and are thereby freely scalable.
 \\
 
@@ -533,7 +511,7 @@ struct ActivateSpare {
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/sequence/ActivateSpare}
-	\caption{When the leader, after reading an input message and instructing its followers to process the input, receives too few decisions after a certain time, it activates the spare replica. When the follower receives more than necessary, the spare component gets deactivated again.} as well as replies to vote requests
+	\caption{When the leader, after reading an input message and instructing its followers to process the input, receives too few decisions after a certain time, it activates the spare replica. When the follower receives more than necessary, the spare component gets deactivated again.}
 	\label{fig:SeqActivateSpare}
 \end{figure}
 
@@ -544,7 +522,7 @@ The additional logic merges into the log replication logic and is depicted in~\a
 When collecting all decisions from the follower replicas, the leader activates or deactivates the spare component when receiving too few or too much decisions, respectively.
 Any spare replica is initialized in spare mode and thereby excluded from making decisions, from becoming a candidate or leader, and from participating in the leader election process.
 After being activated by the leader, the spare component transitions into follower state and can therefore make decisions when asked by the leader and vote for new leaders during the leader election process.
-%However, since they are required to be deactivated when too many replicas are active, any replica that has been a spare component is excluded from becoming the system's leader.
+However, since they are required to be deactivated when too many replicas are active, any replica that has been a spare component is excluded from becoming the system's leader.
 
 While being in \texttt{Spare} state, a replica utilizes a \texttt{WaitSet} to wait for any activate message.
 When an activated spare component receives a message from the leader that should be processed, it checks whether the leader has deactivated the spare beforehand.
@@ -562,17 +540,3 @@ The \textit{Revolution Pi Connects} install a hardware watchdog that can be conf
 After the hardwaare watchdog device has been activated, the software on the replica must notify the watchdog device periodically.
 A watchdog is an important safety-feature and proposed by Sakic and Kellerer~\cite{SakicTimeInConsensus} to increase a system's probability to response when a component failed.
 For the presented system, the watchdog device can be notified when sending heartbeat messages for the leader and when receiving heartbeat messages for the follower components.
-
-% TODO Further specify
-\iffalse
-
-However, without any further treatment, only crash faults can be tolerated for voters in this setup.
-Methods for detecting and handling time and omission faults exist but require additional hardware.
-However, since the leader has sole control about the system's output, it is impossible to tolerate computation faults in this way.
-Thus, it needs to be assured that neither a voter, nor a replica of type (B), have any omission, timing, or computation fault.
-
-
-
-Using replicated voters with a consensus algorithm, \ChallengeVoter can be solved, because the voter is no single point of failure anymore.
-\fi
-
