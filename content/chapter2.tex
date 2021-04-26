@@ -22,6 +22,8 @@ In the following, the subset, as well as the resulting system requirements, are 
 \subsection{Scenario Description}
 \label{sec:ScenarioDescription}
 
+\todo{Define journey: From starting until braking}
+
 The system should be able to receive a \abr{MA} that contains driving permissions.
 Therefore, each \abr{MA} consists of a start- and an end position that limit an area where the train is authorized to move.
 Furthermore, the system should be able to receive a list of balises that the train will encounter during its journey.
@@ -402,10 +404,13 @@ For example, a hardware timer could be started as soon as input data is recogniz
 When the hardware timer is not stopped after a certain timeout is expired, the train can be stopped.
 \\
 
-Because the system is expected to operate in a time constrained environment, the input processing as well as leader election process are limitted by time restrictions.
-These time restrictions can be enforced through \abr{DDS} concepts.
+Even though the approach presented in~\autoref{fig:ThreeRepConsensusDDS} resembles a pipelined approach, each pipeline is executed on the same \abr{EU}.
+In order to benefit from throughput benefits, each pipeline step should be placed on a different \abr{EU} though.
+Nevertheless, the presented approach does not suffer from a \ChallengeThrough so that a single \abr{EU} for each pipeline is sufficient.
+Further, the approach allows for more replicas by distributing the logic modules accordingly.
+This is because the components communicate via \abr{DDS} topics and are thereby freely scalable.
 
-\subsection{Synchronization Model}
+\subsection{Communication Model}
 All computing systems have in common that they receive an input and produce an output.
 In the exemplary case that is considered in this thesis, inputs consist of \abrpl{MA}, balise linking information, and balise telegrams.
 The inputs are expected to be transmitted via an \texttt{Input} \abr{DDS} topic.

@@ -508,6 +508,77 @@ This introduces potential race conditions or deadlocks and can complicate the de
 Since the developed system, for example, needs to react to vote requests and log replication messages at any time, a concurrent system design is unavoidable.
 As discussed in~\autoref{subsub:raceConditions} though, the implemented system applies a race condition free concurrent algorithm.
 
+
+\subsection{Scenario Simulation}
+\label{subsec:ScenarioSimulation}
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/SimulatorWorkflow}
+	\caption{The scenario simulation's workflow. Each simulation begins by creating a scenario from a file and sending \glsentryfull{MA} and linking information. Thereupon, the virtual train is set in motion and balise telegrams are send on its way. When the virtual train stops early or when the \abr{MA}'s end is reached, the simulation stops.}
+	\label{fig:SimulatorWorkflow}
+\end{figure}
+
+The considered \abr{ETCS} subset consists of a \abr{MA} and a list of balises that function as positional landmarks.
+Thus, a simulated scenario is bounded by a \abr{MA}'s start- and end-position and consits of one or multiple balises.
+The workflow of how the simulator executes a scenaio is depicted in~\autoref{fig:SimulatorWorkflow}.
+
+\begin{lstlisting}[caption={A JSON scenario representation. Each scenario consists of a \glsentryfull{MA} with a start and end point, as well as of a set of balises. Balises can be either linked or not and consist of an identification number, a linking position and an actual position. The linking position is transmitted to the on-board unit and is distinguished from its actual position to simulate a misplaced balise.}, label=code:scenarioJSON]
+{
+  "MA": {
+    "start": 0,
+    "end": 10
+  },
+  "balises": {
+
+    "balise": {
+      "id": 0,
+      "link_pos": 1,
+      "pos": 1,
+      "linked": true
+    },
+    "balise": {
+      "id": 1,
+      "link_pos": 5,
+      "pos": 5,
+      "linked": true
+    },
+    "balise": {
+      "id": 2,
+      "pos": 7,
+      "linked": false
+    }
+
+  }
+}
+
+\end{lstlisting}
+
+At first, a scenario is created from a \textit{json} file.
+An exemplary scenario in \textit{json} format is shown in~\autoref{code:scenarioJSON}.
+It contains a \abr{MA} that starts at the current position and is valid for 1000 meters.
+Further, three balises are simulated on the way, one at 100 meters, one at 500 meters, and one at 700 meters after the journey's start.
+The first two balises will be linked with the on-board unit while the third will not.
+Any linked balise further has a linking position field which is communicated to the on-board unit.
+The distinction between a balise's actual position and its linking position is used to simulate balise that are not where they should be.
+\\
+
+After the \abr{MA} and the two linked balises have been sent to the on-board unit, the simulator starts to simulate a trip by updating the virtual train's position.
+The position is continuously compared to the balise's positions and the \abr{MA}'s end.
+As soon as the simulated train passes a balise's position, the corresponding balise's data is published to the \texttt{Input} topic.
+In case that the balise lead to a braking action, for example because the balise was not linked or its position and linking position do not correspond, the simulation stops.
+Finally, when all balises are evaluated successfully, the simulation ends when the \abr{MA}'s end is reached.
+\\
+
+\paragraph{Simulator Classification}
+In literature, simulators are distinguished on the basis of their mode of operation and categorized into \abr{DE}-, and \abr{CT}-based simulators~\cite{CoSimulationStateOfTheArt}.
+In a \abr{DE}-based simulation, communication with the environment is characterized by events that are triggered at certain times.
+For \abr{CT}-based simulations, the simulated state is expected to evolve continuously over time.
+Based on these properties, it can be argued that the simulator that is utilized in this work is a combination of a \abr{DE}- and a \abr{CT}-based simulation system.
+On the one hand, the train's movement is simulated in a way that is typical to \abr{CT}-bases simulations, because the train's position continuously evolves over time based on its speed.
+On the other hand, the track-side balise telegram simulation borrows features from \abr{DE}-based simulators, because it communicates via events.
+The events are ied to the simulated train's position and are thereby time-stamp based.
+
 \iffalse
 \paragraph{State Messages Received}
 
