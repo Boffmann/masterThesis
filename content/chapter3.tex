@@ -459,11 +459,25 @@ Although only a single spare component is currently supported, multiple spares c
 
 \subsection{Watchdog}
 
-\todo{Watchdog!!}
-The \textit{Revolution Pi Connects} install a hardware watchdog that can be configured to restart the system when the program stops responding.
-After the hardwaare watchdog device has been activated, the software on the replica must notify the watchdog device periodically.
 A watchdog is an important safety-feature and proposed by Sakic and Kellerer~\cite{SakicTimeInConsensus} to increase a system's probability to response when a component failed.
-For the presented system, the watchdog device can be notified when sending heartbeat messages for the leader and when receiving heartbeat messages for the follower components.
+The \textit{Revolution Pi Connects} install a configurable hardware watchdog in form of a watchdog timer on a dedicated hardware chip.
+The timer must be manually and periodically resetted.
+When it is not resetted, the timer expires and the corresponding \abr{PLC} gets restarted.
+This allows the watchdog to restart a replica when the on-board unit software stops responding.
+\\
+
+In order to take advantage of the hardware watchdog, the heartbeat mechanism that is used for the consensus algorithm is exploited.
+Each time the leader sends a heartbeat, it also resets the watchdog timer.
+For followers, the watchdog timer is reset upon receiving a heartbeat messages.
+
+On the one hand, this increases the system's reliability because certain exceptions and faults such as memory corruptions that result in a stopped software can be repaired by restarting the system.
+On the other hand, an appropriate watchdog timeout must be small enough to restart a faulty component as soon as possible but long enough to not trigger false positives.
+Since resetting the timer is bound to the heartbeat mechanisms, the maximum time that the system can be without a leader needs to be known.
+This is analyzed in~\autoref{subsec:LeaderElectionEval} and forms the watchdog timer's lower limit.
+
+
+
+
 
 
 
