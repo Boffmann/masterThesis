@@ -17,14 +17,17 @@ Finally in this chapter, the system comparison is summarized and a final system 
 As already stated, the system that is developed in the course of this thesis is intended to function as an on-board unit within \abr{ETCS} level two.
 As such, it receives information from the \abr{RBC}, estimates the train's position based on sensor data, observes the train's braking curve, and evaluates telegrams from track-side balises.
 For demonstration purposes, a subset of the \abr{ETCS} level two is considered.
-In the following, the subset, as well as the resulting system requirements, are described.
+In the following, the \abr{ETCS} subset as well as the resulting system requirements are described.
 
 \subsection{Scenario Description}
 \label{sec:ScenarioDescription}
 
-\todo{Define journey: From starting until braking}
+The on-board system to be developed should process \abr{ETCS} scenarios.
+Such a scenario consists of a \abr{MA}, a set of linked balises, and track-side balises.
+In each scenario, the train goes through a journey that begins as soon as the trains starts moving and stops when braking.
+\\
 
-The system should be able to receive a \abr{MA} that contains driving permissions.
+As such, the system should be able to receive a \abr{MA} that contains driving permissions.
 Therefore, each \abr{MA} consists of a start- and an end position that limit an area where the train is authorized to move.
 Furthermore, the system should be able to receive a list of balises that the train will encounter during its journey.
 The balises in this list have a position and an unique identifier.
@@ -53,6 +56,7 @@ The train's speed is measured in $m/2$ and its deceleration ability is measured 
 For the considered scenario it is assumed that the track is flat so that the braking curve solely depends on the train's speed and deceleration abilities.
 
 \subsection{Fault Model}
+\label{subsec:faultModel}
 The safety requirements for the system are based on the fault classes \textbf{F1}-\textbf{F4} from~\autoref{sec:techniquesSafetyReliability}\cite{CristianFaultModel}.
 Consequently, crash faults, omission faults, timing faults, and computation faults need to be considered.
 Byzantine faults are not covered.
@@ -65,6 +69,11 @@ The deployed system should be able to detect the following problems and stop the
 \item A balise telegram is received whose associated balise is not linked.
 \item The balise telegram from a linked balise is received but the linked position is outside the system's current confidence interval.
 \end{itemize}
+
+In the context of this work, problems related to receiving and processing inputs are considered.
+It is further mandatory for the operated train's safety to, for example, detect when no balise telegram is received at positions where a linked balise is expected.
+It is possible to periodically check for such situations, similar to brake curve monitoring.
+\\
 
 The applied components' internal consistency is not monitored.
 This means that hardware faults can lead to component failures.
@@ -91,7 +100,7 @@ In this section, an overview about different information types and possibilities
 
 \begin{table}[htbp!]
 	\begin{center}
-		\caption{\Gls*{QOS} policies for volatile and enduring states in a \gls*{DDS} system. For an enduring state, data changes slow and unperiodically. In volatile states, data changes frequently and periodically.}
+		\caption{\Gls*{QOS} policies for volatile and enduring state topics in a \gls*{DDS} system. For an enduring state, data changes slow and unperiodically. In volatile states, data changes frequently and periodically. State topics can be used to share a global system state among all participants.}
 		\label{tab:stateQOS}
 		\begin{tabularx}{\textwidth}{|X|X|X|X|}
 			\hline
@@ -122,7 +131,7 @@ Possible \gls*{QOS} settings for volatile and enduring states are presented in~\
 
 \begin{table}[htbp!]
 	\begin{center}
-		\caption{\Gls*{QOS} policies for events in a \gls*{DDS} system.}
+		\caption{\Gls*{QOS} policies for event topics in a \gls*{DDS} system. Event topics can be used to for \glsentryfull{RPC} to make inquiries and invoke functionality from other components.}
 		\label{tab:eventQOS}
 		\begin{tabularx}{\textwidth}{|X|X|X|}
 			\hline
@@ -156,7 +165,7 @@ While some settings are universal for event topics, some others need to be evalu
 
 
 
-\section{System Comparisons}
+\section{Architecture Comparisons}
 The different redundancy techniques, as proposed by Johnson Barry, are applicable for different use-cases~\cite{BarryFaultToleranceAnalysis}.
 In this section, different redundancy techniques are selected, combined and evaluated based on following criteria:
 
@@ -235,36 +244,36 @@ However, this introduces new challenges such as the possibility of a split brain
 In order to overcome the \ChallengeWR challenge, further replicas can be added to the system.
 It can be shown via induction that adding more replicas increases a system's reliability.
 
-\paragraph{Proof by induction}
-Let $M$ be constant and $M \leq N$, let $R_{c}$ the reliability of the system's components.
-
-\subparagraph{Basis}
+\begin{itemize}
+\item \emph{Proof by Induction}: Let $M$ be constant and $M \leq N$, let $R_{c}$ the reliability of the system's components.
+\begin{itemize}[label=$\lozenge$, itemsep=2ex]
+\item \emph{Base Case:}
 \begin{align*}
 &Let N = 1 \Rightarrow M = 1.\\
 &R_{1oo1} = {1 \choose 1} * R_{c}^1 * (1 - R_{c})^0 = R_{c}
 \end{align*}
 
-\subparagraph{Hypothesis}
-\begin{center}
-$R_{MooN}$ describes the reliability for a M-out-of-N-system and a components reliability $R_{c}$ can only be positive.
-\end{center}
+\item \emph{Hypothesis:} $R_{MooN}$ describes the reliability for a M-out-of-N-system and a components reliability $R_{c}$ can only be positive.
 
-\subparagraph{Inductive}
+\item \emph{Induction Step(s):}
 \begin{align*}
 R_{MooN+1} &= \sum_{i=M}^{N+1} {N + 1 \choose i} * R_{c}^i * (1 - R_c)^{N + 1 - i}\\
 &= \sum_{i=M}^{N} {N \choose i} * R_{c}^i * (1 - R_c)^{N - i} + {N+1 \choose N+1} * R_c^{N+1} * (1 - R_c)^{N+1 - N+1}\\
 &= R_{MooN} + R_c^{N+1} \\
 &\Rightarrow R{MooN} \leq R_{MooN+1} \quad \square
 \end{align*}
+\end{itemize}
+\end{itemize}
+
 
 Additional components can be added in an active and in a passive hardware redundant way.
 adding a spare replica is a possibility to address the \ChallengeWR problem.
 
-\subsection{\glsentrylong{TMR} with spares}
+\subsection{\glsentrylong{TMR} with Spares}
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/TMRWithSparesDDS}
-	\caption{A hot standby can be implemented using \glsentryfull{DDS} event topics. In this case, the voter is responsible for detecting when a replica crashed and activates a spare component in this case by sending a corresponding event.}
+	\includegraphics[width=0.8\linewidth]{images/TMRWithSparesDDS}
+	\caption{A hot standby can be implemented using a \abr{DDS} event topic to send \textit{activate} and \textit{deactivate} events. The voter unit is responsible for detecting a failed and thereupon activates the spare component (S) by sending a corresponding event.}
 	\label{fig:TMRWithSparesDDS}
 \end{figure}
 
@@ -297,8 +306,8 @@ Hence, a pipelined \abr{TMR} approach is considered in the following.
 \subsection{Pipelined \glsentrylong{TMR}}
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/InterconnectedVoterPipeline}
-	\caption{Two interconnected pipeline streams with on-component intermediate voting can improve throughput. However, it also increased the system's cost, complexity and communication overhead.}
+	\includegraphics[width=0.9\linewidth]{images/InterconnectedVoterPipeline}
+	\caption{Interconnected pipelines with on-component intermediate voting can reduce provisional result's effect on the final output. It can further increase the system's throughput. However, it increases costs and communication overhead.}
 	\label{fig:PipelineIntermediateVoters}
 \end{figure}
 
@@ -324,8 +333,8 @@ This can be achieved by applying a consensus algorithm.
 \label{subsec:consensusArchitecture}
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/ThreeComponentConsensus}
-	\caption{An alternative to a voter can be a consensus algorithm. In this example, which follows basic ideas from \texttt{Raft}, replica (4) with voter (1) took over the leader role.}
+	\includegraphics[width=0.8\linewidth]{images/ThreeComponentConsensus}
+	\caption{In a consensus-based architecture, no component is a single point of failure. Instead, the components agree on how the output is generated. In this example, voter (4) performs a majority voting on the redundant results from the replicas of type \textbf{A}. Type \textbf{B} replicas implement the consensus algorithm and agree on who controls the output.}
 	\label{fig:ThreeRepConsensus}
 \end{figure}
 
@@ -365,7 +374,7 @@ The implementation is described in~\autoref{cpt:Implementation}.
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.9\linewidth]{images/ThreeEUConsensusDDS}
-	\caption{An approach for building a hybrid consensus- and voting-based \abr{TMR} system using \abr{DDS} event topics. The approach follows concepts of \texttt{Raft}. In \texttt{Raft}, replicas communicate via \abrpl{RBC}. At least two \abrpl{RBC} are required, namely \texttt{RequestVote} and \texttt{AppendEntries}. \texttt{RequestVote} is used for electing a system leader and is accessed by the consensus component. \texttt{AppendEntries} is used for sending heartbeat messages and for exchanging logs, such as inputs and decisions, between the input processing and the consensus component. The consensus component has an integrated voter for voting on decisions. The \abr{EU} with (1) and (4) took over the leader role and thereby read inputs and control the output.}
+	\caption{An approach for building a hybrid consensus- and voting-based \abr{TMR} system using \abr{DDS} event topics. The approach follows concepts of \texttt{Raft}. In \texttt{Raft}, replicas communicate via \abrpl{RPC}. At least two \abrpl{RPC} are required, namely \texttt{RequestVote} and \texttt{AppendEntries}. \texttt{RequestVote} is used for electing a system leader and is accessed by the consensus component. \texttt{AppendEntries} is used for sending heartbeat messages and for exchanging logs, such as inputs and decisions, between the input processing and the consensus component. The consensus component has an integrated voter for voting on decisions. The \abr{EU} with (1) and (4) took over the leader role and thereby read inputs and controls the output.}
 	\label{fig:ThreeRepConsensusDDS}
 \end{figure}
 

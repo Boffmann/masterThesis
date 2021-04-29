@@ -51,8 +51,8 @@ This \abr{ETCS} level is not fully standardized yet.
 
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/DDSStructure}
-	\caption{The \glsentryfull{DDS} is a data-centric communication model and follows the publish/subscribe pattern. The publishing and subscribing attendees do not communicate directly with each other, but make use of topics to read and write data objects.}
+	\includegraphics[width=0.8\linewidth]{images/DDSStructure}
+	\caption{The \glsentryfull{DDS} is a data-centric communication model and follows the publish/subscribe pattern. The publishing and subscribing components do not communicate directly with each other, but make use of topics to read and write data objects.}
 	\label{fig:DDSStructure}
 \end{figure}
 
@@ -161,7 +161,7 @@ This might not always be the case in practice, as common core or power outage fa
 However, the probability of failures affecting multiple components at once can be reduced by various techniques, such as using independent power supplies or diverse redundancy, the latter of which being discussed below.
 \\
 
-Among various theoretical techniques for evaluating a system's safety, Markov chains are one of the most commonly used~\cite{BarryFaultToleranceAnalysis}.
+Among various theoretical techniques for evaluating a system's reliability, Markov chains are one of the most commonly used~\cite{BarryFaultToleranceAnalysis}.
 Markov chains are a stochastic process that models the alterations of a system's state and probabilities for the system to transition into a specific state given that it was in a certain state~\cite{KemenyMarkovChains}.
 Thereby, the next state only depends on the current state and is independent from all previous system modifications.
 
@@ -176,10 +176,10 @@ For the state transition probabilities, the exponential failure law~\autoref{eq:
 
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/TriplexSystemNASA}
-	\caption{A reliability model for \glsentryfull{TMR} using Markov chains. In state (1), three replicas are operating redundantly. Each state transition describes the failure of a replica together with the corresponding probability.}
+	\includegraphics[width=0.8\linewidth]{images/TriplexSystemNASA}
+	\caption{A reliability model for \glsentryfull{TMR} using Markov chains. In state (1), all three replicas are working. The transition from (1) to (2) shows the failure of any of the replicas. Because homogeneous components are used, they all have a failure rate of $\lambda$. The transition from (2) to (4) represents the identification of the faulty component which succeeds which a probability of $F(t)$. The system is still operational in (4) because the the fault identification allows the voter can distinguish a good result from a bad one. Therefore, the system would be still functional when another component fails (5) but not when another component fails without identifying faulty components (3).}
 	\label{fig:NASATMR}
-\end{figure}
+\end{figure}ha 
 
 An example Markov chain for a system using three replicas is proposed by NASA and depicted in~\autoref{fig:NASATMR}~\cite{NASAMarkovChains}.
 At state (1), assuming that the system is homogeneous redundant, the probability that one of the replicas fails is $3\lambda$.
@@ -233,7 +233,7 @@ In addition, an expired timeout can indicate crashed replicas or network partiti
 \paragraph{M-out-of-N Systems}
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/Classical2OO3}
+	\includegraphics[width=0.8\linewidth]{images/Classical2OO3}
 	\caption{Classical 3-out-of-2 redundancy, also known as \glsentryfull{TMR}. Three replicas are simultaneously reading and processing an input in a redundant way. A voter collects these redundant results and performs a majority voting to produce a final output.}
 	\label{fig:Classical2OO3}
 \end{figure}
@@ -258,16 +258,16 @@ While not having a single point of failure anymore, consensus approaches typical
 
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/IntermediateVoting}
-	\caption{Intermediate voting could be applied to reduce the effect of partial results on the final output. Another benefit of this approach is its pipelined fashion, which improves the overall system throughput.}
+	\includegraphics[width=0.9\linewidth]{images/IntermediateVoting}
+	\caption{Intermediate voting mitigates the effect individual computations on the final output. Therefore, a voting is performed on provisional results before further processing. Another benefit of this approach is its pipelined fashion, which improves the overall system throughput. However, it also increases costs and communication overhead. }
 	\label{fig:IntermediateVoting}
 \end{figure}
 
 \paragraph{Standby Redundancy}
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/ActiveSelectionRedundancy}
-	\caption{With standby redundancy, a system can recover from individual component errors by replacing faulty components. Therefore, a switcher component performs error detection operations and delegates control over the output to the component it considers to be the most trustworthy.}
+	\includegraphics[width=0.8\linewidth]{images/ActiveSelectionRedundancy}
+	\caption{With standby redundancy, a system can recover from individual component failures by replacing faulty components. Therefore, a switcher component performs error detection operations and delegates control over the output to the component it considers to be the most trustworthy.}
 	\label{fig:StandbyRedundancy}
 \end{figure}
 
@@ -303,8 +303,8 @@ The concept of diverse software programs is summarized under the term N-version 
 
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/ECC}
-	\caption{\glsentryfull{ECC} applies both time and information redundancy. An encoder is used to encode both input and output of a system (time redundancy). This encoded information is used in addition to the actual data (information redundancy). The encoder function needs to be chosen to that possible outputs can be derived from it~\cite{Su2005ECC}. An exemplary encoding that fulfills these characteristics are Hamming codes~\cite{HammingCodes}.}
+	\includegraphics[width=0.8\linewidth]{images/ECC}
+	\caption{\glsentryfull{ECC} applies both time and information redundancy. An encoder is used to encode both input and output of a system (time redundancy). This encoded information is used in addition to the actual data (information redundancy). The encoder function needs to be chosen to that errors can be located and corrected~\cite{Su2005ECC}. An exemplary encoding that fulfills these characteristics are Hamming codes~\cite{HammingCodes}.}
 	\label{fig:ECC}
 \end{figure}
 
@@ -366,7 +366,7 @@ However, each software intended to be used in railway practice should pass the C
 
 \begin{table}[h!]
 	\begin{center}
-		\caption{\glsentryfull{QOS} policies that affect the communication overhead (o) or the communication time (t). Each \abr{QOS} policy can either be applied to \texttt{DataWriters} (DR), \texttt{DataReaders} (DR), \texttt{Topics} (T), or \texttt{Publishers} (P).}
+		\caption{\abr{QOS} policies that affect the communication overhead (o) or the communication time (t). Each \abr{QOS} policy can either be applied to \texttt{DataWriters} (DR), \texttt{DataReaders} (DR), or \texttt{Topics} (T).}
 		\label{tab:qos_garciavalls}
 		\begin{tabularx}{\textwidth}{|l|l|X|}
 			\hline

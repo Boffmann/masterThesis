@@ -19,15 +19,15 @@ This includes an active hardware redundancy approach as well as a hardware watch
 
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.7\linewidth]{images/setup}
-	\caption{Three \textit{Revolution Pi Connects} make up the redundant system which is implemented in the course of this thesis. The replicas are interconnected via a network switch. A fourth \textit{Revolution Pi Connect} acts as a spare unit that is activated upon a failure of any other unit.}
+	\includegraphics[width=0.8\linewidth]{images/setup}
+	\caption{Three \textit{Revolution Pi Connects} make up the redundant system which is implemented in the course of this thesis. The replicas are interconnected via a network switch. A fourth \textit{Revolution Pi Connect} acts as a spare unit that is activated upon a failure of any other replica.}
 	\label{fig:SystemSetup}
 \end{figure}
 
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.9\linewidth]{images/Components}
-	\caption{The on-board unit's program, that runs on each replica, consists of three major components. The \texttt{input} processing reads inputs and performs the voting. While the \texttt{state manager} components administers the system's global state, the \texttt{consensus} component ensures that a leader is present in the system and provides an interface to process an input on the cluster and collect all results.}
+	\caption{The on-board unit's program, that runs on each replica, consists of three major components. The \texttt{input} processing reads inputs and performs the voting. While the \texttt{state manager} components administers the system's global state, the \texttt{consensus} component ensures that a leader is present in the system and provides an interface to perform a redundant processing and voting.}
 	\label{fig:SystemComponents}
 \end{figure}
 
@@ -149,8 +149,9 @@ It immediately starts sending heartbeat messages afterwards.
 \\
 In the following, the allocation, as well as the collection of votes, will be discussed in more detail.
 \\\\
+
 \begin{algorithm}[H]
-\caption{Algorithm for vote allocation. Whether a vote gets granted or rejected depends on whether the replica that receives the vote request has already voted for another replica in the current voting's term.}\label{algo:VoteAllocation}
+\caption{Algorithm for vote allocation. Whether a vote gets granted or rejected depends on whether the replica that receives the vote request has already voted for another replica in the voting term.}\label{algo:VoteAllocation}
 \SetKwData{Term}{\textit{term}}
 \SetKwData{Sender}{\textit{senderID}}
 \SetKwInOut{Input}{input}
@@ -163,14 +164,13 @@ In the following, the allocation, as well as the collection of votes, will be di
 \If{\Term $==$ current term \textbf{AND} not voted in current term}{grant vote for \Sender\;}
 \end{algorithm}
 
-
 The allocation of votes is shown in~\autoref{algo:VoteAllocation}.
 Each replica can only vote for a single other replica in every term.
 Because the system's state is managed globally by \abr{DDS}, every replica is equally up to date so that vote allocation only depends on the promoting replica's term.
 As soon as a vote request is received that has a higher term number than the replica's term, the receiving replica automatically transitions into follower mode.
 Afterwards, it grants the vote for the promoting replica.
 Only a single leader is allowed to be active in a term so that replicas are not allowed to vote for multiple replicas in a single term.
-\\\\
+\\
 
 \begin{algorithm}[H]\caption{Algorithm for vote collection. Only votes that were answered in the same term that the vote request was issued are considered. When enough votes are collected, the replica becomes leader. If a votes was answered in a more recent term, the vote collection gets aborted and the replica becomes a follower.}\label{algo:VoteCollection}
 \SetKwData{VoteTerm}{\textit{voteTerm}}
@@ -205,10 +205,9 @@ The number of necessary voted depends on the total number of replicas in the sys
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/RaftServerStates}
-	\caption{Taken from~\cite{RaftConsensusPaper}. Replicas in \texttt{Raft} can be in one of three states. When a follower receives no message from a leader, it starts an election and tries to become the new leader. Leaders operate until they fail or until they discover that their term is outdated.}
+	\caption{Replicas in \texttt{Raft} can be in one of three states. When a follower receives no heartbeat messages from a leader, it starts an election and tries to become the new leader. A replica remains in candidate state either until it became the new leader or until it receives a heartbeat from another leader in a higher term. Leaders operate until they fail or until they discover that their term is outdated. This diagram was taken from~\cite{RaftConsensusPaper}}
 	\label{fig:RaftServerStates}
 \end{figure}
-
 
 
 \subsubsection{Safety Considerations}
@@ -274,15 +273,15 @@ However, the quorum required for voting prevents replicas in a partitioned netwo
 
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/LeaderElectionHeartbeatThread}
-	\caption{One \glsentryfull{OS} thread of the leader election process is the \texttt{Heartbeat Thread}. In this thread, followers receive \texttt{AppendEntries} messages from leaders and detect missing leaders through expiring timeouts. The thread also initiates the voting process by sending an initial vote request. A mutex ensures that the algorithm can only be preempted before or after a part that is depicted in green. Consecutive red parts are executed atomically.}
+	\includegraphics[width=0.9\linewidth]{images/LeaderElectionHeartbeatThread}
+	\caption{One part of the leader election process is the monitoring of heartbeat messages. This task is performed by replicas that are in follower state and is used to identify the absence of a leader. When no heartbeat messages are received for a certain period of time, a new leader election starts.}
 	\label{fig:LeaderElectionHeartbeatThread}
 \end{figure}
 
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/LeaderElectionVoteThread}
-	\caption{One \glsentryfull{OS} thread of the leader election process is the "Vote Thread". In this thread, replicas respond to vote requests and handle replies they got for their own vote requests. A replica's action to the requests depends on their private state. A mutex ensures that the algorithm can only be preempted before or after a part that is depicted in green. Consecutive red parts are executed atomically.}
+	\includegraphics[width=0.9\linewidth]{images/LeaderElectionVoteThread}
+	\caption{One part of the leader election process is making and answering vote requests. All replicas are permanently waiting for vote requests. Replicas in candidate state ask the other replicas for their votes and become the new leader after enough votes got accepted. }
 	\label{fig:LeaderElectionVoteThread}
 \end{figure}
 
@@ -334,8 +333,8 @@ Even though this results in a consistent computational overhead, it increases th
 
 \begin{figure}[!hb]
 	\centering
-	\includegraphics[width=0.75\linewidth]{images/sequence/CollectResults}
-	\caption{Input messages from track-side components are recorded by the leader and replicated to its followers. Afterwards, the leader and each follower process the input and generate a decision based on the data and the global system state. The decisions are collected by the leader and a voting is performed on the collected decisions. Meanwhile, the leader ensures that time constraints are met using timeouts.}
+	\includegraphics[width=0.8\linewidth]{images/sequence/CollectResults}
+	\caption{Input messages from track-side components are recorded by the leader. Afterwards, the leader sends a message with a reference to the input to each follower in order to request a decision. Then, the leader and each follower process the input and generate a decision based on the input and the global system state. The decisions are collected by the leader that performs a voting when enough decisions are present. Meanwhile, the leader ensures that time constraints are met using timeouts. If there are not enough decisions for voting after the timeout expires, the train must be slowed down.}
 	\label{fig:SeqCollectResults}
 \end{figure}
 
@@ -432,7 +431,7 @@ In practice, the antenna unit could perform this task by applying a counter and 
 \subsection{Hot Standby}
 \label{sec:HotStandby}
 
-\begin{figure}[!hb]
+\begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/sequence/ActivateSpare}
 	\caption{When the leader, after reading an input message and instructing its followers to process the input, receives too few decisions after a certain time, it activates the spare replica. When the follower receives more than necessary, the spare component gets deactivated again.}
@@ -458,19 +457,21 @@ Upon being activated, a spare component participates in the input processing pro
 
 Although only a single spare component is currently supported, multiple spares can be added by introducing a \texttt{spareID} field to \texttt{ActivateSpare}.
 
-
-
-\iffalse
-
 \subsection{Watchdog}
 
-TODO
+\todo{Watchdog!!}
 The \textit{Revolution Pi Connects} install a hardware watchdog that can be configured to restart the system when the program stops responding.
 After the hardwaare watchdog device has been activated, the software on the replica must notify the watchdog device periodically.
 A watchdog is an important safety-feature and proposed by Sakic and Kellerer~\cite{SakicTimeInConsensus} to increase a system's probability to response when a component failed.
 For the presented system, the watchdog device can be notified when sending heartbeat messages for the leader and when receiving heartbeat messages for the follower components.
 
 
+
+
+
+
+
+\iffalse
 
 
 
