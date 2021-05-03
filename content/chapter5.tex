@@ -1,0 +1,48 @@
+\chapter{Conclusion and Future Work}
+
+\section{Conclusion}
+This thesis describes the implementation of a fault-tolerant redundant architecture that utilizes \abr{DCPS} communication for an \abr{ETCS} on-board unit on \abrpl{PLC}.
+
+In the first part, a suitable redundant architecture was established in three steps.
+First, typical redundancy techniques for fault-tolerant designs were listed and classified.
+Second, an \abr{ETCS} subset and scenario were identified.
+The scenario provides the basis for a fault model, a concrete system architecture, and the subsequent implementation.
+Third, a consensus-based and redundant approach with a hot standby was identified as the most appropriate system architecture solving challenges of \abr{TMR}.
+On the one hand, it prevents the voter from being a single point of failure.
+On the other hand, it provides higher reliability, flexibility, and scaling through \abr{DDS}.
+
+In the second part, the thesis describes the implementation of the redundant architecture using a combination of voting and consensus.
+\texttt{Raft} was chosen as the basis for the consensus part.
+Besides a leader election and decision-making algorithm, methods for system recovery that increase reliability are presented.
+Finally, the implementation is evaluated using a simulator and automatic integration tests.
+Results show fault-tolerance in the event of individual component failure, as well as sufficient real-time capability and system recovery.
+Based on these results, a subset of \abr{DDS} functionality was assembled.
+This facilitates the creation of specialized \abr{DDS} middleware so that the costs for developing and approving future \abr{ETCS} on-board systems can be greatly reduced.
+
+
+\iffalse
+
+
+% Restate the thesis statement
+- Feasibility of DCPS such as DDS for time- and safety-critical ETCS on-board units
+- Aim is to use redundancy and thereby use less safe components
+	- DDS as enabler for distributed computation and redundancy
+
+% Review/Reiterate key points of the thesis by topic
+- Then, different redundancy concepts are explained and weighted against each other regarding reliability, safety, and performance
+- To find the best for a safety-critical DDS application 
+
+
+
+
+    Clearly state the answer to the main research question
+    Summarize and reflect on the research
+    Make recommendations for future work on the topic
+    Show what new knowledge you have contributed
+    
+\fi
+
+
+\section{Future Work}
+- N-version programming
+- Redundant communication channels
