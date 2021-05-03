@@ -335,7 +335,7 @@ In a final step, it is verified whether the output's identification number corre
 \paragraph{Redundancy to enhance Safety.}
 Alapan Chakroborty demonstrates a development process of a reliable, safe, and fault-tolerant system using redundancy methods by an example of railway signaling~\cite{ChakrabortyFaultTolerantRailway}.
 He argues that every fault-tolerant system needs to build upon real-time software solutions.
-This requires both logical and timing correctness, which can only be achieved by correct redundancy management such as fault propagation, synchronization and consensus among replicas.
+This requires both logical and timing correctness, which can only be achieved by correct redundancy management such as fault propagation, synchronization, and consensus among replicas.
 At a fail-safe design's heart lies fault identification, masking and recovery.
 Therefore, each redundant design should be subdivided into redundant elements not affected by any fault from outside the element.
 Chakroborty calls these redundant elements \glspl*{FCR}.
@@ -344,23 +344,60 @@ These two steps form a necessary precondition to predict the probability of fail
 
 In order for the system to reduce redundant results to a single result and to mask failures, the concept of voting is demanded.
 Voting, as Chakraborty claims, requires the \glspl*{FCR} to be in identical states, provide all redundant hardware with the same input, and perform identical real-time concurrent computations on each \gls*{FCR} for synchronization.
-Finally, Chakraborty's method is performed on developing a railway signaling system.
-
-An overview of possible redundancy concepts for the railway domain is provided by Bemment \etal~\cite{BemmentEvaluationOfRedundancy}.
-They further made a cost, benefit, and performance analysis for each presented concept.
+Finally, Chakraborty demonstrates the method by developing a railway signaling system.
 \\
 
-In this work, the concepts proposed by Bemment \etal are extended based on the steps by Chakraborty and by using and evaluating the feasibility of \gls*{DDS} for redundancy in the railway context.
+Bemment \etal evaluate redundancy concepts for railway track switching~\cite{BemmentEvaluationOfRedundancy}.
+For this, they analyze and rate different hardware redundancy concepts and their combinations for railway networks.
+Both reliability and cost estimations are made using mean time to failure caluculations and physical strain.
+\\
+
+An overview of possible hardware- and software redundancy concepts is provided by Barry W. Johnson \etal~\cite{BarryFaultToleranceAnalysis}.
+He further made a cost, benefit, and performance analysis for each presented concept.
+\\
+
+In this work, the concepts proposed by Johnson \etal are extended based on the model by Chakraborty and by using and evaluating the feasibility of \gls*{DDS} for redundancy in the railway context.
+While Chakroborty formulated demands and considerations for hardware- and software redundancy, Bemment \etal focussed on the design and evaluation of hardware redundant systems.
+However, the evaluation approach of hardware according to the mean time to failure principle - used by Bemment \etal - can also be applied to software.
 Typically, as Bemment \etal pointed out, an in-depth redundancy evaluation towards safety and reliability can only be made for well-defined use cases where hazards, risks and potential accidents are know.
-However only the intrinsic safety is examined in this work, which can be done theoretically without doing a detailed risk analysis.
+Therefore, specific design decisions will be made throughout this thesis based on an \abr{ETCS} subset.
 For further evaluations, an overview about possible accidents in railway is given by~\cite{ERTMSRailwayAccidents}.
-\\
+
 
 \paragraph{Software development in the railway context.}
 The CENELEC 50128 standard is a norm for software creating processes for railway applications so that the build software can be considered safe.
 The 2011 version of CENELEC 50128, and resources needed to achieve a set level of assurance, are presented by Jean-Louis Boulanger~\cite{BoulangerStandards}.
-Conducting a CENELEC 50128 conform design process for all software artifacts created in this thesis is outside its scope.
+Because software security - unlike hardware - is not affected by faulty components but by logic, it must be ensured separately.
+First for building software for safety-critical railway applications, a risk analysis is made based on possible undesired events, their frequency, and risk level.
+In addition, requirements and data structure are required before building software.
+Then the development of the software can be started.
+The software's correctness must be shown in subsequent tests.
+\\
+
+In this work, the system is developed based on an \abr{ETCS} subset.
+The software is designed as a distributed and redundant system following the V-model.
+Further, automatic integration and acceptance tests will be made to evaluate and approve the system's decisions.
+Conducting and describing a detailed CENELEC 50128 conform design process for all software artifacts created in this thesis is outside its scope.
 However, each software intended to be used in railway practice should pass the CENELEC 50128 norm.
+
+\paragraph{\abr{DDS} in safety-critical systems.}
+The \gls*{DDS} is already successfully deployed in distributed time- and safety-critical environments.
+One example is given by Bijlsma \etal~\cite{DistributedSafety2020}, who extended the E-Gas layered monitoring concept to handle faults in a distributed and redundant system.
+\Gls*{DDS} is applied to facilitate reliable communication among individual components in the system.
+Their results can be used for automatic component checking mechanisms in a redundant system.
+\\
+
+Hadiwardoyo and Gao, who proposed the use of \gls*{DDS} in security cameras for subways as another example~\cite{DDSInSubways}.
+They used \glspl*{QOS} to meet safety- and reliability requirements.
+Results show that \abr{DDS} is suitable for scaling safety-critical systems where data is continuously transmitted in a dynamic and disruptive environment.
+\\
+
+Song \etal have proposed a system architecture that integrates the \abr{DDS} middleware into real-time embedded and safety-critical systems.
+Thereby, they achieved a stable communication time~\cite{SongDDSInRealTimeSystems}.
+Their approach has been verified by an \abr{UAV} combat scenario that operates in highly safety-critical scenarios.
+Results have shown that the worst-case communication time for a one-kilobyte payload and a reliable communication \abr{QOS} is around 280 microseconds.
+Since Song \etal exerted a topology that is similar to the one used in this work - namely a network switch with a 100~Mpbs Ethernet link for communication and external nodes - their findings can be seen as an affirmation for the approach used in this work.
+However, they utilized a different \abr{DDS} implementation, so that their experiments need to be repeated in my case to approve their findings. 
 \\
 
 \begin{table}[h!]
@@ -389,27 +426,12 @@ However, each software intended to be used in railway practice should pass the C
 	\end{center}
 \end{table}
 
-\paragraph{\abr{DDS} in safety-critical systems.}
-The \gls*{DDS} is already successfully deployed in distributed time- and safety-critical environments.
-One example is given by Bijlsma \etal~\cite{DistributedSafety2020}, who extended the E-Gas layered monitoring concept to handle faults in a distributed and redundant system.
-\Gls*{DDS} is applied to facilitate reliable communication among individual components in the system.
-Hadiwardoyo and Gao, who proposed the use of \gls*{DDS} in security cameras for subways as another example~\cite{DDSInSubways}.
-They used \glspl*{QOS} to meet safety- and reliability requirements.
-Song \etal have proposed a system architecture that integrates the \abr{DDS} middleware into real-time embedded, as well as safety-critical systems.
-Thereby, they achieved a stable communication time~\cite{SongDDSInRealTimeSystems}.
-Their approach has been verified by an \abr{UAV} combat scenario that operates in highly safety-critical scenarios.
-Results have shown that the worst-case communication time for a one-kilobyte payload and a reliable communication \abr{QOS} is around 280 microseconds.
-
-Since Song \etal exerted a topology that is similar to the one used in this work - namely a network switch with a 100~Mpbs Ethernet link for communication and external nodes - their findings can be seen as an affirmation for the approach used in this work.
-However, they utilized a different \abr{DDS} implementation, so that their experiments need to be repeated in my case to approve their findings. 
-\\
-
 A more general approach of how \gls*{DDS} can be used for enabling communication in distributed as well as time- and safety-critical environments is given by García-Valls \etal~\cite{GarciaVallsDDSInDistributed}.
 They used a design of reading and monitoring sensor data to benchmark the middleware's communication performance with different \glspl*{QOS}.
 One of their findings is a summary of \gls*{QOS}-policies that affect the system's communication overhead and communication time.
 These are illustrated in~\autoref{tab:qos_garciavalls} and are especially important when examining real-time and mission-critical systems.
 The results from García-Valls \etal show that the communication performance remains stable even under heavy load.
-Even though they applied a different \gls*{DDS} implementation than I did, the network topology and used hardware are comparable, which renders the results from García-Valls \etal useful for my work.
+Even though they applied a different \gls*{DDS} implementation, the network topology and used hardware are comparable, which renders the results from García-Valls \etal useful for this work.
 
 \paragraph{Time and availability for consensus based redundant systems.}
 While redundant and distributed architectures are a typical approach to enhance a system's robustness, they also entail the demand to agree on certain data values.
@@ -421,6 +443,7 @@ Eventually, in the studies from Sakic and Kellerer after one second, the cluster
 The situation looks different for combined correlated hardware and software failures.
 Only around 20\% of the systems respond a result after one second when more than half of the replicas are affected.
 In order to address this problem, Sakic and Kellerer propose a watchdog mechanism, which drastically increased the response probabilities in their experiments.
+\\
 
 Based on Sakic and Kellerer, the availability and response time for an actual system need to be evaluated in this work.
 Further, the watchdog concepts should be kept in mind as it has a high impact on the system's response time in case of individual component failures.

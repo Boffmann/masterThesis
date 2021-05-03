@@ -24,7 +24,8 @@ Moreover, the approval process needs to be repeated every time the system gets u
 Increasing costs for \abr{ETCS} systems could lead to a situation where it is not profitable to equip certain regions, connections, or train models with \abr{ETCS}.
 \\
 
-Distributed computation is a way to reduce the costs of repeated approval processes and increase its scalability by arranging autonomous computing elements that perform a subset of the system's requirements, each~\cite{DistributedSafety2020}.
+Distributed computation is a way to reduce the costs of repeated approval processes and increase its scalability.
+Therefore, autonomous computing elements - that each performs a subset of the system's requirements - are interconnected~\cite{DistributedSafety2020}.
 However, distributed systems also introduce new challenges such as coping with the communication overhead and dealing with node-, network-, and computation faults.
 
 A fundamental technique for coping with faults in a computing system is redundancy~\cite{TanenbaumSteen07}.
@@ -44,9 +45,17 @@ However, \abr{DDS} has been designed to be a generic standard for distributed ap
 Hence, every feature from the applied middleware implementation needs to be approved when applied in a safety-critical application.
 \\
 
-In this work, it is investigated whether the \abr{DDS} standard is applicable for building redundant, distributed, real-time, and safety-critical systems in the \abr{ETCS} domain.
-For this purpose, different well-established redundancy concepts are analyzed towards their safety and feasibility to be implemented with \abr{DDS}.
+In this thesis, it is investigated whether the \abr{DDS} standard is applicable for building redundant, distributed, real-time, and safety-critical systems in the \abr{ETCS} domain.
+This work makes the following \textit{contributions}:
 
+\begin{enumerate}
+\item An analysis and comparison of different well-established redundancy concepts based on their reliability and implementability with \abr{DDS}.
+\item Elaboration and implementation of a consensus-based redundant architecture dependent on the fault model of an \abr{ETCS} subset.
+\item A proof-of-concept evaluation of the implementation towards functionality, safety, and implementability with \abr{DDS}.
+\item A sufficient \abr{DDS} subset for building a safety-critical and real-time distributed system.
+\end{enumerate}
+
+\paragraph{Structure}
 First, an overview of popular redundancy patterns and characteristics for building safe and reliable systems, as well as about \abr{ETCS} and \abr{DDS}, is given in~\autoref{chptr:concepts}.
 Afterward, mathematical concepts for evaluating the safety and reliability of these systems are pointed out.
 A selection of related work that uses \gls{DDS} in safety-critical applications is presented and set in relation to this work at the end of~\autoref{chptr:concepts}.

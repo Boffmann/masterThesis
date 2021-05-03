@@ -218,7 +218,7 @@ However, if two or more replicas produce the same - but wrong - result, the vote
 On the other hand, if two or more replicas fail to produce on output within a certain time span, the voter can detect this as a deadline violation and transfer the system into a safe state, e.g. by stopping the train.
 Therefore, only \textbf{F1}, \textbf{F2}, and \textbf{F3} can be detected when more than one replica is affected in \abr{TMR}.
 
-In order to allow more than one component to generate a wrong result without affecting the system's safety, component checking mechanisms could be applied.
+In order to allow more than one component to generate a wrong result without affecting the system's safety, component checking mechanisms could be applied using the concepts of~\cite{DistributedSafety2020}.
 Thereby, a wrong result can be identified as being wrong and excluded from the voting process.
 \\
 
