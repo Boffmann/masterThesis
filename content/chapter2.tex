@@ -114,7 +114,6 @@ There is also a difference between whether the information is kept as a state of
 The system's state is typically derived from input events.
 In this section, an overview about different information types and possibilities for their representation in \gls*{DDS} topics is provided.
 
-\todo{Alle Tablellen der Arbeit überarbeiten}
 \begin{table}[htbp!]
 	\begin{center}
 		\caption{\Gls*{QOS} policies for volatile and enduring state topics in a \gls*{DDS} system. For an enduring state, data changes slow and unperiodically. In volatile states, data changes frequently and periodically. State topics can be used to share a global system state among all participants.}
@@ -123,9 +122,9 @@ In this section, an overview about different information types and possibilities
 			\hline
 			\textbf{QoS policy} & \textbf{Setting for volatile state} & \textbf{Setting for enduring state} & \textbf{Description}\\
 			\hline \hline
-			Deadline & Depends on actual implementation & Not required & For volatile state, the deadline should match the period in which the data updates. \\
+			Deadline & Depends on actual implementation & Not required & For volatile states, the deadline should match the period in which the data updates. \\
 			\hline
-			DestinationOrder & SourceTimestamp & SourceTimestamp & Using the source timestamp as ordering guarantees that always the most recent data is stored. \\
+			DestinationOrder & SourceTimestamp & SourceTimestamp & Order by source timestamp guarantees that always the most recent data is stored. \\
 			\hline
 			Durability & Volatile & Transient or Persistent & The more frequent the state changes, the less critical it is for late joining subscribers to see previously published data. \\
 			\hline
@@ -133,9 +132,9 @@ In this section, an overview about different information types and possibilities
 			\hline
 			LatencyBudget & Depends on actual implementation & Not required & The maximum acceptable delay for sending the data should be chosen so that deadlines are not missed. \\
 			\hline
-			Reliability & BestEffort & Reliable & For rapidly and periodically changing state, it is ok if some data gets lost. For enduring state however, data has to be transferred reliably. \\
+			Reliability & BestEffort & Reliable & For rapidly and periodically changing states, it is ok if some data gets lost. For enduring state, however, data has to be transferred reliably. \\
 			\hline
-			WriterDataLifecycle & Not required & autodispose\_unregistered\_instances = False & Even if data instances are unregistered, the actual data should not be disposed on enduring state topics. \\
+			WriterDataLifecycle & Not required & Do not dispose unregistered instances & Even if data instances are unregistered, the actual data on enduring state topics should not be disposed. \\
 			\hline
 		\end{tabularx}
 	\end{center}
@@ -162,13 +161,13 @@ Possible \gls*{QOS} settings for volatile and enduring states are presented in~\
 			\hline
 			History & KeepAll & All events shall eventually be send and processed. Therefore, the event samples should be stored on both the sender and the receiver side.  \\
 			\hline
-			Lifespan & Depends on actual implementation & A event may be only valid for a specific period of time. This timespan can be specified by assigning a lifespan to a DataWriter. \\
+			Lifespan & Depends on actual implementation & An event may be only valid for a specific period of time. This timespan can be specified by assigning a lifespan to a DataWriter. \\
 			\hline
 			Reliability & Reliable & The middleware will attempt to deliver all event data samples and actively checks if the receivers got them. In case the samples got lost, they are re-transmitted. \\
 			\hline
 			ResourceLimits & Depends on actual implementation & It might be appropriate to specify an upper bound for resources to be allocated. Especially with History set to KeepAll. \\
 			\hline
-			WriterDataLifecycle & autodispose\_unregistered\_instances = False & Unregistered data instances should not be disposed because the events are required to be eventually processed. \\
+			WriterDataLifecycle & Do not dispose unregistered instances & Unregistered data instances should not be disposed because the events are required to be eventually processed. \\
 			\hline
 		\end{tabularx}
 	\end{center}

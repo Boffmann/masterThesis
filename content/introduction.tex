@@ -7,7 +7,7 @@ Railway operation is undergoing rapid changes.
 %
 % General introduction to topic through general statements
 As digitalization progresses, a trend towards the \abr{IOT} is developing and devices such as vehicles and machines become interconnected~\cite{RailwayDigitalization}.
-With the increasing traffic and the importance of rail traffic in the transportation of persons and goods alike, digitization offers a way to deal with growing complexity.
+With the increasing traffic and the importance of the railway in the transportation of persons and goods alike, digitization offers a way to deal with growing complexity.
 
 On the one hand, improvements in computation and communication technologies, as well as in railway applications, laid the foundation for building safe and reliable systems.
 Studies have shown that 41\% of all railway accidents were caused by human failures~\cite{StudyRailwayAccidents}.
@@ -24,7 +24,7 @@ Moreover, the approval process needs to be repeated every time the system gets u
 Increasing costs for \abr{ETCS} systems could lead to a situation where it is not profitable to equip certain regions, connections, or train models with \abr{ETCS}.
 \\
 
-Distributed computation is a way to reduce the costs of repeated approval processes and increase its scalability.
+Distributed computation is a way to reduce the costs of repeated approval processes and increase scalability.
 Therefore, autonomous computing elements - that each performs a subset of the system's requirements - are interconnected~\cite{DistributedSafety2020}.
 However, distributed systems also introduce new challenges such as coping with the communication overhead and dealing with node-, network-, and computation faults.
 
@@ -36,7 +36,7 @@ In contrast to non-redundant systems, redundancy allows building safe systems ou
 \\
 
 For handling communication in distributed systems, different concepts, standards, and frameworks exist.
-One of them is \abr{DDS}, a \abr{DCPS} standard for machine-to-machine communication that is specified by the \abr{OMG} and intended to be implemented as a middleware~\cite{omgDDSspec}.
+One of them is \abr{DDS}, a \abr{DCPS} standard for machine-to-machine communication that is specified by the \abr{OMG}~\cite{omgDDSspec}.
 \abr{DDS} is designed for facilitating safe and real-time communication among distributed and autonomous execution units and is therefore applicable for building safety-critical systems~\cite{DistributedSafety2020}.
 The standard, which is intended to be implemented as a middleware, allows the specification of \abr{QOS} to specify the service's behavior in a declarative way.
 Through the \abrpl{QOS}, the communication can be defined to be reliable and real-time.
@@ -46,6 +46,7 @@ Hence, every feature from the applied middleware implementation needs to be appr
 \\
 
 In this thesis, it is investigated whether the \abr{DDS} standard is applicable for building redundant, distributed, real-time, and safety-critical systems in the \abr{ETCS} domain.
+One of the main requirements is that the application should run on general-purpose \abrpl{PLC} with limited resources without violating safety and reliability requirements.
 This work makes the following \textit{contributions}:
 
 \begin{enumerate}
@@ -58,11 +59,11 @@ This work makes the following \textit{contributions}:
 \paragraph{Structure}
 First, an overview of popular redundancy patterns and characteristics for building safe and reliable systems, as well as about \abr{ETCS} and \abr{DDS}, is given in~\autoref{chptr:concepts}.
 Afterward, mathematical concepts for evaluating the safety and reliability of these systems are pointed out.
-A selection of related work that uses \gls{DDS} in safety-critical applications is presented and set in relation to this work at the end of~\autoref{chptr:concepts}.
+A selection of related work that uses \gls{DDS} in safety-critical applications is presented and set in relation to this work at the end of chapter 2.
 \\
 
 In~\autoref{chptr:redundantSystemsCompare}, key building blocks for designing distributed systems with the \abr{DDS} standard are described.
-The redundancy concepts and patterns previously presented are opposed and evaluated based on the characteristics from~\autoref{chptr:concepts}.
+The redundancy concepts and patterns previously presented are opposed and evaluated based on the characteristics from chapter 2.
 Further, each pattern's exemplary concepts and architectures are described and assessed based on their safety and realizability with \abr{DDS} concepts.
 Therefore, not only voting-based concepts but also a way of building consensus-driven redundant systems are described and analyzed.
 A combination of a consensus- and voting-based approach is identified as the most suitable concept for satisfying the desired system's requirements.
@@ -75,9 +76,10 @@ A \textit{Revolution Pi} is a robust \abr{PLC} build upon a \textit{Raspberry Pi
 The \textit{OpenSplice DDS} framework's applicability for safety-critical railway applications has been proven in practice~\cite{SchmidtMissionCriticalChallenges}.
 \\
 
-Afterward, the implemented system's safety and functional correctness is proven based on a simulated \abr{ETCS} scenario in~\autoref{cpt:evaluation}.
-Results show the system runs the simulated scenarios successfully, even when an entire component fails.
+Afterward, the implemented system's safety and functional correctness are proven based on a simulated \abr{ETCS} scenario in~\autoref{cpt:evaluation}.
 In addition, the system's time performances and hardware resource utilization is examined.
+Results show the system runs the simulated scenarios successfully and all requirements are met, even when an entire component fails.
+Finally, the applied \abr{DDS} subset is listed and justified.
 
 
 %TODO Mention results and main realization

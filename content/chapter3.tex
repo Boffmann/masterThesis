@@ -430,7 +430,13 @@ In practice, the antenna unit could perform this task by applying a counter and 
 
 \section{System Recovery}
 
-\todo{Some instroducing words}
+The failure of system components reduces the system's reliability (ref.~\autoref{sec:techniquesSafetyReliability}).
+This section describes methods by which the system can recover from the failure of individual components and thus retain its reliability.
+Such procedures are based on the concepts of error detection, location, and recovery.
+\\
+
+First, the implementation of hot standby redundancy using DDS concepts is described.
+Afterward, it is explained how the hardware watchdog of the \textit{Revolutions Pis} can be used to increase reliability - as proposed by Sakic and Kellerer~\cite{SakicTimeInConsensus}.
 
 \subsection{Hot Standby}
 \label{sec:HotStandby}

@@ -1,7 +1,7 @@
 \chapter{Conclusion and Future Work}
 
 \section{Conclusion}
-This thesis describes the implementation of a fault-tolerant redundant architecture that utilizes \abr{DCPS} communication for an \abr{ETCS} on-board unit on \abrpl{PLC}.
+This thesis described the implementation of a fault-tolerant redundant architecture that utilizes \abr{DCPS} communication for an \abr{ETCS} on-board unit on general-purpose \abrpl{PLC}.
 
 In the first part, a suitable redundant architecture was established in three steps.
 First, typical redundancy techniques for fault-tolerant designs were listed and classified.
@@ -22,3 +22,36 @@ This facilitates the creation of specialized \abr{DDS} middleware so that the co
 
 
 \section{Future Work}
+
+The system developed in this thesis bases on the fault model of an \abr{ETCS} subset.
+As a result, the underlying fault model is limited - compared to the complete \abr{ETCS} specification.
+For example, instead of track-side balise groups, individual balises were assumed.
+Thereby, consideration of the balise group's alignment drops from the fault model.
+Additionally, the speed and gradient profiles of \abrpl{MA} were not considered, which affects braking curve supervision.
+Consequently, the fault model mainly focused on the safety and real-time capability of input processing.
+
+Future work concerns considerations of the entire ETCS specification and thus an extended fault model.
+Based on this, other test scenarios can be added to the simulator.
+Further, advanced checks not related to incoming messages - such as detecting missed balises - can be implemented.
+\\
+
+The results of this work are based on assumptions.
+For example, assumptions are that messages are processed correctly by the middleware, and no data is lost or corrupted during transmission.
+Since this is not always guaranteed, other redundancy concepts, such as information and time redundancies, could be applied.
+In the context of this, redundant and diverse transmission channels, such as CAN-Bus or FlexRay, can be used.
+Further, \abr{ECC} concepts, such as Hamming codes or Reed-Solomon-Codes, could be applied to detect and correct transmission errors.
+\\
+
+This work's fault model omits Byzantine faults.
+Reliable decision-making, despite one manipulative component, requires at least four voters and two rounds of communication~\cite{GamerIncreasingMOON}.
+Thereby, the network's delay and load increase.
+For use in highly safety-critical applications, Byzantine errors should also be covered.
+
+In addition, the system should be applied as an on-board unit.
+As such, it interacts with the train's hardware, which has not yet been covered within this work.
+
+The train hardware includes, among other things, the brakes, as well as position sensors.
+Furthermore, in practice, the inputs are not transmitted directly via \abr{DDS} topics but by antenna systems.
+Finally, the internal consistency of the components can be monitored.
+Concepts of self-checking hardware exist, as described by Wakerly~\cite{SelfCheckingProcessorDesign}.
+Based on the results from Bijsma \etal, \abr{DDS} can be applied together with component checking methods to extend the system's distributed safety mechanisms~\cite{DistributedSafety2020}.
