@@ -1,15 +1,24 @@
 % => Wenn die Arbeit auf Deutsch verfasst wurde, verlangt das Studienreferat KEINEN englischen Abstract
 
 % % englischer Abstract
-%\null\vfil
-%\begin{otherlanguage}{english}
-%\begin{center}\textsf{\textbf{\abstractname}}\end{center}
+\null\vfil
+\begin{otherlanguage}{english}
+\begin{center}\textsf{\textbf{\abstractname}}\end{center}
 %
-%\noindent Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-%
-%\end{otherlanguage}
-%\vfil\null
+\noindent \glsentryfull{ETCS} on-board units are safety-critical systems whose reliability plays a vital role in the integrity of railway operation.
+While redundancy is a typical method for increasing fault tolerance, reliability, and safety, it also adds a communication and computation overhead.
+Further, the development and maintenance of highly safety-critical applications are resource-intensive.
+This thesis provides background and implementation of a redundant and fault-tolerant ETCS on-board system using real-time \glsentryfull{DCPS} machine-to-machine communication and consensus-based voting.
+Besides behavioral concepts, such as a leader election and decision-making algorithm, the work exposes global system state and system recovery mechanisms in distributed systems.
+The implementation's functionality, safety, and reliability are evaluated based on a subset of ETCS in a simulated environment.
+The results confirm DCPS concepts applicable for solving the communication and computation overhead of distributed and redundant computation in a real-time and safety-critical environment.
+Furthermore, the findings also apply to an architecture of general-purpose Programmable Logic Controllers (PLCs).
+Thereby, this work facilitates the development of safe and more cost-efficient on-board systems for future ETCS applications.
 
+\end{otherlanguage}
+\vfil\null
+
+\iffalse
 
 % => Wenn die Arbeit auf Englisch verfasst wurde, verlangt das Studienreferat einen englischen UND deutschen Abstract (der dt. Abstract kann dann ggf. auch ans Ende der Arbeit)
 
@@ -23,5 +32,6 @@
 \end{otherlanguage}
 \vfil\null
 
+\fi
 
 
