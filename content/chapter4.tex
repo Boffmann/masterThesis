@@ -345,8 +345,10 @@ Based on the chronology of the exchanged messages, the system's behavior in diff
 Therefore, the three test scenarios are simulated one after the other.
 In the following plots, the beginning of the first scenario - \texttt{Reach End of MA} - is marked by \textbf{S1}.
 The beginning of \texttt{Unlinked Balise} is marked with \textbf{S2} and the beginning of \texttt{Balise not where expected} with \textbf{S3}.
-Before the third scenario is started, the previous leader was manually stopped.
-This moment is marked with \textbf{LC}.
+Before the third scenario is started, the previous leader was manually stopped at the moment marked with \textbf{LC}.
+Without manually stopping the leader, the system ran for 60 minutes without reelection.
+After 60 minutes, the processing was manually stopped.
+
 Any active hardware redundancy mechanisms have been disabled at first.
 Thus, the third scenario has been run only with a leader and one follower, instead of a leader and two followers for the first two scenarios.
 Later, the active hardware redundancy features are reactivated to show their benefits on the system's reliability.
@@ -748,7 +750,6 @@ What emerged is, that the transmission time is directly dependent on the publish
 	\label{fig:PlotStateMessagesReceive}
 \end{figure}
 
-\todo{Do measurement with killing leader, but this time activate spare and show a topic selection that hot standby works}
 
 Do experiement and structure in way such as SakicTimeInConsensus
 

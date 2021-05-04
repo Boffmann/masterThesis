@@ -54,6 +54,14 @@ dbr = \frac{{v_1}^2}{2*dec} - \frac{{v_2}^2}{2*dec}
 
 The train's speed is measured in $m/2$ and its deceleration ability is measured in $m/s^2$.
 For the considered scenario, it is assumed that the track is flat so that the braking curve solely depends on the train's speed and deceleration abilities.
+\\
+
+The subset is derived from the ETCS specification subset 026~\cite{ETCS26}.
+It can be used as a valid subset to show the solution's functionality since it only truncates the information but not the requirements.
+For example, the subset used here uses individual balises instead of balise groups.
+Thereby, the information on the direction of travel is lost.
+However, the safety-related requirements concerning the positioning of the track components are retained.
+This allows the findings of a solution that satisfies the subset fault model to be applied to the entirety of \abr{ETCS}.
 
 \subsection{Fault Model}
 \label{subsec:faultModel}
@@ -62,7 +70,7 @@ Consequently, crash faults, omission faults, timing faults, and computation faul
 Byzantine faults are not covered.
 
 During a train's journey, situations may arise that affect its safety.
-The deployed system should be able to detect the following problems and stop the train accordingly:
+The deployed system should be able to detect the following problems:
 
 \begin{itemize}
 \item When the braking curve calculation shows that the train reaches the end of the \abr{MA}.
@@ -70,16 +78,20 @@ The deployed system should be able to detect the following problems and stop the
 \item The balise telegram from a linked balise is received, but the linked position is outside the system's current confidence interval.
 \end{itemize}
 
+In the event of one of the problems described above, the system must stop the train.
+In a simulation, it is sufficient to generate an appropriate notification.
+In practice, the train's brakes need to be controlled for this purpose.
+This requires additional hardware that can be controlled by switching currents.
+\\
+
 In the context of this work, problems related to receiving and processing inputs are considered.
 It is further mandatory for the operated train's safety to, for example, detect when no balise telegram is received at positions where a linked balise is expected.
 It is possible to periodically check for such situations, similar to brake curve monitoring.
-\\
 
 The applied components' internal consistency is not monitored.
 This means that hardware faults can lead to component failures.
 Since the system is operating in a safety-critical environment, individual component failures need to be mitigated to not affect the system's safety.
 Therefore, redundancy concepts should be applied.
-\\
 
 In the redundant system, a voter performs a majority voting and thereby generates a final system decision.
 For the voter to perform a vote, individual replica's decisions need to be submitted to the voter.
@@ -92,6 +104,8 @@ For example, additional communication channels can be applied, or the same data 
 Again, diverse redundancy can further improve safety and reliability because it excludes specific communication technology errors.
 For example, one communication channel could apply Ethernet and another could be via CAN-bus.
 If interference on one channel affects communication, it can take place on the second.
+
+
 \section{\glsentryfull{DDS} Building Blocks}
 
 Information in \gls*{ETCS} can be diverse in terms of type, size, durability, actualization frequency, and priority.
