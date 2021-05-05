@@ -1,15 +1,16 @@
 \ProvidesPackage{osm-thesis}
 
 % language options
-\DeclareOption{ngerman}{
-	\PassOptionsToPackage{english,ngerman}{babel}
-	\PassOptionsToPackage{ngerman,onelanguage}{algorithm2e}
-	\AtBeginDocument{\selectlanguage{ngerman}}
-}
+
 \DeclareOption{english}{
 	\PassOptionsToPackage{english}{babel}
 	\PassOptionsToPackage{english}{algorithm2e}
 	\AtBeginDocument{\selectlanguage{english}}
+}
+\DeclareOption{ngerman}{
+	\PassOptionsToPackage{english,ngerman}{babel}
+	\PassOptionsToPackage{ngerman,onelanguage}{algorithm2e}
+	\AtBeginDocument{\selectlanguage{ngerman}}
 }
 \DeclareOption{bibtex}{\PassOptionsToPackage{backend=bibtex}{biblatex}}
 \DeclareOption{biber}{\PassOptionsToPackage{backend=biber}{biblatex}}
@@ -25,9 +26,9 @@
 \RequirePackage{array}            % Extending the array and tabular environments
 \RequirePackage{chngcntr}         % Change the resetting of counters
 \RequirePackage[automark]{scrlayer-scrpage}    % Define and manage page styles
-\RequirePackage{hyperref}         % Extensive support for hypertext in LaTeX
 % \RequirePackage{refcheck}       % Check references (in figures, table, equations, etc)
-\RequirePackage{babel}            % Multilingual support for Plain TeX or LaTeX
+\RequirePackage[ngerman, english]{babel}            % Multilingual support for Plain TeX or LaTeX
+\RequirePackage{hyperref}         % Extensive support for hypertext in LaTeX
 \RequirePackage{csquotes}         % Context sensitive quotation facilities
 \RequirePackage{colortbl}         % Add colour to LaTeX tables
 \RequirePackage{etoolbox}         % e-TeX tools for LaTeX

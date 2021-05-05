@@ -17,7 +17,7 @@ These include an active hardware redundancy approach as well as a hardware watch
 
 \section{System Structure}
 
-\begin{figure}[!hb]
+\begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/setup}
 	\caption{Three \textit{Revolution Pi Connects} make up the redundant system which is implemented in the course of this thesis. The replicas are interconnected via a network switch. A fourth \textit{Revolution Pi Connect} acts as a spare unit that is activated upon a failure of any other replica.}
@@ -77,7 +77,7 @@ Three \abr{DDS} state topics make up the global system state.
 
 The currently valid \abr{MA} is stored in the \texttt{MovementAuthority} topic.
 A \abr{MA} is transmitted to the system before a journey starts and is valid for an entire journey.
-Hence, a \abr{MA} is stored in an enduring state topic (see~\autoref{tab:stateQOS}) so that it is reliably transmitted to all replicas.
+Hence, a \abr{MA} is stored in an enduring state topic (ref.~\autoref{tab:stateQOS}) so that it is reliably transmitted to all replicas.
 Further, the currently valid \abr{MA} is transmitted to late joining replicas.
 \\
 
@@ -272,7 +272,7 @@ However, the quorum required for voting prevents multiple replicas in a partitio
 
 \paragraph{Absence of Race Conditions}
 
-\begin{figure}[!hb]
+\begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.9\linewidth]{images/LeaderElectionHeartbeatThread}
 	\caption{One part of the leader election process is the monitoring of heartbeat messages. This task is performed by replicas that are in follower state and is used to identify a leader's absence. When no heartbeat messages are received for a certain period of time, a new leader election starts.}

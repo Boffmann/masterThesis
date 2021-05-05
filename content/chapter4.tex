@@ -43,7 +43,7 @@ In this case, three track-side balises are simulated at three different position
 The first two balises are linked while the third is not.
 A distinction is made between the balise's position and its linked position in order to simulate the case that a balise is not at the position with which it was linked.
 
-
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[caption={The used simulator simulates scenarios that are provided in \texttt{JSON} format. Each scenario consists of a \abr{MA} with a start and an end position, as well as a set of balises. Balises can either be linked or not and include an identification number, a linking position, and a position. The linking position is used to simulate a misplaced balise.}, label=code:scenarioJSON]
 {
   "MA": {
@@ -74,6 +74,8 @@ A distinction is made between the balise's position and its linked position in o
 }
 
 \end{lstlisting}
+\end{minipage}
+
 \subsection{Simulator Classification}
 
 In literature, simulators are distinguished based on their mode of operation and categorized into \abr{DE}-, and \abr{CT}-based simulators~\cite{CoSimulationStateOfTheArt}.
@@ -113,7 +115,7 @@ With the help of the simulator, the system can be tested under different conditi
 \end{table}
 
 
-The functional fault model envisages three situations that must lead to the train being stopped under all circumstances (see~\autoref{subsec:faultModel}).
+The functional fault model envisages three situations that must lead to the train being stopped under all circumstances (ref.~\autoref{subsec:faultModel}).
 For ensuring that these situations are always handled correctly, they are simulated in scenarios, which are - together with their expected behavior - shown in~\autoref{tab:simulatedScenarios}.
 These three scenarios are called \textit{test scenarios}.
 In order to facilitate automatic integration testing, the on-board unit's system logic has been patched to write the system's decisions to input messages and braking curve observations into a file called \textit{evaluation file}.
@@ -127,7 +129,7 @@ By injecting different faults, for example manually crashing a replica, it can b
 \section{System Evaluation}
 
 In this section, the system's functionality, reliability, and safety are evaluated based on various measurements regarding resource utilization and exchanged messages.
-Measurements were made both in idle mode and while processing the test scenarios (see~\autoref{tab:simulatedScenarios}).
+Measurements were made both in idle mode and while processing the test scenarios (ref.~\autoref{tab:simulatedScenarios}).
 In idle mode, the train is at a standstill, no input messages need to be evaluated, and only heartbeat messages are exchanged.
 
 \begin{table}[h!]
@@ -187,14 +189,14 @@ The publisher starts sending messages with different payload sizes and the subsc
 The communication is state-based, i.e. \texttt{WaitSets} are used so that the test setup is comparable to the actual application.
 Because the network has the same diameter between every node, the number of transferred bytes and samples is independent of publisher and subscriber placement.
 
-\begin{figure}[!hb]
+\begin{figure}[!hbt]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/transferRate}
 	\caption{The transfer rate of data samples from one replica to another with different payload sizes. As the payload's size increases, the transfer rate decreases.}
 	\label{fig:PlotTransferRate}
 \end{figure}
 
-\begin{figure}[!hb]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/dataThroughput}
 	\caption{The average throughput of the network when transferring messages of different sizes from one replica to another. Above a payload size of 15000 bytes, the throughput starts to stagnate due to the \abrpl{PLC} hardware limits.}
@@ -238,7 +240,7 @@ At first, the \abr{CPU} utilization is considered, then the memory consumption.
 
 \paragraph{Idle Mode CPU Utilization}
 
-\begin{figure}[!hb]
+\begin{figure}[!hbt]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/CPUUsageIdleTime}
 	\caption{In idle mode, only heartbeat messages are transmitted from the leader to its followers. Hence, the leader's \abr{CPU} is more demanded, but the overall utilization is small.}
@@ -263,7 +265,7 @@ To measure the resource utilization in different situations, the three test scen
 The beginning of the first scenario - \texttt{Reach End of MA} - is marked by \textbf{S1}.
 The beginning of \texttt{Unlinked Balise} is marked with \textbf{S2} and the beginning of \texttt{Balise not where expected} with \textbf{S3}.
 
-\begin{figure}[!hb]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/TotalCPUUsage}
 	\caption{\abr{CPU} utilization during a train's journey. Three scenarios are processed one after the other. At \textbf{S1}, \textbf{S2}, and \textbf{S3} the individual scenarios start with the reception of \abr{MA} and linking information which is transmitted among replicas via the global system state. At \textbf{B1}, an unlinked balise was encountered. At \textbf{B2}, a balise was received whose position does not correspond with its linked position. In both cases, the train has to brake before arriving at the \abr{MA}'s end.}
@@ -279,7 +281,7 @@ During the journey, where the braking curve is constantly monitored, the utiliza
 The remaining two peaks are due to premature brakings.
 At \textbf{B1}, an unlinked balise is noticed by the system and at \textbf{B2}, a balise at an unexpected location is received.
 
-\begin{figure}[!hb]
+\begin{figure}[!hbt]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/SystemUserCPUUsage}
 	\caption{Most of the \abr{CPU} work is done at user-level. When \abr{MA} and linking information are received (\textbf{S1}, \textbf{S2}, and \textbf{S3}) peaks occur on both user- and system-level. However, the leader performs more work on system-level than the followers. This can be explained by the fact that memory is requested for the new state information. For early braking situations (\textbf{B1}, and \textbf{B2}), work is mostly done at user-level and the system-level utilization shows no peaks here.}
@@ -304,7 +306,7 @@ The memory consumption is constant during the whole time due to the chosen appro
 
 \subsection{Leader Election}
 \label{subsec:LeaderElectionEval}
-\begin{figure}[!hb]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/timeWithoutLeader}
 	\caption{Leader election time is the time that passes from the point where a missing leader is recognized until the first heartbeat message is sent by the new leader. Data from 20 elections were used for the measurement.}
@@ -422,7 +424,7 @@ The robustness of the system is shown by the fact that the number of messages se
 
 \paragraph{State Messages Sent}
 
-\begin{figure}[!hb]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/StateMessagesSent}
 	\caption{Messages that were published to state topics over a period of three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. For the first and third scenario, three balises were linked. The second balise includes an unlinked balise and therefore, only two are linked. Further, a crashed leader (at point \textbf{LC}) does not affect the system state's up-to-dateness.}
@@ -666,7 +668,7 @@ For every message that is published or received by a replica, an entry is writte
 Thereby, not only the system's final decision, but also the replica's synchronization to come to an agreement can be understood.
 
 \paragraph{Send Messages Size}
-\begin{figure}[!hb]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/plots/scenarioProcessingMessageSize}
 	\caption{TODO}
@@ -676,7 +678,7 @@ Thereby, not only the system's final decision, but also the replica's synchroniz
 
 \paragraph{Total Messages Received}
 
-\begin{figure}[!hb]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/plots/TotalMessagesReceive}
 	\caption{Overview about all messages that are received from replicas within the system.}
@@ -723,7 +725,7 @@ This is because only one, instead of two, followers remain in the system.
 
 
 \paragraph{Data Transmission Time}
-\begin{figure}[!hb]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/plots/sendingTimes}
 	\caption{Time that is required to transmit messages with different payload sizes via a \abr{DDS} topic. The times were determined by calculating the mean sending time out of 200 messages per payload size.}
@@ -743,7 +745,7 @@ What emerged is, that the transmission time is directly dependent on the publish
 
 \paragraph{State Messages Received}
 
-\begin{figure}[!hb]
+\begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/plots/StateMessagesReceive}
 	\caption{}
