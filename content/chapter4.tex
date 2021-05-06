@@ -13,7 +13,7 @@ In the second section, the system's functionality, reliability, and safety are e
 First, the applied network's data transmission is analyzed.
 Second, the on-board system's resource utilization is measured and assessed.
 Third, leader election times are measured to analyze the worst-case time that the system can be without a leader.
-Afterward, the simulator is used to evaluate how the system supervises the train's movement and processes input messages, even if individual components fail.
+Fourth, the simulator is used to evaluate how the system supervises the train's movement and processes input messages, even if individual components fail.
 Finally in this chapter, a \abr{DDS} subset for achieving the described behavior as well as advantages and challenges of applying \abr{DCPS} middleware in safety-critical systems are presented.
 
 
@@ -39,7 +39,7 @@ The workflow of how the simulator executes a scenario is depicted in~\autoref{fi
 
 In a first step, a new scenario is created from a \textit{json} file.
 An exemplary scenario in \textit{json} format is shown in~\autoref{code:scenarioJSON}.
-In this case, three track-side balises are simulated at three different positions.
+In the depicted case, three track-side balises are simulated at three different positions.
 The first two balises are linked while the third is not.
 A distinction is made between the balise's position and its linked position in order to simulate the case that a balise is not at the position with which it was linked.
 
@@ -82,10 +82,8 @@ In literature, simulators are distinguished based on their mode of operation and
 In a \abr{DE}-based simulation, communication with the environment is characterized by events that are triggered at certain times.
 For \abr{CT}-based simulations, the simulated state is expected to evolve continuously over time.
 Based on these properties, it can be argued that the simulator that is utilized in this work is a combination of a \abr{DE}- and a \abr{CT}-based simulation system.
-On the one hand, the train's movement is simulated in a way that is typical to \abr{CT}-bases simulations because the train's position continuously evolves over time based on its speed.
+On the one hand, the train's movement is simulated in a way that is typical to \abr{CT}-based simulations because the train's position continuously evolves over time based on its speed.
 On the other hand, the track-side balise telegram simulation borrows features from \abr{DE}-based simulators because it communicates via events.
-The events are tied to the simulated train's position and are thereby time-stamp-based.
-
 
 \subsection{Test Automation}
 \label{subsec:testautomation}
@@ -123,7 +121,7 @@ For each decision, the train's current position, the decision of whether the tra
 A \texttt{Python} script is used to automatically evaluate whether the on-board unit corresponds to its expected behavior.
 Therefore, the script invokes the simulator for each scenario and, after the train stopped, analyzes the \textit{evaluation file}.
 In this manner, the system's actual behavior can automatically be compared to its expected behavior.
-By injecting different faults, for example manually crashing a replica, it can be validated whether the system still reacts as expected.
+By injecting different faults, for example manually crashing a replica, it can be validated whether the system is still safe and reacts as expected.
 
 
 \section{System Evaluation}
@@ -170,7 +168,7 @@ The size for each message sent via a given topic is listed in~\autoref{tab:topic
 First in this section, the applied network's data transmission times and latencies are analyzed before its resource utilization is assessed.
 Afterward, the consensus algorithm's leader election time is measured to analyze the worst-case time that the system can be without a leader.
 Finally, the test scenarios are run one after the other.
-The system's components thereby exchange messages that are captured and analyzed to reproduce the system's behavior in the process.
+The system's components thereby exchange messages that are captured, stored, and analyzed to reproduce the system's behavior in the process.
 
 \subsection{Data Transmission}
 
@@ -207,6 +205,20 @@ The network's transfer rate is depicted in~\autoref{fig:PlotTransferRate}.
 While collecting the data, 60 exchanged messages were evaluated.
 As the size of sent messages increases, the transfer rate decreases.
 Whereas an average of 3427 samples per second was transmitted with a payload size of 8 bytes, the average was 1772 samples per second with 4096 bytes.
+\\
+
+In another experiment, the network's average data throughput for varying payload sizes was measured.
+The results are presented in~\autoref{fig:PlotDataThroughput}.
+With a payload size of 1024 bytes, an average data throughput of 24 Mbit/s is reached.
+The throughput increases to 56 Mbit/s on average for a payload size of 4096 bytes and 75 Mbit/s on average for a payload size of 16384 bytes.
+Above this payload size, the throughput increases less steeply and approaches a value just below 80 Mbit/s.
+This value is not far from the 100~MBit/s supported by the \textit{Revolution Pis}' hardware.
+\\
+
+Consequently, for payload sized below 4096 bytes, the application and middleware's processing overhead limits the data transmission rate.
+For messages with a payload size of 4096 bytes and above, the data transmission is limitted by the network's throughput rate.
+Because the messages exchanged by replicas in the system are small, results show that the applied resources used are sufficient and the system's safety is not affected by network latency.
+\\
 
 As the results show, the communication is stable with only a few outliers.
 This work's \abr{QOS}-policies are based on Song \etal~\cite{SongDDSInRealTimeSystems}.
@@ -214,19 +226,6 @@ Although Song \etal utilized a different \abr{DDS} implementation and used a dif
 Compared to Song \etal the communication of this work's system is a little slower.
 While they reached a latency of around 280 microseconds for one kilobyte of data, the proposed architecture reached around 330 microseconds for a one-kilobyte payload.
 However, the values are similar so that the real-time capability of \abr{DDS} - shown by Song \etal - can be transferred to the architecture studied here.
-\\
-
-In another experiment, the network's average data throughput for varying payload sizes is measured.
-The results are presented in~\autoref{fig:PlotDataThroughput}.
-With a payload size of 1024 bytes, an average data throughput of 24 Mbit/s is reached.
-The throughput increases to 56 Mbit/s on average for a payload size of 4096 bytes and 75 Mbit/s on average for a payload size of 16384 bytes.
-Above this payload size, the throughput increases less steeply and approaches a value just below 80 Mbit/s.
-This value is not far from the 100~MBit/s supported by the \textit{Revolution Pis}.
-\\
-
-Consequently, for payload sized below 4096 bytes, the application and middleware's processing overhead limits the data transmission rate.
-For messages with a payload size of 4096 bytes and above, the data transmission is limitted by the network's throughput rate.
-Because the messages exchanged by replicas in the system are small, results show that the applied resources used are sufficient and the system's safety is not affected by network latency.
 
 
 \subsection{Resource Utilization}
@@ -268,7 +267,7 @@ The beginning of \texttt{Unlinked Balise} is marked with \textbf{S2} and the beg
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/TotalCPUUsage}
-	\caption{\abr{CPU} utilization during a train's journey. Three scenarios are processed one after the other. At \textbf{S1}, \textbf{S2}, and \textbf{S3} the individual scenarios start with the reception of \abr{MA} and linking information which is transmitted among replicas via the global system state. At \textbf{B1}, an unlinked balise was encountered. At \textbf{B2}, a balise was received whose position does not correspond with its linked position. In both cases, the train has to brake before arriving at the \abr{MA}'s end.}
+	\caption{\abr{CPU} utilization during a train's journey. Three scenarios are processed one after the other. At \textbf{S1}, \textbf{S2}, and \textbf{S3} the individual scenarios start with the reception of \abr{MA} and linking information which is shared among replicas via the global system state. At \textbf{B1}, an unlinked balise was encountered. At \textbf{B2}, a balise was received whose position does not correspond with its linked position. In both cases, the train has to brake before arriving at the \abr{MA}'s end.}
 	\label{fig:PlotTotalCPUUsage}
 \end{figure}
 
@@ -292,13 +291,13 @@ In~\autoref{fig:PlotSystemUserCPUUsage}, a distinction is made between \abr{CPU}
 It can be seen that the application operates mainly at user-level.
 At the beginning of each journey, when \abr{MA} and linking information are received, peaks on system-level occur (\textbf{S1}, \textbf{S2}, and \textbf{S3}).
 The peaks on system-level utililzation are mainly on leader side and can be explained by the fact that new instances in the global state are created for the new information.
-The peaks on user-level are due to replica synchronization and start of the simulation.
+The peaks on user-level are due to replica synchronization and simulation start.
 In case of a premature stop (\textbf{B1} and \textbf{B2}), the calculation is almost exclusively done at user-level in order to synchronize the replicas and stop the simulation.
 
 \paragraph{Memory Consumption}
 The memory consumption is constant both in idle mode and when processing the scenarios.
 In idle mode, 10.5~MBit were used from both the leader and the follower.
-This number increases to 11.2~MBit while scenarios are processed.
+It increases to 11.2~MBit while scenarios are processed.
 This can be explained by the fact that the supplied \abr{MA} and the linked balises are stored.
 Further, additional messages are exchanged between the replicas.
 The memory consumption is constant during the whole time due to the chosen approach where all memory is allocated at program startup.
@@ -318,11 +317,10 @@ In the following, the maximum time the system can be without a leader is determi
 \\
 
 A leader communicates its existence to the remaining replicas via heartbeat messages.
-If a replica notices the absence of heartbeat messages for a certain period of time (\textit{election timeout}), a new leader gets elected.
 The lower limit of the time that the system is without a leader after the previous leader failed is regulated by the \textit{election timeout}.
 In addition, time is required for the election process itself.
 The leader election process consists of requesting and collecting votes from all replicas in the system.
-An election process's duration is influenced by the replica's computational resources and data transmission speed.
+An election process' duration is influenced by the replica's computational resources and data transmission speed.
 In order to investigate how long the leader election process takes, the time for 20 elections was measured.
 The average time for an election process is depicted in~\autoref{fig:PlotTimeWithoutLeader}.
 Results show that the election process takes 5500µs on average and at worst 7000~µs.
@@ -347,14 +345,14 @@ Based on the chronology of the exchanged messages, the system's behavior in diff
 Therefore, the three test scenarios are simulated one after the other.
 In the following plots, the beginning of the first scenario - \texttt{Reach End of MA} - is marked by \textbf{S1}.
 The beginning of \texttt{Unlinked Balise} is marked with \textbf{S2} and the beginning of \texttt{Balise not where expected} with \textbf{S3}.
-Before the third scenario is started, the previous leader was manually stopped at the moment marked with \textbf{LC}.
-Without manually stopping the leader, the system ran for 60 minutes without reelection.
-After 60 minutes, the processing was manually stopped.
+Before the third scenario is started, the previous leader was manually stopped at the moment labeled with \textbf{LC}.
+%Without manually stopping the leader, the system ran for 60 minutes without reelection.
+%After 60 minutes, the processing was manually stopped.
 
 Any active hardware redundancy mechanisms have been disabled at first.
-Thus, the third scenario has been run only with a leader and one follower, instead of a leader and two followers for the first two scenarios.
+Thus, the third scenario has been run only with a leader and one follower, instead of a leader and two followers in the first two scenarios.
 Later, the active hardware redundancy features are reactivated to show their benefits on the system's reliability.
-For each measurement, the heartbeat timer has been set to 100000µs so that ten messages per second can be attributed to heartbeat messages.
+For each measurement, the heartbeat timer has been set to 100000~µs so that ten messages per second can be attributed to heartbeat messages.
 \\
 
 At first, the number of received input messages is presented and the processing time for each input is measured to show that no input is lost.
@@ -376,24 +374,24 @@ Therefore, the received events are measured to show how a spare increases the sy
 The individual scenarios' structures can be traced by the input messages that the system receives.
 This is depicted in~\autoref{fig:PlotInputMessagesReceive}.
 At the beginning of each scenario, one message with the \abr{MA} and one with the linked balises are received.
-Then, during each scenario, three balise telegrams are received.
-While the \abr{MA} and linking information are received before the first balise telegram for the first two scenarios, they are received at once for the third scenario.
+Then, during each scenario, three balise telegrams are obtained.
+While the \abr{MA} and linking information are received before the first balise telegram for the first two scenarios, they are taken at once for the third scenario.
 This is due to the previously crashed leader.
 However, it further shows that the input messages are buffered and no input message is lost, even if the leader crashed right before input is received.
 \\
 
 Response times and availability for \texttt{Raft}-based consensus systems have been studied by Sakic and Kellerer~\cite{SakicTimeInConsensus}.
 Their results show that in a cluster with three components, each event can be handled in at least 1000~ms.
-The event processing time for this work's application depends on two factors: the presence of a leader and the input processing time.
-In a worst-case, there the leader fails when a new input event occurs, the absent leader needs to be recognized, a new one needs to be elected, and the input needs to be processed.
+The event processing time for this work's application depends on two factors; the presence of a leader and the input processing time.
+In a worst-case - in which the leader fails while a new input event occurs - the absent leader needs to be recognized, a new one needs to be elected, and the input needs to be processed.
 Since leader election and input processing times are small, the \textit{election timeout} is the decisive factor.
-With an \textit{election timeout} of 500~ms, the system guarantees a result after around 0.6~ms.
+With an \textit{election timeout} of 500~ms, the system guarantees a result after around 600~ms.
 
 
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/inputProcessingTimes}
-	\caption{Time it takes the system to process input messages of different types. The \texttt{Movement Authority} and \texttt{Balise Linking} input type require the leader to add them to the system's global data space. A linking message includes more data and therefore requires more time. For messages of \texttt{Balise Telegram} type, the system performs redundant computation and final voting. The outliers are due to balise telegrams that require the operated train to brake, such as an unlinked balise.}
+	\caption{Time it takes the system to process input messages of different types. The \texttt{Movement Authority} and \texttt{Balise Linking} input type require the leader to add data to the system's global state. A linking message includes more data and therefore requires more time. For messages of \texttt{Balise Telegram} type, the system performs redundant computation and final voting. The outliers are due to balise telegrams that require the operated train to brake, such as an unlinked balise.}
 	\label{fig:PlotInputProcessingTimes}
 \end{figure}
 
@@ -416,7 +414,7 @@ Therefore, network latency, message processing, and voting add to the overall ba
 The total number of messages sent per second by the replicas is shown in~\autoref{fig:PlotTotalMessagesSent}.
 The beginning and end of each of the three scenarios can be seen in the plot by the total number of sent messages.
 While the train is driving, 20-25 messages are sent per second.
-The number reduces to when the scenarios finish, the train stops, and the system returns to idle mode.
+The number reduces to 12-14 after a scenario finished, the train stoped, and the system returned to idle mode.
 While the train is driving, it is the leader's responsibility to update the system's global state, explaining the prominent increase in sent messages during operation.
 A majority of messages are sent by the system's leader, ten alone due to heartbeat messages.
 The rest accrue from a system-wide braking curve monitoring, for which requests and responses are transmitted.
@@ -434,7 +432,7 @@ The robustness of the system is shown by the fact that the number of messages se
 State topics include \texttt{TrainState}, \texttt{MovementAuthority}, and \texttt{LinkedBalises}.
 The number of messages published to these topics can be seen in~\autoref{fig:PlotStateMessagesSent}.
 It is noticeable that most state messages are published on the \texttt{TrainState} topic.
-This is because the position is simulated every 100000µs and written to \texttt{TrainState}.
+This is because the position is simulated every 100~ms and written to \texttt{TrainState}.
 Messages to \texttt{MovementAuthority} and \texttt{LinkedBalises} are only published at the beginning of each scenario because, at this time, the \abr{MA} and linked balises are communicated to the system.
 It can further be seen that three balises are linked in the first and third scenario, but only two linked balises are added for the second.
 The state messages are all sent by the leader because it is the only replica allowed to publish to these topics.
@@ -451,20 +449,19 @@ Hence, a new leader has been elected.
 \end{figure}
 
 Behavioral topics include \texttt{AppendEntries}, \texttt{AppendEntriesReply}, \texttt{RequestVote}, and \texttt{RequestVoteReply}.
-The majority of messages is published to the \texttt{AppendEntries} topic due to the leader periodically publishing a heartbeat message.
-The majority of messages gets published to the \texttt{AppendEntries} topic due to the leader periodically publishing a heartbeat message.
+The majority of messages is published to the \texttt{AppendEntries} topic due to the leader periodically publishing heartbeat messages.
 Before the first scenario is executed, a leader election takes place which is indicated by traffic on \texttt{RequestVote} and \texttt{RequestVoteReply}.
 Another leader election happens after the previous leader crashed (\textbf{LC}).
 The fact that the previous leader crashed is reflected in the collapse of heartbeat messages on the \texttt{AppendEntries} topic.
 Again, a vote request is published to the corresponding topic by the first replica that notices the absent leader.
 This time, only one vote reply is published because only one other replica remains in the system.
-The fact that the amount of heartbeat messages increases back to the number before the previous leader crashed indicates that a new leader has been established.
+The fact that the amount of heartbeat messages increases back to the number before the first leader crashed indicates that a new leader has been established.
 
 
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/ConsensusMessagesReceive}
-	\caption{The number of messages that were received by any replica from behavioral topics throughout three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. After the previous leader crashed at point \textbf{LC}, the number of received messages via the \texttt{AppendEntries} topic decreased by half. This is because heartbeat messages are sent via this topic and the number of followers decreased from two to one after one crashed.
+	\caption{The number of messages that were received by any replica from behavioral topics throughout three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. After the previous leader crashed at point \textbf{LC}, the number of received messages via the \texttt{AppendEntries} topic decreased by half. This is because heartbeat messages are sent via this topic and the number of followers decreased from two to one after the leader's crash.
 }
 	\label{fig:PlotConsensusMessagesReceive}
 \end{figure}
@@ -480,17 +477,17 @@ A difference, on the other hand, can be seen when active hardware redundancy is 
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/ConsensusMessagesReceiveAHR}
-	\caption{The number of messages that were received by any replica from behavioral topics throughout three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. A hot standby was utilized that takes over after the first leader crashed at point \textbf{LC}. After the leader crashed, the number of received messages via the \texttt{AppendEntries} topic became less. Afterward, a new leader gets elected and the spare unit got activated. This is reflected by the fact that the total number of received messages on the \texttt{AppendEntries} topic got back to the amount before \textbf{LC}.}
+	\caption{The number of messages that were received by any replica from behavioral topics throughout three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. A hot standby was utilized that takes over after the first leader crashed at point \textbf{LC}. After the leader crashed, the number of received messages via the \texttt{AppendEntries} topic dropped. Afterward, a new leader got elected and the spare unit got activated. This is reflected by the fact that the total number of received messages on the \texttt{AppendEntries} topic got back to the amount before \textbf{LC}.}
 	\label{fig:PlotConsensusMessagesReceiveAHR}
 \end{figure}
 
-In a separate run, active hardware redundancy is applied in the form of hot standby.
+In a separate simulation, active hardware redundancy is applied in the form of a hot standby.
 Therefore, a fourth replica was added in spare mode.
-After the second scenario ended and the third starts, the previous leader was manually crashed (\textbf{LC}).
+After the second scenario ended and the third starts, the previous leader was manually stopped (\textbf{LC}).
 \\
 
-The total number of messages that are thereby received via the behavioral topics is depicted in~\autoref{fig:PlotConsensusMessagesReceiveAHR}.
-The crashed leader is evident from the collapse of the received heartbeat messages in the system.
+The total number of messages that are received via behavioral topics is depicted in~\autoref{fig:PlotConsensusMessagesReceiveAHR}.
+The crashed leader is evident from the collapse of received heartbeat messages in the system.
 Shortly after, a new leader election takes place and the number of received messages on the \texttt{AppendEntries} topic stabilizes.
 Unlike in~\autoref{fig:PlotConsensusMessagesReceive}, the number goes back to that before \textbf{LC} showing that there are three active replicas again.
 
@@ -498,11 +495,11 @@ Unlike in~\autoref{fig:PlotConsensusMessagesReceive}, the number goes back to th
 \section{\glsentrylong{DDS}}
 
 \abr{DCPS} systems, such as \abr{DDS}, are designed for machine-to-machine communication in real-time applications~\cite{omgDDSspec}.
-It is designed to facilitate reliable and safe communication in distributes systems.
+\abr{DDS} is designed to facilitate reliable and safe communication in distributes systems.
 Therefore, \abr{DDS} was chosen as the basis for the redundant on-board system.
 \\
 
-One contribution of this work, in addition to the suitability of \abr{DDS} for secure and redundant systems, was to find a minimal subset for implementation.
+One challenge of this work, in addition to the suitability of \abr{DDS} for secure and redundant systems, was to find a minimal subset for implementation.
 This is because the system, which is designed to function as a \abr{ETCS} on-board unit, requires a high \abr{SIL}~\cite{ChakrabortyFaultTolerantRailway}.
 With \abr{DDS} being a significant part in the implementation, the \abr{SIL} of \abr{DDS} needs to be high as well.
 With minimal functionality, the cost and time required for approval is also minimal.
@@ -515,18 +512,18 @@ Finally, the opportunities and challenges of \abr{DCPS} systems for consensus-ba
 
 The required subset is determined based on the system requirements.
 Secure and reliable communication between different entities should be possible.
-Further, communication should be independent of the network topology and the components involved should be able to switch dynamically between the sender and receiver sides.
+Further, communication should be independent of the network topology and the components involved should be able to switch dynamically between being sender and receiver.
 In addition to deadlines and time constraints, event-based communication should be enabled.
 In this way, the \abrpl{RPC} proposed by \texttt{Raft} can be emulated.
-In addition, it should be possible to have a global system state managed by DDS.
+Additionally, a global system state should be managed by \abr{DDS}.
 \\
 
-The \abr{DCPS} part of \abr{DDS} is divided into five modules that each fulfills different tasks.
+The \abr{DCPS} part of \abr{DDS} is divided into five modules that each fulfills a different task.
 Throughout this section, the used subset for each of the five modules is described.
 \\
 
 The overview of used functionality only contains methods that are directly used by the application.
-However, the middleware might utilize additional functionalities to implement the features mentioned in this system.
+However, the middleware might transitively utilize additional functionalities to implement the features mentioned in this system.
 
 \paragraph{Domain Module}
 A \abr{DDS} application's main building blocks comprise a \texttt{Domain}, one or multiple \texttt{DomainParticipants}, as well as a \texttt{DomainParticipantFactory} for creating new \texttt{DomainParticipants}~\cite{omgDDSspec}.
@@ -555,7 +552,7 @@ Besides these two classes, the following functionality is required for the exemp
 
 \paragraph{Subscription Module}
 The subscription module resembles the publication module but for reading and receiving data.
-However, besides \texttt{Subscribers} and \texttt{DataReaders} it also contains \texttt{DataSample}, \texttt{SampleInfo} and \texttt{ReadCondition}.
+However, besides \texttt{Subscribers} and \texttt{DataReaders}, it also contains \texttt{DataSample}, \texttt{SampleInfo}, and \texttt{ReadCondition}.
 \texttt{Subscribers} and \texttt{DataReaders} are required for receiving data, which is represented by a \texttt{DataSample}.
 The \texttt{SampleInfo} data structure contains additional information for each \texttt{DataSample}, such as its instance handle or state, which makes it mandatory for the implementation as well.
 \texttt{ReadConditions} are used in combination with \texttt{WaitSets}, so that the application can react to certain middleware states.
@@ -637,6 +634,7 @@ For example, an active spare unit can be added to the system at any time and is 
 This would also allow to apply a three-out-of-five system rather than a two-out-of-three system and use the same software.
 
 Finally, \abr{DDS} supports fast transmission times and manageable hardware utilization, as shown in measurements.
+All in all, the functionalities of DDS simplify secure and time-critical communication, as well as procedures.
 
 \paragraph{Challenges}
 On the other hand, the \abr{DDS} standard has been designed around a loose coupling of publishing and subscribing components.
@@ -656,7 +654,8 @@ This introduces a computational overhead, though a small one as the system's res
 Lastly, a system that utilizes \abr{DDS} for communication needs to support concurrent computations when more than one message should be processable at any time.
 This introduces potential race conditions or deadlocks and can complicate the development and approval process.
 Since the developed system, for example, needs to react to vote requests and log replication messages at any time, a concurrent system design is unavoidable.
-As discussed in~\autoref{subsub:raceConditions} though, the implemented concurrent algorithm has no race conditions.
+However, as described in~\autoref{subsub:raceConditions}, the implemented concurrent algorithm keeps the probability of race conditions small.
+All in all, the use of \abr{DDS} can increase the development effort on the one hand. However, on the other hand, it offers functionalities to simplify and ensure the security and implementation of time-critical applications.
 
 
 

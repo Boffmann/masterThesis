@@ -15,10 +15,9 @@ In the second part, the thesis describes the implementation of the redundant arc
 \texttt{Raft} was chosen as the basis for the consensus part.
 Besides a leader election and decision-making algorithm, methods for system recovery that increase reliability are presented.
 Finally, the implementation is evaluated using a simulator and automatic integration tests.
-Results show fault-tolerance in the event of individual component failure, as well as sufficient real-time capability and system recovery.
+Results verify fault-tolerance in the event of individual component failure, as well as sufficient real-time capability and system recovery.
 Based on these results, a subset of \abr{DDS} functionality was assembled.
 This facilitates the creation of specialized \abr{DDS} middleware so that the costs for developing and approving future \abr{ETCS} on-board systems can be greatly reduced.
-
 
 
 \section{Future Work}
@@ -35,19 +34,20 @@ Based on this, other test scenarios can be added to the simulator.
 Further, advanced checks not related to incoming messages - such as detecting missed balises - can be implemented.
 \\
 
-The results of this work are based on assumptions.
-For example, assumptions are that messages are processed correctly by the middleware, and no data is lost or corrupted during transmission.
+The results of this work are based on some assumptions.
+For example, it is assumed that messages are processed correctly by the middleware, and no data is lost or corrupted during transmission.
 Since this is not always guaranteed, other redundancy concepts, such as information and time redundancies, could be applied.
-In the context of this, redundant and diverse transmission channels, such as CAN-Bus or FlexRay, can be used.
-Further, \abr{ECC} concepts, such as Hamming codes or Reed-Solomon-Codes, could be applied to detect and correct transmission errors.
+In the context of this, redundant and diverse transmission channels, such as CAN-Bus or FlexRay, can be used, or the same data can be sent multiple times.
+Further, \abr{ECC} concepts, such as Hamming codes or Reed-Solomon-Codes~\cite{ReedSolomonCodes}, could be applied to detect and correct transmission errors.
 \\
 
 This work's fault model omits Byzantine faults.
 Reliable decision-making, despite one manipulative component, requires at least four voters and two rounds of communication~\cite{GamerIncreasingMOON}.
 Thereby, the network's delay and load increase.
-For use in highly safety-critical applications, Byzantine errors should also be covered.
+For use in highly safety-critical applications, Byzantine faults should also be covered, and the resulting impact on the system must be investigated.
+Further, diverse hardware redundancy can be applied to reduce the chance of having multiple manipulative components and common core errors.
 
-In addition, the system should be applied as an on-board unit.
+In addition, the system is intended as an \abr{ETCS}1 on-board unit.
 As such, it interacts with the train's hardware, which has not yet been covered within this work.
 
 The train hardware includes, among other things, the brakes, as well as position sensors.

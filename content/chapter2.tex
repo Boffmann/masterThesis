@@ -2,7 +2,7 @@
 \label{chptr:redundantSystemsCompare}
 Due to high demands on the safety and reliability of an on-board unit, it is to be developed as a redundant system.
 As previously described, there are different approaches and concepts to redundancy.
-In order to evaluate the reliability of different redundant system architectures and concepts, the developed system's functional requirements need to be known.
+In order to evaluate the reliability of different redundant architectures and concepts, the developed system's functional requirements need to be known.
 Furthermore, possible security risks and catastrophic failures must be known in order to be able to come up with a suitable system architecture.
 \\
 
@@ -11,20 +11,20 @@ For this purpose, an \abr{ETCS} scenario - which is derived from the \abr{ETCS} 
 Based on this scenario, further investigations are made.
 Afterward, a fault model is established and \abr{DDS} building blocks are introduced that lay the foundation for the following comparison of redundant architectures.
 Then, based on \abr{TMR}, different redundancy architectures are developed and evaluated.
-Finally, the system comparison is summarized and a final system architecture, as well as a synchronization model is presented.
+Finally, the system comparison is summarized and a final system architecture, as well as a synchronization model, are presented.
 
 \section{System Demands}
 As already stated, the system that is developed in this thesis is intended to function as an on-board unit within \abr{ETCS} level two.
 As such, it receives information from the \abr{RBC}, estimates the train's position based on sensor data, observes the train's braking curve, and evaluates telegrams from track-side balises.
-For demonstration purposes, a subset of the \abr{ETCS} level two is considered.
+For demonstration purposes, a subset of \abr{ETCS} level two is considered.
 In the following, the \abr{ETCS} subset as well as the resulting system requirements are described.
 
 \subsection{Scenario Description}
 \label{sec:ScenarioDescription}
 
-The on-board system to be developed should process \abr{ETCS} scenarios.
+The considered on-board system should process \abr{ETCS} scenarios.
 Such a scenario consists of a \abr{MA}, a set of linked balises, and track-side balises.
-In each scenario, the train goes through a journey that begins as soon as the trains starts moving and stops when braking.
+In each scenario, the train goes through a journey that begins as soon as the trains starts moving and stops when it brakes.
 \\
 
 As such, the system should be able to receive a \abr{MA} that contains driving permissions.
@@ -41,11 +41,11 @@ Such balise telegrams consist of an unique identifier so that they can be assign
 When receiving a balise telegram, the train's position is set to the balise's position and the confidence interval is reset.
 \\
 
-During the entire journey, the train's braking curve needs to be periodically calculated and coordinated with the \abr{MA}'s end position.
+During an entire journey, the train's braking curve needs to be periodically calculated and coordinated with the \abr{MA}'s end position.
 Thereby, it is ensured that the train will not drive past the \abr{MA}'s boundaries.
 
 An algorithm for calculating a train's braking curve in \abr{ERTMS} systems is presented by B. Friman~\cite{CalculateBrakeCurveFriman}.
-In general, three types of information are considered for supervising a train, namely speed restrictions, track gradients, and a train's characteristic deceleration abilities.
+In general, three types of information are considered for supervising a braking curve, namely speed restrictions, track gradients, and a train's characteristic deceleration abilities.
 For calculating a train's braking distance $dbr$ for a train with a deceleration ability of $dec$ from one speed $v_1$ to another speed $v_2$, the following equation can be used:
 
 \begin{equation}
@@ -72,39 +72,28 @@ Byzantine faults are not covered.
 During a train's journey, situations may arise that affect its safety.
 The deployed system should be able to detect the following problems:
 
-\begin{itemize}
+\begin{enumerate}
 \item When the braking curve calculation shows that the train reaches the end of the \abr{MA}.
 \item A balise telegram is received whose associated balise is not linked.
 \item The balise telegram from a linked balise is received, but the linked position is outside the system's current confidence interval.
-\end{itemize}
+\end{enumerate}
 
 In the event of one of the problems described above, the system must stop the train.
 In a simulation, it is sufficient to generate an appropriate notification.
 In practice, the train's brakes need to be controlled for this purpose.
-This requires additional hardware that can be controlled by switching currents.
+To interface with the brakes, additional hardware that can be controlled by switching currents is required.
 \\
 
 In the context of this work, problems related to receiving and processing inputs are considered.
-It is further mandatory for the operated train's safety to, for example, detect when no balise telegram is received at positions where a linked balise is expected.
-It is possible to periodically check for such situations, similar to brake curve monitoring.
-
 The applied components' internal consistency is not monitored.
 This means that hardware faults can lead to component failures.
 Since the system is operating in a safety-critical environment, individual component failures need to be mitigated to not affect the system's safety.
-Therefore, redundancy concepts should be applied.
+Therefore, redundancy concepts are applied.
 
 In the redundant system, a voter performs a majority voting and thereby generates a final system decision.
 For the voter to perform a vote, individual replica's decisions need to be submitted to the voter.
 Therefore, the communication channel and the \abr{DDS} middleware are expected to be safe and reliable.
 Hence, it is assumed that no data is lost or corrupted during transmission.
-\\
-
-In systems where safe and reliable communication cannot be presumed, information and time redundancy techniques can be used.
-For example, additional communication channels can be applied, or the same data can be sent multiple times to reduce the chance of communication errors.
-Again, diverse redundancy can further improve safety and reliability because it excludes specific communication technology errors.
-For example, one communication channel could apply Ethernet and another could be via CAN-bus.
-If interference on one channel affects communication, it can take place on the second.
-
 
 \section{\glsentryfull{DDS} Building Blocks}
 
@@ -132,7 +121,7 @@ In this section, an overview about different information types and possibilities
 			\hline
 			LatencyBudget & Depends on actual implementation & Not required & The maximum acceptable delay for sending the data should be chosen so that deadlines are not missed. \\
 			\hline
-			Reliability & BestEffort & Reliable & For rapidly and periodically changing states, it is ok if some data gets lost. For enduring state, however, data has to be transferred reliably. \\
+			Reliability & BestEffort & Reliable & For rapidly and periodically changing states, it is ok if some data get lost. For enduring state, however, data has to be transferred reliably. \\
 			\hline
 			WriterDataLifecycle & Not required & Do not dispose unregistered instances & Even if data instances are unregistered, the actual data on enduring state topics should not be disposed. \\
 			\hline
@@ -147,7 +136,7 @@ Possible \gls*{QOS} settings for volatile and enduring states are presented in~\
 
 \begin{table}[htbp!]
 	\begin{center}
-		\caption{\Gls*{QOS} policies for event topics in a \gls*{DDS} system. Event topics can be used to for \glsentryfull{RPC} to make inquiries and invoke functionality from other components.}
+		\caption{\Gls*{QOS} policies for event topics in a \gls*{DDS} system. Event topics can be used to for \abr{RPC} to make inquiries and invoke functionality from other components.}
 		\label{tab:eventQOS}
 		\begin{tabularx}{\textwidth}{|X|X|X|}
 			\hline
@@ -183,7 +172,7 @@ While some settings are universal for event topics, some others need to be evalu
 
 \section{Architecture Comparisons}
 As proposed by Johnson Barry, the different redundancy techniques are applicable for different use-cases~\cite{BarryFaultToleranceAnalysis}.
-In this section, different redundancy techniques are selected, combined and evaluated based on the following criteria:
+In this section, different redundancy techniques are selected, combined, and evaluated based on the following criteria:
 
 \begin{itemize}
 \item \textbf{Reliability:} How likely does the system continue to operate as specified in case of faults?
@@ -197,7 +186,7 @@ For investigating the technique's implementability with \gls*{DDS}, possible \ab
 \\
 
 Regardless of the specific architecture, the system should receive and process inputs via a \abr{DDS} event topic.
-For specific inputs - in this work's scenario balise telegrams - an output in form of a decision should be generated.
+For specific inputs - in this work balise telegrams - an output in form of a decision should be generated.
 In order for the system to generate a single output, the utilized replicas require to communicate with one another via \abr{DDS} event topics.
 Further, the replicas should be able to access a global system state managed via \abr{DDS} state topics to make deterministic decisions.
 Other design decisions are architecture-specific.
@@ -242,7 +231,7 @@ Another problem arises when the frequency in which inputs occur is higher than t
 In such a case, an output might be already outdated even before it is being produced.
 \\
 
-Recapped, \abr{TMR} suffers three significant challenges, which being:
+\noindent Recapped, \abr{TMR} bears three significant challenges, which being:
 
 \newcommand{\ChallengeWR}{\textbf{Multiple Wrong Results}\xspace}
 \newcommand{\ChallengeVoter}{\textbf{Single Voter}\xspace}
@@ -289,16 +278,16 @@ Adding a spare replica is a possibility to address the \ChallengeWR problem.
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/TMRWithSparesDDS}
-	\caption{A hot standby can be implemented using a \abr{DDS} event topic to send \textit{activate} and \textit{deactivate} events. The voter unit is responsible for detecting a failed and thereupon activates the spare component (S) by sending a corresponding event.}
+	\caption{A hot standby can be implemented using a \abr{DDS} event topic to send \textit{activate} and \textit{deactivate} events. The voter unit is responsible for detecting a failed replica and thereupon activates the spare component (S) by sending a corresponding event.}
 	\label{fig:TMRWithSparesDDS}
 \end{figure}
 
 Instead of adding more replicas in a passive hardware redundancy way, they can also be added as spares in an active hardware redundancy approach.
 However, this also increases costs and communication overhead.
 
-Standby redundancy is a way for redundant systems to repair themselves in case of failures by adding spare replicas, that can replace faulty replicas.
+Standby redundancy is a way for redundant systems to repair themselves in case of failures by adding spare replicas that can replace faulty replicas.
 Therefore, the system relies on error detection methods.
-For the reliability of \abr{TMR} with a spare component holds - provided that the system can reliable detect and repair any error and the replicas are homogeneous and independent:
+For the reliability of \abr{TMR} systems with one spare component holds - provided that the system can reliable detect and repair any error and the replicas are homogeneous and independent:
 
 \begin{equation}
 R_{TMR\_S}(t) = 2 * {3 \choose 3} e^{-\lambda t} + {3 \choose 2} e^{-\lambda t}
@@ -306,10 +295,10 @@ R_{TMR\_S}(t) = 2 * {3 \choose 3} e^{-\lambda t} + {3 \choose 2} e^{-\lambda t}
 \end{equation}
 
 One way of implementing \abr{TMR} with a spare using \abr{DDS} is depicted in~\autoref{fig:TMRWithSparesDDS}.
-The input, as well as the replica's results and an activate event are modeled as \abr{DDS} event topics.
-In an exemplary case where one replica crashes, the voter receives only two replica results and thereupon sends an activate event via the corresponding topic.
-When the spare replica (S) receives the activate event, is subscribes to the \texttt{Input} topic and registers to the \texttt{Replica Results} topic to publish data to it.
-If the failed replica comes back to life and the voter recognizes this, the voter can reject the result from (S) and send a \textit{deactivate} event.
+The input, as well as the replica's results and an activate event, are modeled as \abr{DDS} event topics.
+In an exemplary case where one replica crashes, the voter receives only two replica results and thereupon sends an \textit{activate} event via the corresponding topic.
+When the spare replica \textbf{(S)} receives the activate event, is subscribes to the \texttt{Input} topic and registers to the \texttt{Replica Results} topic to publish data to it.
+If the failed replica comes back to life and the voter recognizes this, the voter can reject the result from \textbf{(S)} and send a \textit{deactivate} event.
 After that, the spare replica ends its subscription to the input topic and stops publishing results.
 A precondition for this approach is, that a replica's result can be unambiguously assigned to a replica, for example by using IDs or by using an individual result topic for each replica.
 Further, the spare replica's state needs to be synchronized with the other replicas to make pertinent decisions, which can be assured by managing a global system state through \abr{DDS}.
@@ -327,11 +316,11 @@ Hence, a pipelined \abr{TMR} approach is considered in the following.
 	\label{fig:PipelineIntermediateVoters}
 \end{figure}
 
-In a pipelined approach, intermediate voting should be used to reduce the effect of wrong intermediate results.
+In a pipelined approach, intermediate voting should be used to reduce the effects of wrong intermediate results.
 It is further possible that components function as both a voter and a data processing replica.
-A redundant and pipelined system with intermediate voting on replicas is depicted in~\autoref{fig:PipelineIntermediateVoters}, where voters (1), (2), and (3) each perform a majority voting based on the results from replicas (1), (3), and (5).
-Based on the intermediate voter, replicas (2), (4), and (6) can perform their dedicated calculations and produce individual outputs, which are later processed by the voter (4).
-Thereby, any failure from replicas (1), (3), or (5) can be masked before they are even handled to the final voter (4).
+A redundant and pipelined system with intermediate voting on replicas is depicted in~\autoref{fig:PipelineIntermediateVoters}, where voters \textbf{(1)}, \textbf{(2)}, and \textbf{(3)} each perform a majority voting based on the results from replicas \textbf{(1)}, \textbf{(3)}, and \textbf{(5)}.
+Based on the intermediate voter, replicas \textbf{(2)}, \textbf{(4)}, and \textbf{(6)} can perform their dedicated calculations and produce individual outputs, which are later processed by the voter \textbf{(4)}.
+Thereby, any failure from replicas \textbf{(1)}, \textbf{(3)}, or \textbf{(5)} can be masked before they are further processed and handled to the final voter \textbf{(4)}.
 However, this approach is still a two-out-of-three approach and therefore has the same challenges that \abr{TMR} has.
 Further, the pipelined approach's reliability can be calculated in the same way as for \abr{TMR}, because in the worst case, two replicas of type A or type B could fail.
 \\
@@ -340,8 +329,8 @@ Although the pipelined approach enhances the system's throughput, it also enhanc
 Thus, a trade-off needs to be made between the added throughput and the additional computation,  as well as the communication overhead and the increased cost for the system.
 \\
 
-Again, the reliability evaluation can only be made without evaluating the voter - in the pipelined version voter (4) - which remains a single point of failure.
-The voter can be prevented from being the single point of failure by adding redundancy for the voter as well, like for voters (1), (2), and (3) in~\autoref{fig:PipelineIntermediateVoters}.
+Again, the reliability evaluation can only be made without evaluating the voter - in the pipelined version voter \textbf{(4)} - which remains a single point of failure.
+The voter can be prevented from being the single point of failure by adding redundancy for the voter as well, like for voters \textbf{(1)}, \textbf{(2)}, and \textbf{(3)} in~\autoref{fig:PipelineIntermediateVoters}.
 In such a system, it needs to be ensured that only a single voter is in charge of controlling the system's final output.
 This can be achieved by applying a consensus algorithm.
 
@@ -350,7 +339,7 @@ This can be achieved by applying a consensus algorithm.
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/ThreeComponentConsensus}
-	\caption{In a consensus-based architecture, no component is a single point of failure. Instead, the components agree on how the output is generated. In this example, voter (4) performs a majority voting on the redundant results from the replicas of type \textbf{A}. Type \textbf{B} replicas implement the consensus algorithm and agree on who controls the output.}
+	\caption{In a consensus-based architecture, no component is a single point of failure. Instead, the components agree on how the output is generated. In this example, voter \textbf{(4)} performs a majority voting on the redundant results from the replicas of type \textbf{A}. Type \textbf{B} replicas implement the consensus algorithm and agree on who controls the output.}
 	\label{fig:ThreeRepConsensus}
 \end{figure}
 
@@ -362,9 +351,9 @@ Followers can become candidates in order to promote to become the new leader.
 \texttt{Raft}'s leader election algorithm ensures that only one leader is active at a time and that the absence of a leader in the system is reliably detected.
 
 An example of how the three roles from \texttt{Raft} are used is depicted in~\autoref{fig:ThreeRepConsensus}.
-The replicas (1), (2), and (3) make up a \abr{TMR} system, while replicas (4), (5), and (6) together define a voter for the system.
-The replicas (4), (5), and (6) together implement the consensus protocol and each provides a designated voter.
-In the example of~\autoref{fig:ThreeRepConsensus}, replica (4) took over the leader role and thereby had complete control over the output, while (5) and (6) are followers.
+The replicas \textbf{(1)}, \textbf{(2)}, and \textbf{(3)} make up a \abr{TMR} system, while replicas \textbf{(4)}, \textbf{(5)}, and \textbf{(6)} together define a voter for the system.
+The replicas \textbf{(4)}, \textbf{(5)}, and \textbf{(6)} together implement the consensus protocol and each provides a designated voter.
+In the example of~\autoref{fig:ThreeRepConsensus}, replica (4) took over the leader role and thereby had complete control over the output, while \textbf{(5)} and \textbf{(6)} are followers.
 \\
 
 A consensus-inspired redundant application provides a way to address the \ChallengeVoter problem.
@@ -391,14 +380,14 @@ The implementation is described in~\autoref{cpt:Implementation}.
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.9\linewidth]{images/ThreeEUConsensusDDS}
-	\caption{An approach for building a hybrid consensus- and voting-based \abr{TMR} system using \abr{DDS} event topics. The approach follows concepts of \texttt{Raft}. In \texttt{Raft}, replicas communicate via \abrpl{RPC}. At least two \abrpl{RPC} are required, namely \texttt{RequestVote} and \texttt{AppendEntries}. \texttt{RequestVote} is used for electing a system leader and is accessed by the consensus component. \texttt{AppendEntries} is used to send heartbeat messages and exchange logs, such as inputs and decisions, between the input processing and the consensus component. The consensus component has an integrated voter for voting on decisions. The \abr{EU} with (1) and (4) took over the leader role and thereby read inputs and controls the output.}
+	\caption{An approach for building a hybrid consensus- and voting-based \abr{TMR} system using \abr{DDS} event topics. The approach follows concepts of \texttt{Raft}. In \texttt{Raft}, replicas communicate via \abrpl{RPC}. At least two \abrpl{RPC} are required, namely \texttt{RequestVote} and \texttt{AppendEntries}. \texttt{RequestVote} is used for electing a system leader and is accessed by the consensus component. \texttt{AppendEntries} is used to send heartbeat messages and exchange logs, such as inputs and decisions, between the input processing and the consensus component. The consensus component has an integrated voter for voting on decisions. The \abr{EU} with \textbf{(1)} and \textbf{(4)} took over the leader role and thereby read inputs and controls the output.}
 	\label{fig:ThreeRepConsensusDDS}
 \end{figure}
 
 The redundant architecture, which meets all the requirements in terms of reliability and safety, is a combination of the architectures described above and depicted in~\autoref{fig:ThreeRepConsensusDDS}.
 The basic architecture is similar to a pipelined \abr{TMR} with a spare and an elected voter.
 On the one hand, an input processing unit is responsible for reading inputs, making decisions, and communicating the decisions to the consensus component.
-On the other hand, the consensus component implements the leader election logic, exchanges votes with other replicas, requests decisions from input processing units, performs votes on decisions, and controls the system's output.
+On the other hand, a consensus component implements the leader election logic, exchanges votes with other replicas, requests decisions from input processing units, performs votes on decisions, and controls the system's output.
 Further, a spare unit is used that can be activated or deactivated by the system's leader.
 \texttt{Raft} lays the foundation for the applied consensus algorithm.
 \\
@@ -406,7 +395,7 @@ Further, a spare unit is used that can be activated or deactivated by the system
 In \texttt{Raft}, it is the leader's responsibility to send periodic heartbeat messages to notify followers about its existence.
 The heartbeat messages, as well as all other messages in \texttt{Raft}, are expressed as \abrpl{RPC}.
 At least two \abrpl{RPC} need to be supported, namely \texttt{AppendEntries} and \texttt{RequestVote}.
-\texttt{AppendEntries} is used for sending heartbeat messages and other commands, called logs in \texttt{Raft}, while \texttt{RequestVote} is invoked by candidates to gather votes to become the new leader.
+\texttt{AppendEntries} is used for sending heartbeat messages and other commands - called logs in \texttt{Raft} - while \texttt{RequestVote} is invoked by candidates to gather votes to become the new leader.
 Since \abr{DDS} will be used for communication, the \abrpl{RPC}, as well as the \texttt{Deactivate/Activate} topic, are represented by \abr{DDS} event topics.
 \\
 
@@ -431,7 +420,7 @@ When the hardware timer is not stopped after a timeout is expired, the train can
 \\
 
 Even though the approach presented in~\autoref{fig:ThreeRepConsensusDDS} resembles a pipelined approach, each pipeline is executed on the same \abr{EU}.
-In order to benefit from throughput benefits, each pipeline step should be placed on a different \abr{EU} though.
+In order to benefit from throughput benefits, each pipeline step should be placed on a different \abr{EU}, though.
 Nevertheless, the presented approach does not suffer from a \ChallengeThrough so that a single \abr{EU} for each pipeline is sufficient.
 Further, the approach allows for more replicas by distributing the logic modules accordingly.
 This is because the components communicate via \abr{DDS} topics and are thereby freely scalable.
