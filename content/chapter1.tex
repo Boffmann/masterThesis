@@ -1,8 +1,8 @@
  \chapter{Background and Related Work}
 \label{chptr:concepts}
 
-All systems that are designed based on the \abr{ETCS} specification must be safety-critical~\cite{OnBoardUnitSafetyTesting}. 
-Introducing redundancy to safety-critical systems is a popular approach to ensure that faults inside the system do not lead to failures that affect the system's environment.
+As ETCS is a safety-critical application, all components and software designed for ETCS must comply with specific requirements towards integrity and reliability.~\cite{OnBoardUnitSafetyTesting}. 
+Introducing redundancy to safety-critical systems is a popular approach to reduce risk and ensure that faults inside the system do not lead to failures that affect the system's environment.
 A system that can continue its intended work even in the presence of faults is said to be fault-tolerant~\cite{BarryFaultToleranceAnalysis}.
 Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy), or performing the same operation multiple times (time redundancy).
 Although being one of the most often used redundancy techniques, the addition of hardware components, called replicas for redundant computation, leads to multiple results that need to be deduplicated to a final system result.
@@ -22,19 +22,22 @@ In order to facilitate interoperability between national railway systems through
 \abr{ETCS} defines the signaling and train control components of \abr{ERTMS}~\cite{ETCS26}.
 As such, \abr{ETCS} defines concepts for monitoring a train's speed, calculating the permissible speed restrictions, and coordinating the collaboration between track-side components, such as \abr{ETCS} euro-balises and on-board systems.
 Any train requires a \abr{MA} to be allowed to drive from one location to another.
-Besides encoding a train's permission to move, a \abr{MA} also encodes information about the track's conditions, such as gradient profiles and speed limitation.
-Any \abr{MA} is supplied by an external entity - called \abr{RBC} - via track-side components or via radio frequencies.
+Besides encoding a train's permission to move, a \abr{MA} also encodes information about the track's conditions, such as gradient profiles and speed limitation profiles.
+Any \abr{MA} is supplied by an external entity - called \abr{RBC} - via radio frequencies.
 A system that is located on the operating train - called on-board unit - monitors compliance with the current \abr{MA}.
-The track-side components, as well as the on-board unit, are standardized according to three different \abr{ETCS} levels.
+The track-side components, as well as the on-board unit, are standardized.
+\abr{ETCS} defines three different levels:
 
 \paragraph{\abr{ETCS} level one}
 \abr{ETCS} level one is designed to build upon existing signaling systems.
-\abrpl{MA}, as well as route data and the maximum allowed speed, are transmitted through fix positioned euro-balises.
-Parallel to that, a breaking curve and the train's position are permanently calculated and compared to the \abr{MA}'s limitations by an on-board unit.
+The track-side balises may transmit fixed or variable information.
+An example for variable information - that might vary among different transmissions - is a \abr{MA}.
+For variable information, the interlocking updates the balise's information via a \abr{LSU}.
+Parallel to that, a braking curve and the train's position are permanently calculated and compared to the \abr{MA}'s limitations by an on-board unit.
 
 \paragraph{\abr{ETCS} level two}
 For \abr{ETCS} level two, signaling and \abr{MA} data is transmitted via mobile communication channels from the \abr{RBC} and displayed to the driver.
-The \abr{RBC} is a central unit that constantly collects and supervises train movements and track information.
+The \abr{RBC} typically is a central unit that constantly collects and supervises train movements and track information.
 Although each train observes its own position, it can come to inaccuracies, for example due to a faulty sensor calibration.
 Hence, a train operating under \abr{ETCS} level two does not know its exact position but can only locate itself within a certain range.
 This range is called \textit{confidence interval} and consists of an upper and lower limit of an area where the train's actual position lies.
@@ -43,8 +46,9 @@ Before the train starts its journey, the positions of the balises that it will e
 Thus, when a train crosses a linked balise and receives the balise telegram, the on-board unit can reset the train's confidence interval to the balises position.
 
 \paragraph{\abr{ETCS} level three}
-Finally, in \abr{ETCS} level three, any track-side component is abolished and the entire communication takes place via radio signals.
-This \abr{ETCS} level is not fully standardized yet.
+Finally, in \abr{ETCS} level three, any fixed track-side component is abolished and the entire communication takes place via radio signals.
+Further, moving-block operations are enabled.
+\abr{ETCS} level three is not fully standardized yet but is intended to replace track-vacancy detection by on-board technology.
 
 \section{\glsentryfull{DDS}}
 
@@ -233,7 +237,7 @@ In addition, an expired timeout can indicate crashed replicas or network partiti
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/Classical2OO3}
-	\caption{Classical 3-out-of-2 redundancy - also known as \glsentryfull{TMR}. Three replicas are simultaneously reading and redundantly processing an input. A voter collects these redundant results and performs a majority voting to produce a final output.}
+	\caption{Classical 2-out-of-3 redundancy - also known as \glsentryfull{TMR}. Three replicas are simultaneously reading and redundantly processing an input. A voter collects these redundant results and performs a majority voting to produce a final output.}
 	\label{fig:Classical2OO3}
 \end{figure}
 
@@ -365,8 +369,8 @@ For further evaluations, an overview about possible accidents in railway is give
 
 
 \paragraph{Software development in the railway context.}
-The CENELEC 50128 standard is a norm for software creating processes for railway applications so that the software can be considered safe.
-The 2011 version of CENELEC 50128, and resources needed to achieve a set level of assurance, are presented by Jean-Louis Boulanger~\cite{BoulangerStandards}.
+The CENELEC EN50128 standard is a norm for software creating processes for railway applications so that the software can be considered safe.
+The 2011 version of CENELEC EN50128, and resources needed to achieve a set level of assurance, are presented by Jean-Louis Boulanger~\cite{BoulangerStandards}.
 Because software security - unlike hardware - is not affected by faulty components but by logic, it must be ensured separately.
 First for building software for safety-critical railway applications, a risk analysis is made based on possible undesired events, their frequency, and risk level.
 In addition, requirements and data structure are required before building software.
@@ -397,7 +401,7 @@ Thereby, they achieved a stable communication time~\cite{SongDDSInRealTimeSystem
 Their approach has been verified by an \abr{UAV} combat scenario that operates in highly safety-critical situations.
 Results have shown that the worst-case communication time for a one-kilobyte payload and a reliable communication \abr{QOS} is around 280 microseconds.
 Since Song \etal exerted a topology that is similar to the one used in this work - namely a network switch with a 100~Mpbs Ethernet link for communication and external nodes - their findings can be seen as an affirmation for the approach used in this work.
-However, they utilized a different \abr{DDS} implementation, so that their experiments need to be repeated in my case to approve their findings. 
+However, they utilized a different \abr{DDS} implementation, so that their experiments need to be repeated to deduce their findings to this thesis' work. 
 \\
 
 \begin{table}[h!]

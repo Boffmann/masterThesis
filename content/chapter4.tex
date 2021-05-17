@@ -216,7 +216,7 @@ This value is not far from the 100~MBit/s supported by the \textit{Revolution Pi
 \\
 
 Consequently, for payload sized below 4096 bytes, the application and middleware's processing overhead limits the data transmission rate.
-For messages with a payload size of 4096 bytes and above, the data transmission is limitted by the network's throughput rate.
+For messages with a payload size of 4096 bytes and above, the data transmission is limited by the network's throughput rate.
 Because the messages exchanged by replicas in the system are small, results show that the applied resources used are sufficient and the system's safety is not affected by network latency.
 \\
 
@@ -230,7 +230,9 @@ However, the values are similar so that the real-time capability of \abr{DDS} - 
 
 \subsection{Resource Utilization}
 
-The system is intended to operate on small and cheap \abrpl{PLC} where resources are limited.
+The PLCs that were utalized in this work were chosen as a simple model.
+However, this model is relevant to a real-world rail scenario with comparable low-cost rail controllers.
+Thus, the system is intended to operate on small and cheap \abrpl{PLC} where resources are limited.
 However, it operates in a time-critical environment in which the lack of available resources should not affect execution.
 Therefore, the resource utilization both in idle mode and while processing scenarios was measured.
 Measurements were made with \textit{pidstat}, a tool that monitors individual tasks that are managed by the \abr{OS} kernel.
@@ -386,6 +388,7 @@ The event processing time for this work's application depends on two factors; th
 In a worst-case - in which the leader fails while a new input event occurs - the absent leader needs to be recognized, a new one needs to be elected, and the input needs to be processed.
 Since leader election and input processing times are small, the \textit{election timeout} is the decisive factor.
 With an \textit{election timeout} of 500~ms, the system guarantees a result after around 600~ms.
+The result is suitable for \abr{ETCS} applications whose demands for on-board units include a maximal reaction time of 1000~ms~\cite{ETCS26}.
 
 
 \begin{figure}[!hb]

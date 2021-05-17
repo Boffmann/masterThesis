@@ -6,18 +6,17 @@
 \begin{center}\textsf{\textbf{\abstractname}}\end{center}
 %
 \noindent \glsentryfull{ETCS} on-board units are safety-critical systems whose reliability plays a vital role in the integrity of railway operation.
-While redundancy is a typical method for increasing fault tolerance, reliability, and safety, it also adds a communication and computation overhead.
-Further, the development and maintenance of highly safety-critical applications are resource-intensive.
-This thesis provides background and implementation of a redundant and fault-tolerant ETCS on-board system using real-time \glsentryfull{DCPS} machine-to-machine communication and consensus-based voting.
-Besides behavioral concepts, such as a leader election and decision-making algorithm, the work exposes global system state and system recovery mechanisms in distributed systems.
-The implementation's functionality, safety, and reliability are evaluated based on a subset of ETCS in a simulated environment.
-The results confirm DCPS concepts applicable for solving the communication and computation overhead of distributed and redundant computation in a real-time and safety-critical environment.
-Furthermore, the findings also apply to an architecture of general-purpose Programmable Logic Controllers (PLCs).
-Thereby, this work facilitates the development of safe and more cost-efficient on-board systems for future ETCS applications.
+While redundancy is a typical method for increasing fault tolerance and hence reliability and safety, it also elevates synchronization and runtime complexity.
+This thesis proposes the usage of DDS - a real-time capable machine-to-machine communication standard following the \glsentryfull{DCPS} pattern - to deal with the added complexity.
+It further provides background and implementation of a redundant and fault-tolerant ETCS on-board system using real-time DCPS communication and consensus-based voting.
+Besides data-centric implementations of behavioral concepts, such as a leader election and decision-making algorithm, the work contributes practical solutions to global state and recovery subjects in distributed systems.
+Functionality, safety, and reliability of the implementation are evaluated using a subset of ETCS and a cluster of four Raspberry Pi-based PLCs within a simulated environment.
+The results show that (1) the redundant system facilitates real-time computation with high network throughput (up to 77 Mbit/s) and fast consensus-building ($\mu~6.5ms;~\sigma~1.3ms$). (2) Consensus-based DCPS communication increases reliability and enables fast system recovery ($\mu~5.47ms;~\sigma~0.77ms$ upon recognizing a fault). (3) A subset of DDS is already sufficient to accomplish reliability and safety.
+Thereby, this work facilitates the development of safe and cost-efficient on-board systems for future ETCS applications.
 
 %\end{otherlanguage}
 \vfil\null
-
+\clearpage
 % => Wenn die Arbeit auf Englisch verfasst wurde, verlangt das Studienreferat einen englischen UND deutschen Abstract (der dt. Abstract kann dann ggf. auch ans Ende der Arbeit)
 
 % deutsche Zusammenfassung
@@ -26,7 +25,7 @@ Thereby, this work facilitates the development of safe and more cost-efficient o
 \begin{center}\textsf{\textbf{\abstractname}}\end{center}
 
 \noindent 
-
+\todo{Translate new abstract to german}
 Die Fahrzeugsysteme des Europäischen Zugbeeinflussungssystems (ETCS) sind sicherheitskritische Systeme, deren Zuverlässigkeit eine entscheidende Rolle bei der Betriebssicherheit der Bahn spielt.
 Um die Fehlertoleranz, die Zuverlässigkeit und die Sicherheit von Systemen zu erhöhen, werden üblicherweise redundante Informationen und Berechnungen verwendet.
 Diese führen allerdings auch zu einem erhöhten Kommunikations- und Bearbeitungsaufwand.

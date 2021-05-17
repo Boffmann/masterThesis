@@ -57,6 +57,10 @@ When the decision-making succeeded, the \textit{on\_result} callback is called.
 Otherwise, \textit{on\_fail} would be invoked.
 \\
 
+To build a \abr{SIL} 4 application, each system component must comply with a certain \abr{SIL} level.
+It is assumed that the applied \abrpl{PLC} have a sufficient \abr{SIL} level for analyzing the system's safety.
+Nevertheless, the presented model is pertinent to a real-world rail scenario.
+
 Because the network is arranged in a star network, the network switch makes up a single point of failure.
 For safety-reasons, a fully connected network would be the better choice.
 However, since the software implementation is independent of the applied network topology, a star network was chosen due to cost reasons.
@@ -420,8 +424,7 @@ Receiving too few decisions is a safety risk and the leader must stop the train.
 In addition, a leader could repeatedly crash while processing an input.
 Thereby, the system would not be able to generate an output for a critical input.
 The presented system cannot cope with such a situation because it would require a distributed timeout that is not possible for an asynchronous system~\cite{FLPProblemConsensus}.
-It could be solved by an external instance that recognizes incoming inputs and stops the train when it is not notified that an output has been generated.
-In practice, the antenna unit could perform this task by applying a counter and being connected to the on-board unit's output line.
+Such situations could be managed by usage of a safety layer - for example applying \abr{ECC} on the tramsmitted data -  as well as by using a deterministic transport protocol~\cite{DeterministicTransport} such as TRDP, TTEthernet, or EtherCAT.
 
 \section{System Recovery}
 

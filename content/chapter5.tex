@@ -39,6 +39,10 @@ For example, it is assumed that messages are processed correctly by the middlewa
 Since this is not always guaranteed, other redundancy concepts, such as information and time redundancies, could be applied.
 In the context of this, redundant and diverse transmission channels, such as CAN-Bus or FlexRay, can be used, or the same data can be sent multiple times.
 Further, \abr{ECC} concepts, such as Hamming codes or Reed-Solomon-Codes~\cite{ReedSolomonCodes}, could be applied to detect and correct transmission errors.
+
+Also, the utilized \abrpl{PLC} are unlikely to comply with a \abr{SIL} level that is sufficient for building a \abr{SIL} 4 system.
+However, the analyzed model is pertinent to a real-world scenario where low-cost standard rail controllers with a sufficient \abr{SIL} level can be chosen instead of complex and expensive specialized \abr{SIL} 4 on-board computers.
+The exact characteristics of such a related system are to be investigated.
 \\
 
 This work's fault model omits Byzantine faults.
@@ -47,7 +51,7 @@ Thereby, the network's delay and load increase.
 For use in highly safety-critical applications, Byzantine faults should also be covered, and the resulting impact on the system must be investigated.
 Further, diverse hardware redundancy can be applied to reduce the chance of having multiple manipulative components and common core errors.
 
-In addition, the system is intended as an \abr{ETCS}1 on-board unit.
+In addition, the system is intended as an \abr{ETCS} on-board unit.
 As such, it interacts with the train's hardware, which has not yet been covered within this work.
 
 The train hardware includes, among other things, the brakes, as well as position sensors.
