@@ -97,7 +97,7 @@ Hence, it is assumed that no data is lost or corrupted during transmission.
 
 \section{\glsentryfull{DDS} Building Blocks}
 
-Information in \gls*{ETCS} can be diverse in terms of type, size, durability, actualization frequency, and priority.
+Information in \gls*{ETCS} can be diverse in terms of type, size, durability, update frequency, and priority.
 For example, a train's position is a periodically and frequently updated type of information, while a \gls*{MA} is valid for a longer time and may be updated infrequently.
 There is also a difference between whether the information is kept as a state of the system, used as a message within the system, or provided as system input.
 The system's state is typically derived from input events.
@@ -105,7 +105,7 @@ In this section, an overview about different information types and possibilities
 
 \begin{table}[htbp!]
 	\begin{center}
-		\caption{\Gls*{QOS} policies for volatile and enduring state topics in a \gls*{DDS} system. For an enduring state, data changes slow and unperiodically. In volatile states, data changes frequently and periodically. State topics can be used to share a global system state among all participants.}
+		\caption{\Gls*{QOS} policies for volatile and enduring state topics in a \gls*{DDS} system. For an enduring state, data changes rarely and unperiodically. In volatile states, data changes frequently and periodically. State topics can be used to share a global system state among all participants.}
 		\label{tab:stateQOS}
 		\begin{tabularx}{\textwidth}{|X|X|X|X|}
 			\hline
@@ -231,7 +231,7 @@ Another problem arises when the frequency in which inputs occur is higher than t
 In such a case, an output might be already outdated even before it is being produced.
 \\
 
-\noindent Recapped, \abr{TMR} bears three significant challenges, which being:
+\noindent Recapped, \abr{TMR} bears three significant challenges, which are:
 
 \newcommand{\ChallengeWR}{\textbf{Multiple Wrong Results}\xspace}
 \newcommand{\ChallengeVoter}{\textbf{Single Voter}\xspace}
@@ -347,7 +347,7 @@ For a consensus, multiple components are involved in deciding about redundant in
 An exemplary consensus algorithm is \texttt{Raft}, which has been proposed by Ongaro and Ousterhout~\cite{RaftConsensusPaper}.
 A component in \texttt{Raft} can take on one of three roles, namely \textit{leader}, \textit{follower}, or \textit{candidate}.
 While a leader takes over the entire responsibility in the system, followers wait for instructions from the leader.
-Followers can become candidates in order to promote to become the new leader.
+Followers can become candidates to run for the new leader.
 \texttt{Raft}'s leader election algorithm ensures that only one leader is active at a time and that the absence of a leader in the system is reliably detected.
 
 An example of how the three roles from \texttt{Raft} are used is depicted in~\autoref{fig:ThreeRepConsensus}.
@@ -429,7 +429,7 @@ This is because the components communicate via \abr{DDS} topics and are thereby 
 All computing systems have in common that they receive an input and produce an output.
 In the exemplary case that is considered in this thesis, inputs consist of \abrpl{MA}, balise linking information, and balise telegrams.
 The inputs are expected to be transmitted via an \texttt{Input} \abr{DDS} topic.
-Such an \texttt{Input}-topic should be defined as an event topic to make sure that every replica receives and eventually processes the inputs.
+Such an \texttt{Input} topic should be defined as an event topic to make sure that every replica receives and eventually processes the inputs.
 Because inputs occur asynchronously, the deadline \gls*{QOS} is not applicable for the \texttt{Input} event topic.
 For the real-time application examined in this work, an output is expected to be delivered by the system within a maximal timespan of $\Delta t$ after the system received an input.
 Therefore, the input topic's \texttt{Durability} should be set to volatile and the \texttt{Lifespan}-policy can be set to at least $\Delta t$ plus a network latency.

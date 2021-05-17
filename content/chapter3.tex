@@ -4,7 +4,7 @@
 In this chapter, a practical implementation of a consensus-inspired redundant architecture is presented.
 The sources are publicly available on GitHub~\cite{GitHubSources}.
 The applied consensus algorithm is based on the concepts of \texttt{Raft}.
-This implementation's aim is to showcase the practicability and performance of a redundant architecture that applies \abr{DCPS} concepts for finding a consensus in an \abr{ETCS} context, even in the presence of individual component failures.
+This implementation aims to showcase the practicability and performance of a redundant architecture that applies \abr{DCPS} concepts for finding a consensus in an \abr{ETCS} context, even in the presence of individual component failures.
 \\
 
 At first in this chapter, the structure of the implemented system is presented.
@@ -63,7 +63,7 @@ Nevertheless, the presented model is pertinent to a real-world rail scenario.
 
 Because the network is arranged in a star network, the network switch makes up a single point of failure.
 For safety-reasons, a fully connected network would be the better choice.
-However, since the software implementation is independent of the applied network topology, a star network was chosen due to cost reasons.
+However, since the software implementation is independent of the applied network topology, a star network was chosen for the purpose of this thesis.
 
 The communication channel is implemented via \textit{Ethernet} and no information redundant communication channel is applied in this demonstration.
 Further, no N-version programming is applied, which means that each replica runs the same software implementation.

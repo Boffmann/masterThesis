@@ -1,7 +1,7 @@
  \chapter{Background and Related Work}
 \label{chptr:concepts}
 
-As ETCS is a safety-critical application, all components and software designed for ETCS must comply with specific requirements towards integrity and reliability.~\cite{OnBoardUnitSafetyTesting}. 
+As \abr{ETCS} is a safety-critical application, all components and software designed for {ETCS} must comply with specific requirements towards integrity and reliability.~\cite{OnBoardUnitSafetyTesting}. 
 Introducing redundancy to safety-critical systems is a popular approach to reduce risk and ensure that faults inside the system do not lead to failures that affect the system's environment.
 A system that can continue its intended work even in the presence of faults is said to be fault-tolerant~\cite{BarryFaultToleranceAnalysis}.
 Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy), or performing the same operation multiple times (time redundancy).
@@ -38,7 +38,7 @@ Parallel to that, a braking curve and the train's position are permanently calcu
 \paragraph{\abr{ETCS} level two}
 For \abr{ETCS} level two, signaling and \abr{MA} data is transmitted via mobile communication channels from the \abr{RBC} and displayed to the driver.
 The \abr{RBC} typically is a central unit that constantly collects and supervises train movements and track information.
-Although each train observes its own position, it can come to inaccuracies, for example due to a faulty sensor calibration.
+Although each train monitors its position, inaccuracies can occur, for example due to faulty sensor calibration.
 Hence, a train operating under \abr{ETCS} level two does not know its exact position but can only locate itself within a certain range.
 This range is called \textit{confidence interval} and consists of an upper and lower limit of an area where the train's actual position lies.
 In order for the on-board unit to determine a train's exact position, track-side balises are used.
@@ -115,7 +115,7 @@ In general, safety defines the absence of catastrophic failures of the system on
 When non-catastrophic failures can be reliably detected and a safe state can be taken in case of failures, safety can be treated as reliability concerning catastrophic failures.
 In other words, safety can be expressed as a system's probability not to experience any fault that would lead to a catastrophic failure in a specific period.
 
-Based on these definitions, it can be conducted that a system's safety and reliability can only be finally assessed when the system's environment, the reliability of the system's components, and the operations performed by the system are known.
+Based on these definitions, it is concluded that a system's safety and reliability can only be finally assessed when the system's environment, the reliability of the system's components, and the operations performed by the system are known.
 In addition, the system's architecture and structure need to be acquainted.
 Finally, in order to precisely evaluate a system's safety, possible faults and their consequences need to be known.
 In order to be able to evaluate and compare different architectural patterns towards their safety characteristics, independently of the subsequently conducted operations, the definition of \texttt{intrinsic safety}, made by~\cite{BoulangerStandards}, is used in this work.
@@ -353,11 +353,11 @@ Finally, Chakraborty demonstrates the method by developing a railway signaling s
 
 Bemment \etal evaluate redundancy concepts for railway track switching~\cite{BemmentEvaluationOfRedundancy}.
 For this, they analyze and rate different hardware redundancy concepts and their combinations for railway networks.
-Both reliability and cost estimations are made using mean time to failure caluculations and physical layouts.
+Both reliability and cost estimations are made using mean time to failure calculations and physical layouts.
 \\
 
 An overview of possible hardware- and software redundancy concepts is provided by Barry W. Johnson~\cite{BarryFaultToleranceAnalysis}.
-He further made a cost, benefit, and performance analysis for each presented concept.
+He further conducts a cost, benefit, and performance analysis for each presented concept.
 \\
 
 In this work, the concepts proposed by Johnson are extended based on the model by Chakraborty and by using and evaluating the feasibility of \gls*{DDS} for redundancy in the railway context.
@@ -450,4 +450,4 @@ In order to address this problem, Sakic and Kellerer propose a watchdog mechanis
 \\
 
 Based on Sakic and Kellerer, the availability and response time for an actual system need to be evaluated in this work.
-Further, the watchdog concepts should be kept in mind as it has a high impact on the system's response time in case of individual component failures.
+Further, the watchdog concept should be kept in mind as it has a high impact on the system's response time in case of individual component failures.

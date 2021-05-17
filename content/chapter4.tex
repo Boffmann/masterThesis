@@ -201,9 +201,9 @@ Because the network has the same diameter between every node, the number of tran
 	\label{fig:PlotDataThroughput}
 \end{figure}
 
-The network's transfer rate is depicted in~\autoref{fig:PlotTransferRate}.
+The network's sample transfer rate is depicted in~\autoref{fig:PlotTransferRate}.
 While collecting the data, 60 exchanged messages were evaluated.
-As the size of sent messages increases, the transfer rate decreases.
+As the size of sent messages increases, the sample transfer rate decreases.
 Whereas an average of 3427 samples per second was transmitted with a payload size of 8 bytes, the average was 1772 samples per second with 4096 bytes.
 \\
 
@@ -253,8 +253,8 @@ In idle mode, the train is not driving and only heartbeat messages are exchanged
 The idle mode \abr{CPU} utilization for both a leader and a follower is depicted in~\autoref{fig:PlotCPUUsageIdleTime}.
 Results show that the leader's idle \abr{CPU} utilization is consistently higher than the follower's.
 On average, the follower utilized 1.81\% in 90 seconds, while the leader utilized 2.42\% of the applied \abr{CPU}.
-At system-level, 0.21\% are used for the leader and 0.25\% for a follower on average.
-On user-level, the leader utilizes on average 1.0\%, while a follower uses 0.66\%.
+At system-mode, 0.21\% are used for the leader and 0.25\% for a follower on average.
+On user-mode, the leader utilizes on average 1.0\%, while a follower uses 0.66\%.
 This can be explained by the fact that the leader has more responsibilities in idle mode.
 It periodically sends heartbeat messages and observes whether the train has a valid \abr{MA} and can start driving.
 
@@ -285,16 +285,16 @@ At \textbf{B1}, an unlinked balise is noticed by the system and at \textbf{B2}, 
 \begin{figure}[!hbt]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/SystemUserCPUUsage}
-	\caption{Most of the \abr{CPU} work is done at user-level. When \abr{MA} and linking information are received (\textbf{S1}, \textbf{S2}, and \textbf{S3}) peaks occur on both user- and system-level. However, the leader performs more work on system-level than the followers. This can be explained by the fact that memory is requested for the new state information. For early braking situations (\textbf{B1}, and \textbf{B2}), work is mostly done at user-level and the system-level utilization shows no peaks here.}
+	\caption{Most of the \abr{CPU} work is done at user-mode. When \abr{MA} and linking information are received (\textbf{S1}, \textbf{S2}, and \textbf{S3}) peaks occur on both user- and system-mode. However, the leader performs more work on system-mode than the followers. This can be explained by the fact that memory is requested for the new state information. For early braking situations (\textbf{B1}, and \textbf{B2}), work is mostly done at user-mode and the system-mode utilization shows no peaks here.}
 	\label{fig:PlotSystemUserCPUUsage}
 \end{figure}
 
-In~\autoref{fig:PlotSystemUserCPUUsage}, a distinction is made between \abr{CPU} utilization at user-level and at system-level.
-It can be seen that the application operates mainly at user-level.
-At the beginning of each journey, when \abr{MA} and linking information are received, peaks on system-level occur (\textbf{S1}, \textbf{S2}, and \textbf{S3}).
-The peaks on system-level utililzation are mainly on leader side and can be explained by the fact that new instances in the global state are created for the new information.
-The peaks on user-level are due to replica synchronization and simulation start.
-In case of a premature stop (\textbf{B1} and \textbf{B2}), the calculation is almost exclusively done at user-level in order to synchronize the replicas and stop the simulation.
+In~\autoref{fig:PlotSystemUserCPUUsage}, a distinction is made between \abr{CPU} utilization at user-mode and at system-mode.
+It can be seen that the application operates mainly at user-mode.
+At the beginning of each journey, when \abr{MA} and linking information are received, peaks on system-mode occur (\textbf{S1}, \textbf{S2}, and \textbf{S3}).
+The peaks on system-mode utililzation are mainly on leader side and can be explained by the fact that new instances in the global state are created for the new information.
+The peaks on user-mode are due to replica synchronization and simulation start.
+In case of a premature stop (\textbf{B1} and \textbf{B2}), the calculation is almost exclusively done at user-mode in order to synchronize the replicas and stop the simulation.
 
 \paragraph{Memory Consumption}
 The memory consumption is constant both in idle mode and when processing the scenarios.
@@ -325,7 +325,7 @@ The leader election process consists of requesting and collecting votes from all
 An election process' duration is influenced by the replica's computational resources and data transmission speed.
 In order to investigate how long the leader election process takes, the time for 20 elections was measured.
 The average time for an election process is depicted in~\autoref{fig:PlotTimeWithoutLeader}.
-Results show that the election process takes 5500µs on average and at worst 7000~µs.
+Results show that the election process takes 5.5~ms on average and at worst 7.1~ms.
 \\
 
 Under special circumstances, it may be impossible for the system to elect a leader.
@@ -354,7 +354,7 @@ Before the third scenario is started, the previous leader was manually stopped a
 Any active hardware redundancy mechanisms have been disabled at first.
 Thus, the third scenario has been run only with a leader and one follower, instead of a leader and two followers in the first two scenarios.
 Later, the active hardware redundancy features are reactivated to show their benefits on the system's reliability.
-For each measurement, the heartbeat timer has been set to 100000~µs so that ten messages per second can be attributed to heartbeat messages.
+For each measurement, the heartbeat timer has been set to 100~ms so that ten messages per second can be attributed to heartbeat messages.
 \\
 
 At first, the number of received input messages is presented and the processing time for each input is measured to show that no input is lost.
@@ -621,6 +621,12 @@ The following \abr{QOS} policies are used in the application:
 	\end{itemize}
 \item DDS\_ResourceLimitsQosPolicy: Controls the maximum amount of resources used by \texttt{DataReaders} and \texttt{DataWriters}. Required because the application is supposed to run in a resource-constrained environment.
 \end{itemize}
+
+
+The \abr{ETCS} subset studied in this paper serves as a model for \abr{ETCS} in general.
+Therefore, the elaborated \abr{DDS} subset is pertinent for the overall \abr{ETCS} specification.
+However, for a \abr{SIL} 4 system, the \abr{SIL} level of the applied \abr{DDS} application must be sufficient. Furthermore, for a \abr{SIL} 4-compliant system, the used components must also fulfill a certain \abr{SIL} level.
+The component's required \abr{SIL}-level as well as the \abr{DDS} application's SIL-level are left to future work.
 
 \subsection{Opportunities and Challenges}
 

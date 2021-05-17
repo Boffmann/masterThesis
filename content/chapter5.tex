@@ -43,13 +43,14 @@ Further, \abr{ECC} concepts, such as Hamming codes or Reed-Solomon-Codes~\cite{R
 Also, the utilized \abrpl{PLC} are unlikely to comply with a \abr{SIL} level that is sufficient for building a \abr{SIL} 4 system.
 However, the analyzed model is pertinent to a real-world scenario where low-cost standard rail controllers with a sufficient \abr{SIL} level can be chosen instead of complex and expensive specialized \abr{SIL} 4 on-board computers.
 The exact characteristics of such a related system are to be investigated.
+In addition, the same applies for the utilized DDS application's \abr{SIL} level.
 \\
 
 This work's fault model omits Byzantine faults.
 Reliable decision-making, despite one manipulative component, requires at least four voters and two rounds of communication~\cite{GamerIncreasingMOON}.
 Thereby, the network's delay and load increase.
 For use in highly safety-critical applications, Byzantine faults should also be covered, and the resulting impact on the system must be investigated.
-Further, diverse hardware redundancy can be applied to reduce the chance of having multiple manipulative components and common core errors.
+Further, diverse hardware redundancy can be applied to reduce the chance of having multiple manipulative components and common core faults.
 
 In addition, the system is intended as an \abr{ETCS} on-board unit.
 As such, it interacts with the train's hardware, which has not yet been covered within this work.

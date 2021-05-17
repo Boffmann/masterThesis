@@ -15,7 +15,7 @@ At the same time, \abr{SIL} 4 certified \abr{ATP} systems with a small \abr{PFD}
 Further, the standardization of signaling and control components in the \abr{ETCS} is intended to facilitate train operation across borders and increased the significance of \abr{ATP} systems~\cite{YIN2017RNDofATO}.
 
 On the other hand, the automation of railway operations comes with higher development and acquisition costs, as well as ethical issues.
-System designers must specify the system's reaction under specific conditions and balance the safety of humans, such as passengers and road users, and of resources, such as costs and time~\cite{EthicsInSafety}.
+System designers must specify the system's reaction under specific conditions and balance the safety of humans, such as passengers and road users, and resources, such as costs and time~\cite{EthicsInSafety}.
 
 Hence, with the railway being a safety-critical system, any component applied in the \abr{ETCS} context must comply with strict certification requirements to assure its safety and reliability.
 Compliance with system requirements is ensured during an approval process.
@@ -45,7 +45,7 @@ However, \abr{DDS} has been designed to be a generic standard for distributed ap
 Hence, every feature from the applied middleware implementation needs to be approved when applied in a safety-critical application.
 \\
 
-In this thesis, it is investigated whether the \abr{DDS} standard is applicable for building redundant, distributed, real-time, and safety-critical systems in the \abr{ETCS} domain.
+This thesis investigates whether the \abr{DDS} standard is applicable for building redundant, distributed, real-time, and safety-critical systems in the \abr{ETCS} domain.
 One of the main requirements is that the application should run on general-purpose \abrpl{PLC} with limited resources without violating safety and reliability requirements.
 This work makes the following \textit{contributions}:
 
@@ -71,8 +71,8 @@ A combination of a consensus- and voting-based approach is identified as the mos
 
 In~\autoref{cpt:Implementation}, an exemplary implementation is presented that follows the concepts of \texttt{Raft}~\cite{RaftConsensusPaper}.
 Thereby, the significance of a safe consensus- and voting-based redundant system, which utilizes \abr{DDS} for communication, is shown.
-The system comprises of four homogeneous and interconnected \textit{Revolution Pi} from Kunbus~\cite{Kunbus} and utilizes \textit{OpenSplice DDS} from ADLINK~\cite{VortexOpenSplice} as a \abr{DDS} framework.
-A \textit{Revolution Pi} is a robust \abr{PLC} that build upon a \textit{Raspberry Pi} and features a real-time capable \abr{OS}.
+The system is comprised of four homogeneous and interconnected \textit{Revolution Pi} from Kunbus~\cite{Kunbus} and utilizes \textit{OpenSplice DDS} from ADLINK~\cite{VortexOpenSplice} as a \abr{DDS} framework.
+A \textit{Revolution Pi} is a robust \abr{PLC} that builds upon a \textit{Raspberry Pi} and features a real-time capable \abr{OS}.
 The \textit{OpenSplice DDS} framework's applicability for safety-critical railway applications has been proven in practice~\cite{SchmidtMissionCriticalChallenges}.
 \\
 
