@@ -424,7 +424,7 @@ Receiving too few decisions is a safety risk and the leader must stop the train.
 In addition, a leader could repeatedly crash while processing an input.
 Thereby, the system would not be able to generate an output for a critical input.
 The presented system cannot cope with such a situation because it would require a distributed timeout that is not possible for an asynchronous system~\cite{FLPProblemConsensus}.
-Such situations could be managed by usage of a safety layer - for example applying \abr{ECC} on the tramsmitted data -  as well as by using a deterministic transport protocol~\cite{DeterministicTransport} such as TRDP, TTEthernet, or EtherCAT.
+Such situations could be managed by usage of a safety layer - for example applying \abr{ECC} on the tramsmitted data -  as well as by using a deterministic transport protocol~\cite{DeterministicTransport} such as TTEthernet or EtherCAT.
 
 \section{System Recovery}
 
