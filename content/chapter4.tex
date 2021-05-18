@@ -116,9 +116,9 @@ With the help of the simulator, the system can be tested under different conditi
 The functional fault model envisages three situations that must lead to the train being stopped under all circumstances (ref.~\autoref{subsec:faultModel}).
 For ensuring that these situations are always handled correctly, they are simulated in scenarios, which are - together with their expected behavior - shown in~\autoref{tab:simulatedScenarios}.
 These three scenarios are called \textit{test scenarios}.
-In order to facilitate automatic integration testing, the on-board unit's system logic has been patched to write the system's decisions to input messages and braking curve observations into a file called \textit{evaluation file}.
+In order to facilitate automatic integration testing, the \abr{EVC}'s system logic has been patched to write the system's decisions to input messages and braking curve observations into a file called \textit{evaluation file}.
 For each decision, the train's current position, the decision of whether the train should brake or continue driving, the last encountered balise, and a reason are saved.
-A \texttt{Python} script is used to automatically evaluate whether the on-board unit corresponds to its expected behavior.
+A \texttt{Python} script is used to automatically evaluate whether the \abr{EVC} corresponds to its expected behavior.
 Therefore, the script invokes the simulator for each scenario and, after the train stopped, analyzes the \textit{evaluation file}.
 In this manner, the system's actual behavior can automatically be compared to its expected behavior.
 By injecting different faults, for example manually crashing a replica, it can be validated whether the system is still safe and reacts as expected.
@@ -499,11 +499,11 @@ Unlike in~\autoref{fig:PlotConsensusMessagesReceive}, the number goes back to th
 
 \abr{DCPS} systems, such as \abr{DDS}, are designed for machine-to-machine communication in real-time applications~\cite{omgDDSspec}.
 \abr{DDS} is designed to facilitate reliable and safe communication in distributes systems.
-Therefore, \abr{DDS} was chosen as the basis for the redundant on-board system.
+Therefore, \abr{DDS} was chosen as the basis for the redundant \abr{EVC}.
 \\
 
 One challenge of this work, in addition to the suitability of \abr{DDS} for secure and redundant systems, was to find a minimal subset for implementation.
-This is because the system, which is designed to function as a \abr{ETCS} on-board unit, requires a high \abr{SIL}~\cite{ChakrabortyFaultTolerantRailway}.
+This is because the system, which is designed to function as an \abr{EVC}, requires a high \abr{SIL}~\cite{ChakrabortyFaultTolerantRailway}.
 With \abr{DDS} being a significant part in the implementation, the \abr{SIL} of \abr{DDS} needs to be high as well.
 With minimal functionality, the cost and time required for approval is also minimal.
 \\

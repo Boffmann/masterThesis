@@ -11,7 +11,8 @@ This thesis proposes the usage of DDS - a real-time capable machine-to-machine c
 It further provides background and implementation of a redundant and fault-tolerant ETCS on-board system using real-time DCPS communication and consensus-based voting.
 Besides data-centric implementations of behavioral concepts, such as a leader election and decision-making algorithm, the work contributes practical solutions to global state and recovery subjects in distributed systems.
 Functionality, safety, and reliability of the implementation are evaluated using a subset of ETCS and a cluster of four Raspberry Pi-based PLCs within a simulated environment.
-The results show that (1) the redundant system facilitates real-time computation with high network throughput (up to 77 Mbit/s) and fast consensus-building ($\mu$=$6.5$~ms;$~\sigma$=$1.3$~ms). (2) Consensus-based DCPS communication increases reliability and enables fast system recovery ($\mu$=$5.47$~ms;$~\sigma$=$0.77$~ms upon recognizing a fault). (3) A subset of DDS is already sufficient to accomplish reliability and safety.
+The results show that (1) the redundant system facilitates real-time computation with high network throughput (up to 77 Mbit/s) and fast consensus-building ($\mu$=$6.5$~ms;$~\sigma$=$1.3$~ms). (2) Consensus-based DCPS communication increases reliability and enables fast system recovery ($\mu$=$5.47$~ms;$~\sigma$=$0.77$~ms upon recognizing a fault).
+(3) A subset of DDS is already sufficient to accomplish reliable and safe \abr{ETCS} on-board units.
 Thereby, this work facilitates the development of safe and cost-efficient on-board systems for future ETCS applications.
 
 %\end{otherlanguage}
@@ -25,19 +26,18 @@ Thereby, this work facilitates the development of safe and cost-efficient on-boa
 \begin{center}\textsf{\textbf{\abstractname}}\end{center}
 
 \noindent 
-\todo{Translate new abstract to german}
-Die Fahrzeugsysteme des Europäischen Zugbeeinflussungssystems (ETCS) sind sicherheitskritische Systeme, deren Zuverlässigkeit eine entscheidende Rolle bei der Betriebssicherheit der Bahn spielt.
-Um die Fehlertoleranz, die Zuverlässigkeit und die Sicherheit von Systemen zu erhöhen, werden üblicherweise redundante Informationen und Berechnungen verwendet.
-Diese führen allerdings auch zu einem erhöhten Kommunikations- und Bearbeitungsaufwand.
-Darüber hinaus sind Entwicklung und Instandhaltung von sicherheitskritischen Anwendungen ressourcenintensiv.
-In dieser Arbeit werden Grundlagen, Funktionsweisen und die Implementierung eines verteilten, redundanten und fehlertoleranten ETCS-Fahrzeugsystems vorgestellt.
-Die systeminterne Kommunikation basiert auf einer echtzeitfähigen Zwischenanwendung, die dem datenzentralen Publish-Subscribe (DCPS) Muster folgt.
+Die Fahrzeuggeräte des europäischen Zugbeeinflussungssystems (ETCS) sind sicherheitskritische Systeme, deren Zuverlässigkeit eine entscheidende Rolle bei der Betriebssicherheit der Bahn spielt.
+Um die Fehlertoleranz von Systemen und damit deren Zuverlässigkeit und Sicherheit zu erhöhen, werden üblicherweise redundante Informationen und Berechnungen verwendet.
+Redundanzen führen allerdings auch zu einer erhöhten Synchronisations- und Laufzeitkomplexität.
+Diese Arbeit schlägt die Verwendung von DDS - einer echtzeitfähigen Middleware zur datenzentrierten Kommunikation in verteilten Systemen - zur Bewältigung der zusätzlichen Komplexitäten vor.
+Darüber hinaus liefert die Arbeit Hintergründe und die Implementierung eines redundanten und fehlertoleranten ETCS-Fahrzeuggerätes auf der Grundlage von datenzentraler Publish-Subscribe (DCPS) Kommunikation.
 Weiterhin werden redundante Zwischenergebnisse über ein konsensbasiertes Abstimmungsverfahren dedupliziert.
-Neben Verhaltenskonzepten, wie der Wahl eines Systemanführers und einem Entscheidungsfindungsalgorithmus, stellt diese Arbeit Möglichkeiten für einen globalen Systemzustand und zur Erholung von Fehlern in verteilten Systemen vor.
-Die Evaluation von Funktionalität, Sicherheit und Zuverlässigkeit der Implementierung erfolgt in einer simulierten Umgebung, basierend auf einer Teilmenge von ETCS.
-Die Ergebnisse bestätigen die Anwendbarkeit von DCPS-Konzepten zur Lösung des Kommunikations- und Rechenaufwandes verteilter und redundanter Systeme in echtzeit- und sicherheitskritischen Umgebungen.
-Darüber hinaus zeigt sich, dass die Erkenntnisse auch für eine Architektur von universell einsetzbaren Speicherprogrammierbaren Steuerungen (SPS) gelten. 
-Dadurch erleichtert diese Arbeit die zukünftige Entwicklung von sicheren und kostengünstigen ETCS-Fahrzeugsystemen.
+Neben Implementierungen von Verhaltenskonzepten, wie der Wahl eines Systemanführers und einem Entscheidungsalgorithmus, trägt die Arbeit praktische Lösungen zu Themen des globalen Zustands und der Wiederherstellung in verteilten Systemen bei.
+Die Evaluation von Funktionalität, Sicherheit und Zuverlässigkeit der Implementierung erfolgt in einer simulierten Umgebung anhand einer Untermenge von ETCS und einem Cluster von vier Raspberry Pi-basierten Speicherprogrammierbaren Steuerungen (SPS).
+Die Ergebnisse zeigen, dass (1) Echtzeitberechnungen mit hohem Netzwerkdurchsatz (bis zu 77~Mbit/s) und schneller Konsensbildung ($\mu$=$6.5$~ms;$~\sigma$=$1.3$~ms) durch das redundanten System möglich sind.
+(2) Die konsensbasierte DCPS-Kommunikation erhöht die Zuverlässigkeit des Systems und ermöglicht eine schnelle Wiederherstellung im Fehlerfall ($\mu$=$5.47$~ms;$~\sigma$=$0.77$~ms nach dem Bemerken des Fehlers).
+(3) Eine Teilmenge von DDS ist bereits ausreichend, um zuverlässige und sichere ETCS-Fahrzeuggeräte zu ermöglichen.
+Dadurch fördert diese Arbeit die Entwicklung von sicheren und kostengünstigen Fahrzeuggeräten für zukünftige ETCS-Anwendungen.
 
 \end{otherlanguage}
 \vfil\null

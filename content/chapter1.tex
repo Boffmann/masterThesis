@@ -24,7 +24,7 @@ As such, \abr{ETCS} defines concepts for monitoring a train's speed, calculating
 Any train requires a \abr{MA} to be allowed to drive from one location to another.
 Besides encoding a train's permission to move, a \abr{MA} also encodes information about the track's conditions, such as gradient profiles and speed limitation profiles.
 Any \abr{MA} is supplied by an external entity - called \abr{RBC} - via radio frequencies.
-A system that is located on the operating train - called on-board unit - monitors compliance with the current \abr{MA}.
+A system that is located on the operating train - called on-board unit of \abr{EVC} - monitors compliance with the current \abr{MA}.
 The track-side components, as well as the on-board unit, are standardized.
 \abr{ETCS} defines three different levels:
 
@@ -33,7 +33,7 @@ The track-side components, as well as the on-board unit, are standardized.
 The track-side balises may transmit fixed or variable information.
 An example for variable information - that might vary among different transmissions - is a \abr{MA}.
 For variable information, the interlocking updates the balise's information via a \abr{LSU}.
-Parallel to that, a braking curve and the train's position are permanently calculated and compared to the \abr{MA}'s limitations by an on-board unit.
+Parallel to that, a braking curve and the train's position are permanently calculated and compared to the \abr{MA}'s limitations by an \abr{EVC}.
 
 \paragraph{\abr{ETCS} level two}
 For \abr{ETCS} level two, signaling and \abr{MA} data is transmitted via mobile communication channels from the \abr{RBC} and displayed to the driver.
@@ -365,7 +365,7 @@ While Chakroborty formulated demands and considerations for hardware- and softwa
 However, the evaluation approach of hardware according to the mean time to failure principle - used by Bemment \etal - can also be applied to software.
 Typically, as Bemment \etal pointed out, an in-depth redundancy evaluation towards safety and reliability can only be made for well-defined use cases where hazards, risks and potential accidents are know.
 Therefore, specific design decisions will be made throughout this thesis based on an \abr{ETCS} subset.
-For further evaluations, an overview about possible accidents in railway is given by~\cite{ERTMSRailwayAccidents}.
+For further evaluations, an overview about possible accidents in railway is given by~\cite{GlobalRailwayRiskAnalysis}.
 
 
 \paragraph{Software development in the railway context.}

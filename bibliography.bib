@@ -61,15 +61,8 @@ year = {1996},
 month = {02},
 pages = {1-87},
 title = {An introduction to the design and analysis of fault-tolerant systems},
+journal={Fault-tolerant computer system design},
 isbn = {0-13-057887-8}
-}
-
-@article{AvizienisDependability2001,
-author = {Avizienis, Algirdas and Laprie, Jean-claude and Randell, Brian},
-year = {2001},
-month = {09},
-pages = {},
-title = {Fundamental Concepts of Dependability}
 }
 
 @article{YIN2017RNDofATO,
@@ -142,15 +135,6 @@ journal = {J. ACM},
 month = apr,
 pages = {374–382},
 numpages = {9}
-}
-
-@article{RaftConsensusPaper,
-author = {Ongaro, D. and Ousterhout, J.},
-year = {2014},
-month = {01},
-pages = {305-320},
-title = {In search of an understandable consensus algorithm},
-journal = {USENIX}
 }
 
 @article{NASAMarkovChains,
@@ -255,9 +239,14 @@ doi={10.2495/CR060421}
 
 @article{CoSimulationStateOfTheArt,
 author = {Gomes, Cláudio and Thule, Casper and Broman, David and Larsen, Peter and Vangheluwe, Hans},
+title = {Co-simulation: State of the art},
+journal = {CoRR},
+volume = {abs/1702.00686},
 year = {2017},
 month = {02},
-title = {Co-simulation: State of the art}
+url = {http://arxiv.org/abs/1702.00686},
+archivePrefix = {arXiv},
+eprint = {1702.00686},
 }
 
 @Article{RailwayDigitalization,
@@ -329,6 +318,38 @@ URL = {https://doi.org/10.1137/0108018},
 eprint = {https://doi.org/10.1137/0108018}
 }
 
+@article{ieee610.12,
+  author={},
+  journal={IEEE Std 610.12-1990}, 
+  title={IEEE Standard Glossary of Software Engineering Terminology}, 
+  year={1990},
+  volume={},
+  number={},
+  pages={1-84},
+  doi={10.1109/IEEESTD.1990.101064}
+}
+
+@article{HammingCodes,
+  title={Error detecting and error correcting codes},
+  author={Hamming, Richard W},
+  journal={The Bell system technical journal},
+  volume={29},
+  number={2},
+  pages={147--160},
+  year={1950},
+  publisher={Nokia Bell Labs}
+}
+
+@article{GlobalRailwayRiskAnalysis,
+  title={A global multi-hazard risk analysis of road and railway infrastructure assets},
+  author={Koks, Elco E and Rozenberg, Julie and Zorn, Conrad and Tariverdi, Mersedeh and Vousdoukas, Michalis and Fraser, SA and Hall, JW and Hallegatte, Stephane},
+  journal={Nature communications},
+  volume={10},
+  number={1},
+  pages={1--11},
+  year={2019},
+  publisher={Nature Publishing Group}
+}
 
 
 @techreport{SelfCheckingProcessorDesign,
@@ -340,6 +361,24 @@ type = {Technical Report},
 number = {115},
 address = {Stanford, CA, USA},
 month = feb
+}
+
+@techreport{AvizienisDependability2001,
+author = {Avizienis, Algirdas and Laprie, Jean-claude and Randell, Brian},
+year = {2001},
+month = {09},
+title = {Fundamental Concepts of Dependability},
+institution = {University of Newcastle upon Tyne},
+type = {Computing Science}
+}
+
+@techreport{ETCS26,
+  author = {ERA and UNISIG and EEIG ERTMS USERS GROUP},
+  type = {Specification},
+  title = {ERTMS/ETCS Subset-026 - System Requirement Specification},
+  year = {2015},
+  month = {12},
+  day = {18}
 }
 
 -@Inbook{Dijkstra1965,
@@ -544,20 +583,20 @@ abstract="Total drag of common transport systems such as aircrafts or railways i
 isbn="978-81-322-2529-4"
 }
 
+@inproceedings{RaftConsensusPaper,
+author = {Ongaro, D. and Ousterhout, J.},
+year = {2014},
+month = {01},
+pages = {305-320},
+title = {In search of an understandable consensus algorithm},
+booktitle={2014 $\{$USENIX$\}$ Annual Technical Conference ($\{$USENIX$\}$$\{$ATC$\}$ 14)}
+}
+
 
 @misc{ERTMSRailwayAccidents,
   publisher = {{ERTMS UNISIG}},
   title={{Railway accident scenario}},
   number={{96E2832 ERTMS U.G.}}
-}
-
-@misc{ieee610.12,
-  Key = {{IEEE 610.12}},
-  publisher = {{C/S2ESC - Software \& Systems Engineering Standards Committee}},
-  type = {{Norm}},
-  title = {{IEEE 610.12-1990 - IEEE Standard Glossary of Software Engineering Terminology}},
-  number = {{IEEE 610.12}},
-  year = {{1990}}
 }
 
 @misc{omgDDSspec,
@@ -570,39 +609,19 @@ isbn="978-81-322-2529-4"
   url = {{https://www.omg.org/spec/DDS/About-DDS/}}
 }
 
-
-@misc{ETCS26,
-  Key = {{ERTMS/ETCS Subset-026}},
-  publisher = {{ERA * UNISIG * EEIG ERTMS USERS GROUP}},
-  type = {{Specification}},
-  title = {{ERTMS/ETCS Subset-026 - System Requirement Specification}},
-  number = {{ERTMS/ETCS Subset-026}},
-  year = {{2015}},
-  month = {{12}},
-  day = {{18}}
-}
-
-@misc{HammingCodes,
-  title = {Error detecting and error correcting codes},
-  author = {Hamming, Richard, W.},
-  year = {1982},
-  URL = {https://calhoun.nps.edu/handle/10945/46756},
-  publisher = {Calhoun}
-}
-
 @misc{Kunbus,
 author = {KUNBUS GmbH},
 title = {Revolution Pi - THE ONLY REAL industrial Raspberry Pi},
 year = {2021},
 URL = {https://revolution.kunbus.de/},
-urldate = {2021-04-06}
+urldate = {2021-05-11}
 }
 
 @misc{VortexOpenSplice,
 author = {ADLINK Technology},
 title = {Data Distribution Service: Vortex OpenSplice: ADLINK},
 URL = {https://www.adlinktech.com/en/vortex-opensplice-data-distribution-service},
-urldate = {2021-04-06}
+urldate = {2021-05-11}
 }
 
 @misc{GitHubSources,
@@ -610,5 +629,5 @@ author = {Hendrik Tjabben},
 title = {ETCS On-Board Unit - Sources for the On-Board Unit Project},
 year = {2021},
 URL = {https://github.com/Boffmann/ETCSOnBoard},
-urldate = {2021-05-06}
+urldate = {2021-05-18}
 }
