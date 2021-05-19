@@ -44,7 +44,7 @@ The first two balises are linked while the third is not.
 A distinction is made between the balise's position and its linked position in order to simulate the case that a balise is not at the position with which it was linked.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[caption={The used simulator simulates scenarios that are provided in \texttt{JSON} format. Each scenario consists of a \abr{MA} with a start and an end position, as well as a set of balises. Balises can either be linked or not and include an identification number, a linking position, and a position. The linking position is used to simulate a misplaced balise.}, label=code:scenarioJSON]
+\begin{lstlisting}[caption={The developed simulator simulates scenarios that are provided in \texttt{json} format. Each scenario consists of a \abr{MA} with a start and an end position, as well as a set of balises. Balises can either be linked or not and include an identification number, a linking position, and a position. The linking position is used to simulate a misplaced balise.}, label=code:scenarioJSON]
 {
   "MA": {
     "start": 0,
@@ -78,7 +78,8 @@ A distinction is made between the balise's position and its linked position in o
 
 \subsection{Simulator Classification}
 
-In literature, simulators are distinguished based on their mode of operation and categorized into \abr{DE}-, and \abr{CT}-based simulators~\cite{CoSimulationStateOfTheArt}.
+In literature, simulators are distinguished based on their mode of operation.
+They are categorized into simulators based on \abr{DE}-, and \abr{CT}~\cite{CoSimulationStateOfTheArt}.
 In a \abr{DE}-based simulation, communication with the environment is characterized by events that are triggered at certain times.
 For \abr{CT}-based simulations, the simulated state is expected to evolve continuously over time.
 Based on these properties, it can be argued that the simulator that is utilized in this work is a combination of a \abr{DE}- and a \abr{CT}-based simulation system.
@@ -91,12 +92,12 @@ On the other hand, the track-side balise telegram simulation borrows features fr
 Because the scenarios are simulated, a reproducible test environment is created.
 This enables automated integration testing and facilitates the measurement of system characteristics under comparable circumstances.
 Further, data reproducibility allows to make changes to the system and to evaluate its performance compared to other versions.
-With the help of the simulator, the system can be tested under different conditions and in different situations without using or jeopardizing real railway components.
+With the help of the simulator, the system can be continuously tested under different conditions and in different situations without using or jeopardizing real railway components.
 \\
 
 \begin{table}[h!]
 	\begin{center}
-		\caption{In order to test the system's behavior in critical situations, three scenarios - called \textit{test scenarios} - are used. Each \textit{test scenario} includes a \abr{MA} and three balises but differ in the number and position of linked balises. In \texttt{Reach End of \abr{MA}}, all three balises are linked. In \texttt{Unlinked Balise}, only the first two balises are linked and the third is not. In \texttt{Balise not where expected}, all three balises are linked but the third's balises linked position differs from its actual position. As a consequence, the system's expected behavior for each scenario is different.}
+		\caption{In order to test the system's behavior in critical situations, three scenarios - called \textit{test scenarios} - are used. Each \textit{test scenario} includes a \abr{MA} and three balises but differs in the number and position of linked balises. In \texttt{Reach End of \abr{MA}}, all three balises are linked. In \texttt{Unlinked Balise}, only the first two balises are linked and the third is not. In \texttt{Balise not where expected}, all three balises are linked but the third's balises linked position differs from its actual position. As a consequence, the system's expected behavior for each scenario is different.}
 		\label{tab:simulatedScenarios}
 		\begin{tabularx}{\textwidth}{|X|X|}
 			\hline
@@ -174,12 +175,13 @@ The system's components thereby exchange messages that are captured, stored, and
 
 An essential parameter for assessing a distributed system is network latency~\cite{SinhaMeasureNetworkLatency}.
 Network latency is used to indicate a delay that occurs while data is transmitted via a network.
+
 It can be derived from the network's throughput characteristic.
 \\
 
 In the analyzed architecture, components are arranged in a star topology and interconnected via a network switch that allows up to 2000 Mbit/s for each port.
 Data is transmitted via a wired \textit{Ethernet} connection.
-The interface installed on the utilized \textit{Revolution Pi} is a 10/100 Ethernet.
+The interface of the utilized \textit{Revolution Pi} is a 10/100 Ethernet.
 Consequently, data transfers with up to 100~MBit/s are theoretically possible.
 In order to examine the bandwidth and latency of the applied network, a \abr{DDS} throughput testing program from \texttt{ADLINK} is used.
 Further, a publisher has been set up on one replica and a receiver on another.
@@ -197,26 +199,26 @@ Because the network has the same diameter between every node, the number of tran
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/dataThroughput}
-	\caption{The average throughput of the network when transferring messages of different sizes from one replica to another. Above a payload size of 15000 bytes, the throughput starts to stagnate due to the \abrpl{PLC} hardware limits.}
+	\caption{The average throughput of the network when transferring messages of different sizes from one replica to another. Above a payload size of 15000 bytes, the throughput starts to stagnate due to the \abr{PLC}'s hardware limits.}
 	\label{fig:PlotDataThroughput}
 \end{figure}
 
 The network's sample transfer rate is depicted in~\autoref{fig:PlotTransferRate}.
 While collecting the data, 60 exchanged messages were evaluated.
 As the size of sent messages increases, the sample transfer rate decreases.
-Whereas an average of 3427 samples per second was transmitted with a payload size of 8 bytes, the average was 1772 samples per second with 4096 bytes.
+Whereas an average of 3427~samples per second was transmitted with a payload size of 8 bytes, the average was 1772~samples per second with~4096 bytes.
 \\
 
 In another experiment, the network's average data throughput for varying payload sizes was measured.
 The results are presented in~\autoref{fig:PlotDataThroughput}.
-With a payload size of 1024 bytes, an average data throughput of 24 Mbit/s is reached.
-The throughput increases to 56 Mbit/s on average for a payload size of 4096 bytes and 75 Mbit/s on average for a payload size of 16384 bytes.
-Above this payload size, the throughput increases less steeply and approaches a value just below 80 Mbit/s.
+With a payload size of 1024~bytes, an average data throughput of 24~Mbit/s is reached.
+The throughput increases to 56~Mbit/s on average for a payload size of 4096~bytes and 75~Mbit/s on average for a payload size of 16384~bytes.
+Above this payload size, the throughput increases less steeply and approaches a value just below 80~Mbit/s.
 This value is not far from the 100~MBit/s supported by the \textit{Revolution Pis}' hardware.
 \\
 
-Consequently, for payload sized below 4096 bytes, the application and middleware's processing overhead limits the data transmission rate.
-For messages with a payload size of 4096 bytes and above, the data transmission is limited by the network's throughput rate.
+Consequently, for payload sized below 4096~bytes, the application and middleware's processing overhead limits the data transmission rate.
+For messages with a payload size of 4096~bytes and above, the data transmission is limited by the network's throughput rate.
 Because the messages exchanged by replicas in the system are small, results show that the applied resources used are sufficient and the system's safety is not affected by network latency.
 \\
 
@@ -232,9 +234,9 @@ However, the values are similar so that the real-time capability of \abr{DDS} - 
 
 The PLCs that were utalized in this work were chosen as a simple model.
 However, this model is relevant to a real-world rail scenario with comparable low-cost rail controllers.
-Thus, the system is intended to operate on small and cheap \abrpl{PLC} where resources are limited.
+Thus, the system is intended to operate on small and \abr{COTS} \abrpl{PLC} where resources are limited.
 However, it operates in a time-critical environment in which the lack of available resources should not affect execution.
-Therefore, the resource utilization both in idle mode and while processing scenarios was measured.
+The utilization was measured in idle mode and while processing scenarios to make statements about resource utilization and differentiate between fundamental- and productive utilization.
 Measurements were made with \textit{pidstat}, a tool that monitors individual tasks that are managed by the \abr{OS} kernel.
 In this section, the resource utilization for both the leader replica and the follower replicas are analyzed.
 At first, the \abr{CPU} utilization is considered, then the memory consumption.
@@ -244,7 +246,7 @@ At first, the \abr{CPU} utilization is considered, then the memory consumption.
 \begin{figure}[!hbt]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/CPUUsageIdleTime}
-	\caption{In idle mode, only heartbeat messages are transmitted from the leader to its followers. Hence, the leader's \abr{CPU} is more demanded, but the overall utilization is small.}
+	\caption{In idle mode, only heartbeat messages are transmitted from the leader to its followers. Hence, the leader's \abr{CPU} is more demanded, but the overall utilization is below 3\%.}
 	\label{fig:PlotCPUUsageIdleTime}
 \end{figure}
 
@@ -335,7 +337,7 @@ This timeout determines the maximum time that a candidate waits for incoming vot
 After a selectable number of failed elections, the election process gets aborted and a braking process is initiated.
 \\
 
-In a nutshell, the maximum time that the system can typically be without a leader is determined by the \textit{election timeout} plus the election time.
+Recapped , the maximum time that the system can typically be without a leader is determined by the \textit{election timeout} plus the election time.
 When a leader election is impossible, the maximum time is determined by the \textit{election timeout} plus the \textit{leader ready timeout} times the number of allowed failed elections.
 
 \subsection{Scenario Processing}
@@ -369,7 +371,7 @@ Therefore, the received events are measured to show how a spare increases the sy
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/InputMessagesReceive}
-	\caption{Number of input messages that the system receives throughout three scenarios. The first scenario starts after three seconds (\textbf{S1}), the second after 15 seconds (\textbf{S2}), and the third after 26 seconds (\textbf{S3}). After 25 seconds, the previous leader was manually stopped. The peaks at \textbf{S1} and \textbf{S2} indicate that one message with \abr{MA} and one with linking information was received. At \textbf{S3}, three input messages are received. This is because the \abr{MA} and linking message were buffered until a new leader got elected. The remaining peaks indicate that balise telegrams were received.}
+	\caption{Number of input messages that the system receives throughout three scenarios. The first scenario starts after three seconds (\textbf{S1}), the second after 15 seconds (\textbf{S2}), and the third after 26 seconds (\textbf{S3}). After 25 seconds, the previous leader was manually stopped (\textbf{LC}). The peaks at \textbf{S1} and \textbf{S2} indicate that one message with \abr{MA} and one with linking information was received. At \textbf{S3}, three input messages are received. This is because the \abr{MA} and linking message were buffered until a new leader got elected. The remaining peaks indicate that balise telegrams were received.}
 	\label{fig:PlotInputMessagesReceive}
 \end{figure}
 
@@ -503,7 +505,7 @@ Therefore, \abr{DDS} was chosen as the basis for the redundant \abr{EVC}.
 \\
 
 One challenge of this work, in addition to the suitability of \abr{DDS} for secure and redundant systems, was to find a minimal subset for implementation.
-This is because the system, which is designed to function as an \abr{EVC}, requires a high \abr{SIL}~\cite{ChakrabortyFaultTolerantRailway}.
+This is because the system, which is designed to function as an \abr{EVC}, requires a \abr{SIL}-level 4~\cite{ChakrabortyFaultTolerantRailway}.
 With \abr{DDS} being a significant part in the implementation, the \abr{SIL} of \abr{DDS} needs to be high as well.
 With minimal functionality, the cost and time required for approval is also minimal.
 \\
@@ -626,7 +628,7 @@ The following \abr{QOS} policies are used in the application:
 The \abr{ETCS} subset studied in this paper serves as a model for \abr{ETCS} in general.
 Therefore, the elaborated \abr{DDS} subset is pertinent for the overall \abr{ETCS} specification.
 However, for a \abr{SIL} 4 system, the \abr{SIL} level of the applied \abr{DDS} application must be sufficient. Furthermore, for a \abr{SIL} 4-compliant system, the used components must also fulfill a certain \abr{SIL} level.
-The component's required \abr{SIL}-level as well as the \abr{DDS} application's SIL-level are left to future work.
+The required component \abr{SIL}-level as well as the \abr{DDS} application's SIL-level are left to future work.
 
 \subsection{Opportunities and Challenges}
 
@@ -651,7 +653,7 @@ However, decoupling of senders and receivers is not always possible in a consens
 A follower replica that receives heartbeat messages can become the sender of heartbeat messages at any time when the previous leader becomes unavailable.
 Therefore, replicas need to alternate dynamically between sending and receiving data.
 One way to solve this challenge is to create and delete objects for publishing and subscribing to topics dynamically.
-However, this can lead to a sudden allocation and deallocation of dynamic memory, leading to unpredictable time performances.
+However, this can lead to a sudden allocation and deallocation of dynamic memory, leading to unpredictable timings.
 Thus, every replica allocates the required objects to publish and subscribe to every topic at program start, which leads to other challenges.
 \\
 

@@ -1,7 +1,7 @@
  \chapter{Background and Related Work}
 \label{chptr:concepts}
 
-As \abr{ETCS} is a safety-critical application, all components and software designed for {ETCS} must comply with specific requirements towards integrity and reliability.~\cite{OnBoardUnitSafetyTesting}. 
+As \abr{ETCS} is a safety-critical application, all components and software designed for {ETCS} must comply with specific requirements towards integrity and reliability~\cite{OnBoardUnitSafetyTesting}. 
 Introducing redundancy to safety-critical systems is a popular approach to reduce risk and ensure that faults inside the system do not lead to failures that affect the system's environment.
 A system that can continue its intended work even in the presence of faults is said to be fault-tolerant~\cite{BarryFaultToleranceAnalysis}.
 Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy), or performing the same operation multiple times (time redundancy).
@@ -24,7 +24,7 @@ As such, \abr{ETCS} defines concepts for monitoring a train's speed, calculating
 Any train requires a \abr{MA} to be allowed to drive from one location to another.
 Besides encoding a train's permission to move, a \abr{MA} also encodes information about the track's conditions, such as gradient profiles and speed limitation profiles.
 Any \abr{MA} is supplied by an external entity - called \abr{RBC} - via radio frequencies.
-A system that is located on the operating train - called on-board unit of \abr{EVC} - monitors compliance with the current \abr{MA}.
+A system that is located on the operating train - called on-board unit or \abr{EVC} - monitors compliance with the current \abr{MA}.
 The track-side components, as well as the on-board unit, are standardized.
 \abr{ETCS} defines three different levels:
 
@@ -39,11 +39,11 @@ Parallel to that, a braking curve and the train's position are permanently calcu
 For \abr{ETCS} level two, signaling and \abr{MA} data is transmitted via mobile communication channels from the \abr{RBC} and displayed to the driver.
 The \abr{RBC} typically is a central unit that constantly collects and supervises train movements and track information.
 Although each train monitors its position, inaccuracies can occur, for example due to faulty sensor calibration.
-Hence, a train operating under \abr{ETCS} level two does not know its exact position but can only locate itself within a certain range.
+Hence, a train operating under \abr{ETCS} does not know its exact position but can only locate itself within a certain range.
 This range is called \textit{confidence interval} and consists of an upper and lower limit of an area where the train's actual position lies.
 In order for the on-board unit to determine a train's exact position, track-side balises are used.
 Before the train starts its journey, the positions of the balises that it will encounter on its journey are provided during a phase called the linking phase.
-Thus, when a train crosses a linked balise and receives the balise telegram, the on-board unit can reset the train's confidence interval to the balises position.
+Thus, when a train crosses a linked balise and receives the balise telegram, the on-board unit can reset the train's confidence interval to the balise's position.
 
 \paragraph{\abr{ETCS} level three}
 Finally, in \abr{ETCS} level three, any fixed track-side component is abolished and the entire communication takes place via radio signals.
