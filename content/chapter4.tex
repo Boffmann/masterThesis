@@ -2,7 +2,7 @@
 \label{cpt:evaluation}
 
 As Chakroborty argued, any part of railway signaling requires highly reliable and fault-tolerant design~\cite{ChakrabortyFaultTolerantRailway}.
-Various methods exist to achieve these requirements from which redundancies and recovery mechanisms were used.
+Various methods exist to achieve these requirements from which redundancies and recovery mechanisms were used in this work's implementation.
 Chakroborty further states that redundancy can only support reliability and safety when it is managed correctly.
 Therefore, the developed system is analyzed and assessed to evaluate the applied redundancies' correctness.
 \\
@@ -28,7 +28,7 @@ Finally in this chapter, a \abr{DDS} subset for achieving the described behavior
 \end{figure}
 
 The developed on-board system supervises a train while it is on a journey.
-Each journey is encapsulated within a scenario that is bounded by a \abr{MA} and consists of a set of linked balises and track-side balises.
+Each journey is encapsulated within a scenario that is bounded by a \glsentryfull{MA} and consists of a set of linked balises and track-side balises.
 Scenarios are simulated to test the system and evaluate it concerning various criteria.
 Therefore, the elected leader simulates the train's position based on a constant speed and a hypothetical sensor inaccuracy.
 A separated program, called \textit{simulator}, simulates \abr{RBC} and track-side balises.
@@ -173,17 +173,11 @@ The system's components thereby exchange messages that are captured, stored, and
 
 \subsection{Data Transmission}
 
-An essential parameter for assessing a distributed system is network latency~\cite{SinhaMeasureNetworkLatency}.
-Network latency is used to indicate a delay that occurs while data is transmitted via a network.
-
-It can be derived from the network's throughput characteristic.
-\\
-
 In the analyzed architecture, components are arranged in a star topology and interconnected via a network switch that allows up to 2000 Mbit/s for each port.
 Data is transmitted via a wired \textit{Ethernet} connection.
 The interface of the utilized \textit{Revolution Pi} is a 10/100 Ethernet.
 Consequently, data transfers with up to 100~MBit/s are theoretically possible.
-In order to examine the bandwidth and latency of the applied network, a \abr{DDS} throughput testing program from \texttt{ADLINK} is used.
+In order to examine the relation of bandwidth and throughput in the applied network, a \abr{DDS} throughput testing program from \texttt{ADLINK} is used.
 Further, a publisher has been set up on one replica and a receiver on another.
 The publisher starts sending messages with different payload sizes and the subscriber counts the number of received bytes and samples.
 The communication is state-based, i.e. \texttt{WaitSets} are used so that the test setup is comparable to the actual application.
@@ -226,13 +220,13 @@ As the results show, the communication is stable with only a few outliers.
 This work's \abr{QOS}-policies are based on Song \etal~\cite{SongDDSInRealTimeSystems}.
 Although Song \etal utilized a different \abr{DDS} implementation and used a different processing hardware, their network characteristics are the same.
 Compared to Song \etal the communication of this work's system is a little slower.
-While they reached a latency of around 280 microseconds for one kilobyte of data, the proposed architecture reached around 330 microseconds for a one-kilobyte payload.
+While they reached a latency of around 280 microseconds for one kilobyte of data, the proposed architecture reached about 330 microseconds for a one-kilobyte payload.
 However, the values are similar so that the real-time capability of \abr{DDS} - shown by Song \etal - can be transferred to the architecture studied here.
 
 
 \subsection{Resource Utilization}
 
-The PLCs that were utalized in this work were chosen as a simple model.
+The \abrpl{PLC} that were utilized in this work were chosen as a simple model.
 However, this model is relevant to a real-world rail scenario with comparable low-cost rail controllers.
 Thus, the system is intended to operate on small and \abr{COTS} \abrpl{PLC} where resources are limited.
 However, it operates in a time-critical environment in which the lack of available resources should not affect execution.
@@ -255,7 +249,7 @@ In idle mode, the train is not driving and only heartbeat messages are exchanged
 The idle mode \abr{CPU} utilization for both a leader and a follower is depicted in~\autoref{fig:PlotCPUUsageIdleTime}.
 Results show that the leader's idle \abr{CPU} utilization is consistently higher than the follower's.
 On average, the follower utilized 1.81\% in 90 seconds, while the leader utilized 2.42\% of the applied \abr{CPU}.
-At system-mode, 0.21\% are used for the leader and 0.25\% for a follower on average.
+In system-mode, 0.21\% are used for the leader and 0.25\% for a follower on average.
 On user-mode, the leader utilizes on average 1.0\%, while a follower uses 0.66\%.
 This can be explained by the fact that the leader has more responsibilities in idle mode.
 It periodically sends heartbeat messages and observes whether the train has a valid \abr{MA} and can start driving.
@@ -287,16 +281,16 @@ At \textbf{B1}, an unlinked balise is noticed by the system and at \textbf{B2}, 
 \begin{figure}[!hbt]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/SystemUserCPUUsage}
-	\caption{Most of the \abr{CPU} work is done at user-mode. When \abr{MA} and linking information are received (\textbf{S1}, \textbf{S2}, and \textbf{S3}) peaks occur on both user- and system-mode. However, the leader performs more work on system-mode than the followers. This can be explained by the fact that memory is requested for the new state information. For early braking situations (\textbf{B1}, and \textbf{B2}), work is mostly done at user-mode and the system-mode utilization shows no peaks here.}
+	\caption{Most of the \abr{CPU} work is done in user-mode. When \abr{MA} and linking information are received (\textbf{S1}, \textbf{S2}, and \textbf{S3}) peaks occur on both user- and system-mode. However, the leader performs more work on system-mode than the followers. This can be explained by the fact that memory is requested for the new state information. For early braking situations (\textbf{B1}, and \textbf{B2}), work is mostly done in user-mode and the system-mode utilization shows no peaks here.}
 	\label{fig:PlotSystemUserCPUUsage}
 \end{figure}
 
-In~\autoref{fig:PlotSystemUserCPUUsage}, a distinction is made between \abr{CPU} utilization at user-mode and at system-mode.
-It can be seen that the application operates mainly at user-mode.
+In~\autoref{fig:PlotSystemUserCPUUsage}, a distinction is made between \abr{CPU} utilization in user-mode and in system-mode.
+It can be seen that the application operates mainly in user-mode.
 At the beginning of each journey, when \abr{MA} and linking information are received, peaks on system-mode occur (\textbf{S1}, \textbf{S2}, and \textbf{S3}).
-The peaks on system-mode utililzation are mainly on leader side and can be explained by the fact that new instances in the global state are created for the new information.
+The peaks in system-mode utilization are mainly on leader side and can be explained by the fact that new instances in the global state are created for the new information.
 The peaks on user-mode are due to replica synchronization and simulation start.
-In case of a premature stop (\textbf{B1} and \textbf{B2}), the calculation is almost exclusively done at user-mode in order to synchronize the replicas and stop the simulation.
+In case of a premature stop (\textbf{B1} and \textbf{B2}), the calculation is almost exclusively done in user-mode in order to synchronize the replicas and stop the simulation.
 
 \paragraph{Memory Consumption}
 The memory consumption is constant both in idle mode and when processing the scenarios.
@@ -337,7 +331,7 @@ This timeout determines the maximum time that a candidate waits for incoming vot
 After a selectable number of failed elections, the election process gets aborted and a braking process is initiated.
 \\
 
-Recapped , the maximum time that the system can typically be without a leader is determined by the \textit{election timeout} plus the election time.
+Recapped, the maximum time that the system can typically be without a leader is determined by the \textit{election timeout} plus the election time.
 When a leader election is impossible, the maximum time is determined by the \textit{election timeout} plus the \textit{leader ready timeout} times the number of allowed failed elections.
 
 \subsection{Scenario Processing}
@@ -419,7 +413,7 @@ Therefore, network latency, message processing, and voting add to the overall ba
 The total number of messages sent per second by the replicas is shown in~\autoref{fig:PlotTotalMessagesSent}.
 The beginning and end of each of the three scenarios can be seen in the plot by the total number of sent messages.
 While the train is driving, 20-25 messages are sent per second.
-The number reduces to 12-14 after a scenario finished, the train stoped, and the system returned to idle mode.
+The number reduces to 12-14 after a scenario finished, the train stopped, and the system returned to idle mode.
 While the train is driving, it is the leader's responsibility to update the system's global state, explaining the prominent increase in sent messages during operation.
 A majority of messages are sent by the system's leader, ten alone due to heartbeat messages.
 The rest accrue from a system-wide braking curve monitoring, for which requests and responses are transmitted.
@@ -440,7 +434,7 @@ It is noticeable that most state messages are published on the \texttt{TrainStat
 This is because the position is simulated every 100~ms and written to \texttt{TrainState}.
 Messages to \texttt{MovementAuthority} and \texttt{LinkedBalises} are only published at the beginning of each scenario because, at this time, the \abr{MA} and linked balises are communicated to the system.
 It can further be seen that three balises are linked in the first and third scenario, but only two linked balises are added for the second.
-The state messages are all sent by the leader because it is the only replica allowed to publish to these topics.
+The state messages are all sent by the leader because it is the only replica allowed to publish on these topics.
 After the previous leader stopped (\textbf{LC}), messages are still published to the state topics.
 Hence, a new leader has been elected.
 
@@ -454,7 +448,7 @@ Hence, a new leader has been elected.
 \end{figure}
 
 Behavioral topics include \texttt{AppendEntries}, \texttt{AppendEntriesReply}, \texttt{RequestVote}, and \texttt{RequestVoteReply}.
-The majority of messages is published to the \texttt{AppendEntries} topic due to the leader periodically publishing heartbeat messages.
+The majority of messages are published to the \texttt{AppendEntries} topic due to the leader periodically publishing heartbeat messages.
 Before the first scenario is executed, a leader election takes place which is indicated by traffic on \texttt{RequestVote} and \texttt{RequestVoteReply}.
 Another leader election happens after the previous leader crashed (\textbf{LC}).
 The fact that the previous leader crashed is reflected in the collapse of heartbeat messages on the \texttt{AppendEntries} topic.
@@ -500,14 +494,14 @@ Unlike in~\autoref{fig:PlotConsensusMessagesReceive}, the number goes back to th
 \section{\glsentrylong{DDS}}
 
 \abr{DCPS} systems, such as \abr{DDS}, are designed for machine-to-machine communication in real-time applications~\cite{omgDDSspec}.
-\abr{DDS} is designed to facilitate reliable and safe communication in distributes systems.
+\abr{DDS} is designed to facilitate reliable and safe communication in distributed systems.
 Therefore, \abr{DDS} was chosen as the basis for the redundant \abr{EVC}.
 \\
 
-One challenge of this work, in addition to the suitability of \abr{DDS} for secure and redundant systems, was to find a minimal subset for implementation.
-This is because the system, which is designed to function as an \abr{EVC}, requires a \abr{SIL}-level 4~\cite{ChakrabortyFaultTolerantRailway}.
-With \abr{DDS} being a significant part in the implementation, the \abr{SIL} of \abr{DDS} needs to be high as well.
-With minimal functionality, the cost and time required for approval is also minimal.
+One challenge of this work, in addition to the suitability of \abr{DDS} for secure and redundant systems, was to find a minimal subset for an implementation.
+This is because the system, which is designed to function as an \abr{EVC}, requires a \abr{SIL} 4 level~\cite{ChakrabortyFaultTolerantRailway}.
+With \abr{DDS} being a significant part in the implementation, the \abr{SIL} of the applied \abr{DDS} application needs to be high enough to facilitate a \abr{SIL} 4 system.
+A minimal sufficient \abr{DDS} subset reduces the costs for approving the \abr{DDS} application and determining its \abr{SIL} level.
 \\
 
 At first in this section, the utilized \abr{DDS} subset is described and justified.
@@ -628,7 +622,7 @@ The following \abr{QOS} policies are used in the application:
 The \abr{ETCS} subset studied in this paper serves as a model for \abr{ETCS} in general.
 Therefore, the elaborated \abr{DDS} subset is pertinent for the overall \abr{ETCS} specification.
 However, for a \abr{SIL} 4 system, the \abr{SIL} level of the applied \abr{DDS} application must be sufficient. Furthermore, for a \abr{SIL} 4-compliant system, the used components must also fulfill a certain \abr{SIL} level.
-The required component \abr{SIL}-level as well as the \abr{DDS} application's SIL-level are left to future work.
+The required component \abr{SIL}-level, as well as the \abr{DDS} application's SIL-level, are left to future work.
 
 \subsection{Opportunities and Challenges}
 

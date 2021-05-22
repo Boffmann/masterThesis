@@ -10,7 +10,7 @@ While redundancy is a typical method for increasing fault tolerance and hence re
 This thesis proposes the usage of DDS - a real-time capable machine-to-machine communication standard following the \glsentryfull{DCPS} pattern - to deal with the added complexity.
 It further provides background and implementation of a redundant and fault-tolerant ETCS on-board system using real-time DCPS communication and consensus-based voting.
 Besides data-centric implementations of behavioral concepts, such as a leader election and decision-making algorithm, the work contributes practical solutions to global state and recovery subjects in distributed systems.
-Functionality, safety, and reliability of the implementation are evaluated using a subset of ETCS and a cluster of four Raspberry Pi-based PLCs within a simulated environment.
+Functionality, safety, and reliability of the implementation are evaluated using a subset of ETCS and a cluster of four Raspberry Pi-based Programmable Logic Controllers (PLCs) within a simulated environment.
 The results show that (1) the redundant system facilitates real-time computation with high network throughput (up to 77 Mbit/s) and fast consensus-building ($\mu$=$6.5$~ms;$~\sigma$=$1.3$~ms). (2) Consensus-based DCPS communication increases reliability and enables fast system recovery ($\mu$=$5.47$~ms;$~\sigma$=$0.77$~ms upon recognizing a fault).
 (3) A subset of DDS is already sufficient to accomplish reliable and safe ETCS on-board units.
 Thereby, this work facilitates the development of safe and cost-efficient on-board systems for future ETCS applications.
@@ -27,12 +27,12 @@ Thereby, this work facilitates the development of safe and cost-efficient on-boa
 
 \noindent 
 Die Fahrzeuggeräte des europäischen Zugbeeinflussungssystems (ETCS) sind sicherheitskritische Systeme, deren Zuverlässigkeit eine entscheidende Rolle bei der Betriebssicherheit der Bahn spielt.
-Um die Fehlertoleranz von Systemen und damit deren Zuverlässigkeit und Sicherheit zu erhöhen, werden üblicherweise redundante Informationen und Berechnungen verwendet.
+Um die Fehlertoleranz von Systemen und damit deren Zuverlässigkeit und Sicherheit zu erhöhen, werden üblicherweise Redundanzen verwendet.
 Redundanzen erhöhen allerdings auch die Synchronisations- und Laufzeitkomplexität.
 Diese Arbeit schlägt die Verwendung von DDS - einer echtzeitfähigen Middleware zur datenzentrierten Kommunikation in verteilten Systemen - zur Bewältigung der zusätzlichen Komplexitäten vor.
 Darüber hinaus liefert die Arbeit Hintergründe und die Implementierung eines redundanten und fehlertoleranten ETCS-Fahrzeuggerätes auf der Grundlage von datenzentraler Publish-Subscribe (DCPS) Kommunikation.
 Weiterhin werden redundante Zwischenergebnisse über ein konsensbasiertes Abstimmungsverfahren dedupliziert.
-Neben Implementierungen von Verhaltenskonzepten, wie der Wahl eines Systemanführers und einem Entscheidungsalgorithmus, trägt die Arbeit praktische Lösungen zu Themen des globalen Zustands und der Wiederherstellung in verteilten Systemen bei.
+Neben Implementierungen von Verhaltenskonzepten, wie der Wahl eines zentralen Hauptknotens und einem Entscheidungsalgorithmus, trägt die Arbeit praktische Lösungen zu Themen des globalen Zustands und der Wiederherstellung in verteilten Systemen bei.
 Die Evaluation von Funktionalität, Sicherheit und Zuverlässigkeit der Implementierung erfolgt in einer simulierten Umgebung anhand einer Untermenge von ETCS und einem Cluster von vier Raspberry Pi-basierten Speicherprogrammierbaren Steuerungen (SPS).
 Die Ergebnisse zeigen, dass (1) Echtzeitberechnungen mit hohem Netzwerkdurchsatz (bis zu 77~Mbit/s) und schneller Konsensbildung ($\mu$=$6.5$~ms;$~\sigma$=$1.3$~ms) durch das redundanten System möglich sind.
 (2) Die konsensbasierte DCPS-Kommunikation erhöht die Zuverlässigkeit des Systems und ermöglicht eine schnelle Wiederherstellung im Fehlerfall ($\mu$=$5.47$~ms;$~\sigma$=$0.77$~ms nach dem Bemerken des Fehlers).

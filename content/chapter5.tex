@@ -5,8 +5,7 @@ This thesis describes the implementation of a fault-tolerant redundant architect
 
 In the first part, a suitable redundant architecture is established in three steps.
 First, typical redundancy techniques for fault-tolerant designs are listed and classified.
-Second, an \abr{ETCS} subset and scenario are identified.
-The scenario provides the basis for a fault model, a concrete system architecture, and the subsequent implementation.
+Second, an \abr{ETCS} subset and scenario are identified as the basis for a fault model, a concrete system architecture, and subsequent implementation.
 Third, a consensus-based and redundant approach with a hot standby is identified as the most appropriate system architecture solving challenges of \abr{TMR}.
 On the one hand, it prevents the voter from being a single point of failure.
 On the other hand, it provides higher reliability, flexibility, and scaling through \abr{DDS}.
@@ -16,7 +15,7 @@ In the second part, the thesis describes the implementation of the redundant arc
 Besides a leader election and decision-making algorithm, methods for system recovery - namely a hot standby and hardware watchdog - are presented.
 Finally, the implementation is evaluated using a simulator and automatic integration tests.
 Results verify fault-tolerance in the event of individual component failure, as well as sufficient real-time capable consense-building ($\mu$=$6.5$~ms;$~\sigma$=$1.3$~ms) and system recovery ($\mu$=$5.47$~ms;$~\sigma$=$0.77$~ms upon recognizing a fault).
-Based on these results, a subset of \abr{DDS} functionality is assembled.
+Based on these results, a subset of \abr{DDS} functionality is assembled that is sufficient for building fault-tolerant distributed applications.
 This facilitates the creation of specialized \abr{DDS} middleware so that the costs for developing and approving future \abr{ETCS} on-board systems can be greatly reduced.
 
 
@@ -25,7 +24,7 @@ This facilitates the creation of specialized \abr{DDS} middleware so that the co
 The system developed in this thesis bases on the fault model of an \abr{ETCS} subset.
 As a result, the underlying fault model is limited - compared to the complete \abr{ETCS} specification.
 For example, instead of track-side balise groups, individual balises were assumed.
-Thereby, consideration of the balise group's alignment were not considered in the fault model.
+Thereby, reflections of the balise group's alignment were not considered in the fault model.
 Additionally, the speed and gradient profiles of \abrpl{MA} were not considered, which affects braking curve supervision.
 Consequently, the fault model mainly focused on the safety and real-time capability of input processing.
 
@@ -38,7 +37,7 @@ The results of this work are based on assumptions regarding the communication's 
 For example, it is assumed that messages are processed correctly by the middleware, and no data is lost or corrupted during transmission.
 Since this is not always guaranteed, other redundancy concepts, such as information and time redundancies, could be applied.
 In the context of this, redundant and diverse transmission channels, such as CAN-Bus or FlexRay, can be used, or the same data can be sent multiple times.
-Further, \abr{ECC} concepts, such as Hamming codes or Reed-Solomon-Codes~\cite{ReedSolomonCodes}, could be applied to detect and correct transmission errors.
+Further, \glsentryfull{ECC} concepts, such as Hamming codes or Reed-Solomon-Codes~\cite{ReedSolomonCodes}, could be applied to detect and correct transmission errors.
 
 Also, the utilized \abrpl{PLC} are unlikely to comply with a \abr{SIL} level that is sufficient for building a \abr{SIL} 4 system.
 However, the analyzed model is pertinent to a real-world scenario where low-cost standard rail controllers with a sufficient \abr{SIL} level can be chosen instead of complex and expensive specialized \abr{SIL} 4 on-board computers.

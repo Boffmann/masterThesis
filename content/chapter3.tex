@@ -44,7 +44,7 @@ The solution is implemented in the C-programming language and makes use of the C
 A general outline of the system's structure is provided in~\autoref{fig:SystemComponents}.
 The \texttt{Input Processing} component provides an interface to the system's environment.
 Information about \abrpl{MA}, linked balises, and balise telegrams can be transferred to the system via the \textit{input} interface.
-Via the \textit{result} interface, the votet result for a corresponding input is presented.
+Via the \textit{result} interface, the voted result for a corresponding input is presented.
 \\
 
 The system distinguishes between two message types; informative and critical messages.
@@ -62,7 +62,7 @@ It is assumed that the applied \abrpl{PLC} have a sufficient \abr{SIL} level for
 Nevertheless, the presented model is pertinent to a real-world rail scenario.
 
 Because the network is arranged in a star network, the network switch makes up a single point of failure.
-For safety-reasons, a fully connected network would be the better choice.
+For safety reasons, a fully connected network would be the better choice.
 However, since the software implementation is independent of the applied network topology, a star network was chosen for the purpose of this thesis.
 
 The communication channel is implemented via \textit{Ethernet} and no information redundant communication channel is applied in this demonstration.
@@ -74,7 +74,7 @@ In order to build a highly secure system, the mentioned compromises need to be f
 It is mandatory for the replicas in the distributed system to produce deterministic results and to have access to the most recent global system state.
 The system's state is stored as a global state in \abr{DDS} state topics and consequently managed by the middleware.
 This ensures that all replicas can operate on the most recent system state and no replica becomes outdated.
-Only the system's leader is permitted to alter the system's state, all other replicas have read-only access.
+Only the system's leader is permitted to alter the system's state; all other replicas have read-only access.
 Three \abr{DDS} state topics make up the global system state.
 \\
 
@@ -131,8 +131,7 @@ The same applies for \texttt{RequestVote}, whose response topic is \texttt{Reque
 	\label{fig:SeqLeaderElection}
 \end{figure}
 
-A consensus algorithm guarantees that there is at most one leader present in the system at a time and that a new leader is elected when there is none present.
-The remaining replicas transition to follower mode when they recognize a leader.
+A consensus algorithm guarantees that there is at most one leader present in the system at a time and that a new leader is elected when there is none present; the remaining replicas transition to follower mode when they recognize a leader.
 Time in \texttt{Raft} is subdivided into \textit{terms}, that each start with a leader election.
 When a follower recognizes a missing leader in the system, it starts a new term and promotes to become the new leader. 
 Each replica manages its term, its current role, and voting information as a private replica state.
@@ -144,7 +143,7 @@ When a replica does not receive a message from a leader for a specific period of
 A high-level overview of a voting process is depicted in~\autoref{fig:SeqLeaderElection}.
 Replica \textbf{1} notices the crashed leader first and promotes to become the new leader by switching into candidate mode and sending a vote request to each remaining replica.
 In the exemplary case in~\autoref{fig:SeqLeaderElection}, replica \textbf{2} accepts the vote request and replica \textbf{1} becomes the new leader.
-It immediately starts sending heartbeat messages afterwards.
+It immediately starts sending heartbeat messages afterward.
 \\
 In the following, the allocation and the collection of votes will be discussed in more detail.
 \\\\
@@ -204,7 +203,7 @@ The number of necessary voted depends on the total number of replicas in the sys
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/RaftServerStates}
-	\caption{Replicas in \texttt{Raft} can be in one of three states. When a follower receives no heartbeat messages from a leader, it starts an election and tries to become the new leader. A replica remains in the candidate state either until it becames the new leader or until it receives a heartbeat from another leader with a higher term. Leaders operate until they fail or until they discover that their term is outdated. This diagram was taken from~\cite{RaftConsensusPaper}}
+	\caption{Replicas in \texttt{Raft} can be in one of three states. When a follower receives no heartbeat messages from a leader, it starts an election and tries to become the new leader. A replica remains in the candidate state either until it becomes the new leader or until it receives a heartbeat from another leader with a higher term. Leaders operate until they fail or until they discover that their term is outdated. This diagram was taken from~\cite{RaftConsensusPaper}}
 	\label{fig:RaftServerStates}
 \end{figure}
 
@@ -215,7 +214,7 @@ The number of necessary voted depends on the total number of replicas in the sys
 It is crucial for the system's safety that only one leader is present at any time.
 Further, it needs to be ensured that a new leader is elected after the previous leader failed and that the system is not without a leader for too long.
 When a leader election is impossible, the remaining replicas must ensure that the train stops.
-This can lead to situations where multiple replicas at once take control about the system's output.
+This can lead to situations where multiple replicas at once take control of the system's output.
 Therefore, only the most restrictive output should be taken - in this case stopping the train.
 Specialized multiplexing hardware that filters simultaneous outputs can ensure that always the most restrictive output is taken.
 Other hardware, such as gravity-controlled switches, can ensure that a train stops when no replica is active at all.
@@ -223,7 +222,7 @@ Other hardware, such as gravity-controlled switches, can ensure that a train sto
 
 The election algorithm is implemented as a concurrent algorithm.
 Because no assumptions about the thread's relative speed can be made, race conditions can occur~\cite{Dijkstra1965}.
-In the following, it is described how the algorithm ensures functional correntness with \abr{DDS} features and prevents race conditions.
+In the following, it is described how the algorithm ensures functional correctness with \abr{DDS} features and prevents race conditions.
 
 \paragraph{Functional Correctness}
 During the entire time, each replica is in one of three states, namely \texttt{Leader}, \texttt{Candidate} or \texttt{Follower}.
@@ -235,7 +234,7 @@ Five requirements can be derived from the figure that must be met by an algorith
 \item \textbf{End of Election:} A candidate remains in candidate state until it either wins the election, receives information about another leader in the system, or times out.
 \item \textbf{Won Election:} A candidate wins the election if it receives votes from a majority of replicas in the same term. Each replica votes for at most one replica in a given term.
 \item \textbf{Lost Election:} A candidate loses the election when it receives a message from a leader whose term is at least as high as the candidate's term.
-\item \textbf{No Result:} A certain period of time goes by without the candidate winning or loosing the election.
+\item \textbf{No Result:} A certain period of time goes by without the candidate winning or losing the election.
 \end{enumerate}
 
 For realizing the leader election algorithm with \abr{DCPS} features, three \texttt{Topics} are required.
@@ -267,7 +266,7 @@ The voting part is therefore treated by another \abr{OS} thread, that again make
 Thereby, the replicas can agree to a vote request while the candidate waits for the voting to end.
 
 In the case of a network partition, where one or multiple replicas are separated from the others, split-brain situations with multiple leaders - one for each subnet - could happen.
-However, the quorum required for voting prevents multiple replicas in a partitioned network to become the leader and prevent split-brain situations from leading to system failures.
+However, the quorum required for voting prevents multiple replicas in a partitioned network to become the leader and prevents split-brain situations from leading to system failures.
 
 \paragraph{Absence of Race Conditions}
 
@@ -385,7 +384,7 @@ Upon expiring, the leader behaves as if an input message has been received.
 First, the leader requests redundant decisions whether the train should brake or continue its journey.
 Second, the leader calculates a decision itself by calculating the braking curve and comparing it to the current \abr{MA}'s end position.
 Third, it waits for results from the remaining replicas and performs a majority voting.
-Finally, the voted result is send as a system output.
+Finally, the voted result is sent as a system output.
 
 In the following, both monitoring the braking curve and handling critical inputs is referred to as \textit{input processing}.
 \\
@@ -424,7 +423,7 @@ Receiving too few decisions is a safety risk and the leader must stop the train.
 In addition, a leader could repeatedly crash while processing an input.
 Thereby, the system would not be able to generate an output for a critical input.
 The presented system cannot cope with such a situation because it would require a distributed timeout that is not possible for an asynchronous system~\cite{FLPProblemConsensus}.
-Such situations could be managed by usage of a safety layer - for example applying \abr{ECC} on the tramsmitted data -  as well as by using a deterministic transport protocol~\cite{DeterministicTransport} such as TTEthernet or EtherCAT.
+Such situations could be managed by the usage of a safety layer - for example applying \abr{ECC} on the transmitted data -  as well as by using a deterministic transport protocol~\cite{DeterministicTransport} such as TTEthernet or EtherCAT.
 
 \section{System Recovery}
 
@@ -450,7 +449,7 @@ Active hardware redundancy facilitates systems to recover from individual compon
 An algorithm for adding a spare component as a hot standby is depicted in~\autoref{fig:TMRWithSparesDDS}.
 If the leader receives too few decisions when processing an input, it assumes that any non-responsive replica has crashed.
 Thereupon, the leader activates the spare by publishing a message to a \abr{DDS} event topic called \texttt{ActivateSpare}.
-If the replica that was presumed crashed responds again, the spare can be deactivated again by publishing a corresponding message to the \texttt{ActivateSpare} topic.
+If the replica that was presumed crashed responds again, the spare could be deactivated again by publishing a corresponding message to the \texttt{ActivateSpare} topic.
 \\
 
 For creating a hot standby, a component must be initialized in spare mode.

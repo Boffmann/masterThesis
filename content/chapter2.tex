@@ -101,7 +101,7 @@ Information in \gls*{ETCS} can be diverse in terms of type, size, durability, up
 For example, a train's position is a periodically and frequently updated type of information, while a \gls*{MA} is valid for a longer time and may be updated infrequently.
 There is also a difference between whether the information is kept as a state of the system, used as a message within the system, or provided as system input.
 The system's state is typically derived from input events.
-In this section, an overview about different information types and possibilities for their representation in \gls*{DDS} topics is provided.
+In this section, an overview of different information types and possibilities for their representation in \gls*{DDS} topics is provided.
 
 \begin{table}[htbp!]
 	\begin{center}
@@ -148,7 +148,7 @@ Possible \gls*{QOS} settings for volatile and enduring states are presented in~\
 			\hline
 			Durability & Depends on actual implementation & It might be appropriate to let late joining DataReaders process the events. \\
 			\hline
-			History & KeepAll & All events shall eventually be send and processed. Therefore, the event samples should be stored on both the sender and the receiver side.  \\
+			History & KeepAll & All events shall eventually be sent and processed. Therefore, the event samples should be stored on both the sender and the receiver side.  \\
 			\hline
 			Lifespan & Depends on actual implementation & An event may be only valid for a specific period of time. This timespan can be specified by assigning a lifespan to a DataWriter. \\
 			\hline
@@ -258,7 +258,7 @@ It can be shown via induction that adding more replicas increases a system's rel
 &R_{1oo1} = {1 \choose 1} * R_{c}^1 * (1 - R_{c})^0 = R_{c}
 \end{align*}
 
-\item \emph{Hypothesis:} $R_{MooN}$ describes the reliability for a M-out-of-N-system and a components reliability $R_{c}$ can only be positive.
+\item \emph{Hypothesis:} $R_{MooN}$ describes the reliability for an M-out-of-N-system and a components reliability $R_{c}$ can only be positive.
 
 \item \emph{Induction Step(s):}
 \begin{align*}
@@ -300,7 +300,7 @@ In an exemplary case where one replica crashes, the voter receives only two repl
 When the spare replica \textbf{(S)} receives the activate event, is subscribes to the \texttt{Input} topic and registers to the \texttt{Replica Results} topic to publish data to it.
 If the failed replica comes back to life and the voter recognizes this, the voter can reject the result from \textbf{(S)} and send a \textit{deactivate} event.
 After that, the spare replica ends its subscription to the input topic and stops publishing results.
-A precondition for this approach is, that a replica's result can be unambiguously assigned to a replica, for example by using IDs or by using an individual result topic for each replica.
+A precondition for this approach is that a replica's result can be unambiguously assigned to a replica, for example by using IDs or by using an individual result topic for each replica.
 Further, the spare replica's state needs to be synchronized with the other replicas to make pertinent decisions, which can be assured by managing a global system state through \abr{DDS}.
 \\
 
@@ -412,7 +412,7 @@ Thereby, crash faults (\textbf{F1}) for voters can be caught by the heartbeat me
 
 Nevertheless, it is not possible to catch omission, timing, and computation faults for voters with the considered consensus-inspired architecture.
 This is because the voter, which acts as the system's leader, has sole responsibility and control over the system's output.
-When the voter fails to perform a voting on incoming decisions, the system's output remains unchanged and thus the system's safety is affected.
+When the voter fails to perform voting on incoming decisions, the system's output remains unchanged and thus the system's safety is affected.
 However, a majority voting algorithm is quite simple and the applied fault model is based on the correct transmission of data, omission, timing, and computation faults are unlikely to happen for the voter.
 Further, additional hardware could be applied to catch omission and timing faults for voters.
 For example, a hardware timer could be started as soon as input data is recognized and stopped when the system produced an output.
@@ -435,7 +435,7 @@ For the real-time application examined in this work, an output is expected to be
 Therefore, the input topic's \texttt{Durability} should be set to volatile and the \texttt{Lifespan}-policy can be set to at least $\Delta t$ plus a network latency.
 There are also other ways for ensuring deadlines in \abr{DDS}, such as using \texttt{WaitSets} that can be attached with timeouts.
 As mentioned by Sinha \etal, network latency can be measured with a looping technique that utilizes \abr{IP} \abr{TTL} or by an end-to-end approach using probing packets~\cite{SinhaMeasureNetworkLatency}.
-Latter is applied in~\autoref{cpt:evaluation} to determine network latencies in the practical approach.
+Latter is applied in~\autoref{cpt:evaluation} to determine network characteristics in the practical approach.
 The input's \texttt{ResourceLimit} depends on the frequency the input is expected to be delivered and can be set to one when the input's frequency is higher than $\Delta t$.
 \\
 
@@ -448,7 +448,7 @@ An example of this could be a message concerning a \abr{MA} that has been expire
 Hence, a component's message might require a certain \texttt{Lifespan}-policy or timeout that depends on the actual message.
 \\
 
-So that all replicas can make deterministic decisions in spicific situations, they must have access to a global system state.
+So that all replicas can make deterministic decisions in specific situations, they must have access to a global system state.
 Such a global system state should store the currently valid \abr{MA}, a set of linked balises, as well as the train's current speed and estimated position.
 Since \abr{MA} and balise linking information is communicated at the start of each journey, they are each stored in an enduring \abr{DDS} state topic.
 The train's state is expected to change frequently, so that it is stored in a volatile \abr{DDS} state topic.

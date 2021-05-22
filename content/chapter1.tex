@@ -6,7 +6,7 @@ Introducing redundancy to safety-critical systems is a popular approach to reduc
 A system that can continue its intended work even in the presence of faults is said to be fault-tolerant~\cite{BarryFaultToleranceAnalysis}.
 Redundancy can be achieved in multiple ways, some of which being adding additional resources (hardware redundancy), adding additional information or messages (information redundancy), or performing the same operation multiple times (time redundancy).
 Although being one of the most often used redundancy techniques, the addition of hardware components, called replicas for redundant computation, leads to multiple results that need to be deduplicated to a final system result.
-Thus, the replicas need to communicate with each other and synchronize their results to act like a single unit in their environment.
+Thus, the replicas need to communicate with each other and synchronize their results to act as a single unit in their environment.
 A promising approach to cope with the communication overhead is \gls*{DDS}, a \gls*{DCPS} system since it supports reliable and real-time communication~\cite{omgDDSspec}.
 However, while hardware redundancy enhances a system's fault-tolerance, it also increases its costs and complexity.
 \\
@@ -48,7 +48,7 @@ Thus, when a train crosses a linked balise and receives the balise telegram, the
 \paragraph{\abr{ETCS} level three}
 Finally, in \abr{ETCS} level three, any fixed track-side component is abolished and the entire communication takes place via radio signals.
 Further, moving-block operations are enabled.
-\abr{ETCS} level three is not fully standardized yet but is intended to replace track-vacancy detection by on-board technology.
+\abr{ETCS} level three is not fully standardized yet but is intended to replace track-vacancy detection with on-board technology.
 
 \section{\glsentryfull{DDS}}
 
@@ -84,7 +84,7 @@ Therefore, Vortex OpenSplice DDS is used throughout this thesis, which is develo
 
 The applicability of the \gls*{DDS}-standard and of Vortex OpenSplice \gls*{DDS} for safety-critical railway applications has been demonstrated by Schmidt and van't Hag~\cite{SchmidtMissionCriticalChallenges}.
 Their findings show that OpenSplice \gls*{DDS}'s \gls*{QOS} policies allow predictable time and locality characteristics for data distribution.
-Further, their work provides an overview about Vortex OpenSplice's \gls*{QOS} policies and features to ensure reliability, availability, data delivery, and resource usage.
+Further, their work provides an overview of Vortex OpenSplice's \gls*{QOS} policies and features to ensure reliability, availability, data delivery, and resource usage.
 
 \section{Techniques for Safety and Reliability Evaluation}
 \label{sec:techniquesSafetyReliability}
@@ -327,7 +327,7 @@ Thereby, permanent faults in a system can be detected.
 
 \autoref{fig:ECC} depicts an example of a combination of information and time redundancy using \gls*{ECC} techniques.
 An encoder encodes the input and transmits this redundant information together with the input data.
-After the system produces an output based on its input information, the output is also encoded and afterwards compared to the encoded input.
+After the system produces an output based on its input information, the output is also encoded and afterward compared to the encoded input.
 When there are anomalies between the system's input and its output, safety operations can be initiated.
 The encoding function must be chosen so that it allows the detection of faults in the system.
 In an exemplary case, where each input allows two possible outputs, the encoding function could generate two numbers for each input.
@@ -363,7 +363,7 @@ He further conducts a cost, benefit, and performance analysis for each presented
 In this work, the concepts proposed by Johnson are extended based on the model by Chakraborty and by using and evaluating the feasibility of \gls*{DDS} for redundancy in the railway context.
 While Chakroborty formulated demands and considerations for hardware- and software redundancy, Bemment \etal focussed on the design and evaluation of hardware redundant systems.
 However, the evaluation approach of hardware according to the mean time to failure principle - used by Bemment \etal - can also be applied to software.
-Typically, as Bemment \etal pointed out, an in-depth redundancy evaluation towards safety and reliability can only be made for well-defined use cases where hazards, risks and potential accidents are know.
+Typically, as Bemment \etal pointed out, an in-depth redundancy evaluation towards safety and reliability can only be made for well-defined use cases where hazards, risks and potential accidents are known.
 Therefore, specific design decisions will be made throughout this thesis based on an \abr{ETCS} subset.
 For further evaluations, an overview about possible accidents in railway is given by~\cite{GlobalRailwayRiskAnalysis}.
 
@@ -437,7 +437,7 @@ These are illustrated in~\autoref{tab:qos_garciavalls} and are especially import
 The results from García-Valls \etal show that the communication performance remains stable even under heavy load.
 Even though they applied a different \gls*{DDS} implementation, the network topology and used hardware are comparable, which renders the results from García-Valls \etal useful for this work.
 
-\paragraph{Time and availability for consensus based redundant systems.}
+\paragraph{Time and availability for consensus-based redundant systems.}
 While redundant and distributed architectures are a typical approach to enhance a system's robustness, they also entail the demand to agree on certain data values.
 Consensus algorithms are a way for components to coordinate and come to an agreement.
 However, consensus algorithms also introduce a performance overhead, whose effects on the system's response time have been investigated by Sakic and Kellerer~\cite{SakicTimeInConsensus}.
