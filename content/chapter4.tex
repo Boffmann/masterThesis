@@ -81,7 +81,7 @@ A distinction is made between the balise's position and its linked position in o
 \subsection{Simulator Classification}
 
 In literature, simulators are distinguished based on their mode of operation.
-They are categorized into simulators based on \abr{DE}-, and \abr{CT}~\cite{CoSimulationStateOfTheArt}.
+They are categorized into simulators based on \abr{DE}, and \abr{CT}~\cite{CoSimulationStateOfTheArt}.
 In a \abr{DE}-based simulation, communication with the environment is characterized by events that are triggered at certain times.
 For \abr{CT}-based simulations, the simulated state is expected to evolve continuously over time.
 Based on these properties, it can be argued that the simulator that is utilized in this work is a combination of a \abr{DE}- and a \abr{CT}-based simulation system.
@@ -179,7 +179,7 @@ The system's components thereby exchange messages that are captured, stored, and
 In the analyzed architecture, components are arranged in a star topology and interconnected via a network switch that allows up to 2000 Mbit/s for each port.
 Data is transmitted via a wired \textit{Ethernet} connection.
 The interface of the utilized \textit{Revolution Pi} is a 10/100 Ethernet.
-Consequently, data transfers with up to 100~MBit/s are theoretically possible.
+Consequently, data transfers with up to 100~Mbit/s are theoretically possible.
 In order to examine the relation of bandwidth and throughput in the applied network, a \abr{DDS} throughput testing program from \texttt{ADLINK} is used.
 Further, a publisher has been set up on one replica and a receiver on another.
 The publisher starts sending messages with different payload sizes and the subscriber counts the number of received bytes and samples.
@@ -213,7 +213,7 @@ The results are presented in~\autoref{fig:PlotDataThroughput}.
 With a payload size of 1024~bytes, an average data throughput of 24~Mbit/s is reached.
 The throughput increases to 56~Mbit/s on average for a payload size of 4096~bytes and 75~Mbit/s on average for a payload size of 16384~bytes.
 Above this payload size, the throughput increases less steeply and approaches a value just below 80~Mbit/s.
-This value is not far from the 100~MBit/s supported by the \textit{Revolution Pis}' hardware.
+This value is not far from the 100~Mbit/s supported by the \textit{Revolution Pi's} hardware.
 \\
 
 \noindent
@@ -301,8 +301,8 @@ In case of a premature stop (\textbf{B1} and \textbf{B2}), the calculation is al
 
 \paragraph{Memory Consumption}
 The memory consumption is constant both in idle mode and when processing the scenarios.
-In idle mode, 10.5~MBit were used from both the leader and the follower.
-It increases to 11.2~MBit while scenarios are processed.
+In idle mode, 10.5~Mbit were used from both the leader and the follower.
+It increases to 11.2~Mbit while scenarios are processed.
 This can be explained by the fact that the supplied \abr{MA} and the linked balises are stored.
 Further, additional messages are exchanged between the replicas.
 The memory consumption is constant during the whole time due to the chosen approach where all memory is allocated at program startup.
@@ -415,7 +415,7 @@ Therefore, network latency, message processing, and voting add to the overall ba
 
 \paragraph{Total Messages}
 
-\begin{figure}[!t]
+\begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/TotalMessagesSent}
 	\caption{All messages that were published by replicas over a period of three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. After 25 seconds, the system's leader was manually stopped (\textbf{LC}). The number of messages sent after the first leader stopped does not differ from those sent before, showing the system's robustness.}
@@ -425,7 +425,7 @@ Therefore, network latency, message processing, and voting add to the overall ba
 \begin{figure}[!t]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/StateMessagesSent}
-	\caption{Messages that were published to state topics over a period of three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. For the first and third scenario, three balises were linked. The second balise includes an unlinked balise and therefore, only two are linked. Further, a crashed leader (at point \textbf{LC}) does not affect the system state's up-to-dateness.}
+	\caption{Messages that were published to state topics over a period of three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. For the first and third scenario, three balises were linked. The second balise includes an unlinked balise and therefore, only two are linked. Further, a crashed leader (at point \textbf{LC}) does not affect the system state's up-to-dateness since the same amount of messages are published to the state as before \textbf{LC}.}
 	\label{fig:PlotStateMessagesSent}
 \end{figure}
 
@@ -433,9 +433,10 @@ The total number of messages sent per second by the replicas is shown in~\autore
 The beginning and end of each of the three scenarios can be seen in the plot by the total number of sent messages.
 While the train is driving, 20-25 messages are sent per second.
 The number reduces to 12-14 after a scenario finished, the train stopped, and the system returned to idle mode.
-While the train is driving, it is the leader's responsibility to update the system's global state, explaining the prominent increase in sent messages during operation.
-A majority of messages are sent by the system's leader, ten alone due to heartbeat messages.
-The rest accrue from a system-wide braking curve monitoring, for which requests and responses are transmitted.
+While the train is driving, it is the leader's responsibility to update the system's global state.
+Hence, most messages are sent by the system's leader, ten alone due to heartbeat messages.
+This explains the prominent increase in sent messages during operation.
+The remaining messages accrue from a system-wide braking curve monitoring, for which requests and responses are transmitted.
 The robustness of the system is shown by the fact that the number of messages sent for the last scenario (\textbf{S3}) - after the previous leader stopped (\textbf{LC}) - does not differ from the previous two scenarios.
 
 \paragraph{State Messages Sent}
@@ -505,7 +506,7 @@ Shortly after, a new leader election takes place and the number of received mess
 Unlike in~\autoref{fig:PlotConsensusMessagesReceive}, the number goes back to that before \textbf{LC} showing that there are three active replicas again.
 
 
-\section{\glsentrylong{DDS}}
+\section{\glsentryfull{DDS}}
 
 \abr{DCPS} systems, such as \abr{DDS}, are designed for machine-to-machine communication in real-time applications~\cite{omgDDSspec}.
 \abr{DDS} is designed to facilitate reliable and safe communication in distributed systems.
@@ -547,8 +548,8 @@ A \abr{DDS} application's main building blocks comprise a \texttt{Domain}, one o
 Besides these classes, the domain module contains various functionalities, from which the following subset is used within the exemplary implementation.
 
 \begin{itemize}
-\item \textit{DDS\_DomainParticipant\_create\_(publisher|subscriber|topic)} Is used for creating \abr{DDS} publishers, subscribers or topics.
-\item \textit{DDS\_DomainParticipant\_delete\_(publisher|subscriber|topic)} Is used for deleting \abr{DDS} publishers, subscribers or topics.
+\item \textit{DDS\_DomainParticipant\_create\_(publisher|subscriber|topic)} Used for creating \abr{DDS} publishers, subscribers or topics.
+\item \textit{DDS\_DomainParticipant\_delete\_(publisher|subscriber|topic)} Used for deleting \abr{DDS} publishers, subscribers or topics.
 \item \textit{DDS\_DomainParticipantFactory\_get\_instance} Used for acquiring the \texttt{DomainParticipantFactory} singleton.
 \item \textit{DDS\_DomainParticipantFactory\_(create|delete)\_participant} Used for creating and deleting a new participant in the \abr{DDS} domain.
 \end{itemize}
@@ -648,10 +649,10 @@ In this section, the suitability of \abr{DCPS} systems, like \abr{DDS}, for cons
 \paragraph{Advantages}
 On the one hand, \abr{DDS} allows to utilize \abr{QOS} settings to specify what is expected from the system rather than how it should be done.
 Through \texttt{ReadConditions}, messages can be filtered.
-Further, \texttt{WaitSets} and \abr{QOS}-settings can be used to declare time restriction and requirements.
+Further, \texttt{WaitSets} and \abr{QOS}-settings can be used to declare time restrictions and requirements.
 This facilitates reliable and predictable machine-to-machine communication.
 
-In addition, the middleware supports the automatic discovery of replicas to that the number of used replicas is dynamically scalable.
+In addition, the middleware supports the automatic discovery of replicas so that the number of used replicas is dynamically scalable.
 For example, an active spare unit can be added to the system at any time and is automatically discovered and included.
 This would also allow to apply a three-out-of-five system rather than a two-out-of-three system and use the same software.
 
@@ -664,7 +665,7 @@ However, decoupling of senders and receivers is not always possible in a consens
 A follower replica that receives heartbeat messages can become the sender of heartbeat messages at any time when the previous leader becomes unavailable.
 Therefore, replicas need to alternate dynamically between sending and receiving data.
 One way to solve this challenge is to create and delete objects for publishing and subscribing to topics dynamically.
-However, this can lead to a sudden allocation and deallocation of dynamic memory, leading to unpredictable timings.
+However, this can lead to a sudden allocation and deallocation of dynamic memory, resulting in unpredictable timings.
 Thus, every replica allocates the required objects to publish and subscribe to every topic at program start, which leads to other challenges.
 \\
 
@@ -679,6 +680,7 @@ Lastly, a system that utilizes \abr{DDS} for communication needs to support conc
 This introduces potential race conditions or deadlocks and can complicate the development and approval process.
 Since the developed system, for example, needs to react to vote requests and log replication messages at any time, a concurrent system design is unavoidable.
 However, as described in~\autoref{subsub:raceConditions}, the implemented concurrent algorithm keeps the probability of race conditions small.
+
 All in all, the use of \abr{DDS} can increase the development effort on the one hand. However, on the other hand, it offers functionalities to simplify and ensure the security and implementation of time-critical applications.
 
 

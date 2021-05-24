@@ -141,7 +141,7 @@ The same applies for \texttt{RequestVote}, whose response topic is \texttt{Reque
 
 A consensus algorithm guarantees that there is at most one leader present in the system at a time and that a new leader is elected when there is none present; the remaining replicas transition to follower mode when they recognize a leader.
 Time in \texttt{Raft} is subdivided into \textit{terms}, that each start with a leader election.
-When a follower recognizes a missing leader in the system, it starts a new term and promotes to become the new leader. 
+When a follower recognizes a missing leader in the system, it starts a new term, votes for itself, and promotes to become the new leader. 
 Each replica manages its term, its current role, and voting information as a private replica state.
 \\
 
@@ -150,7 +150,7 @@ It is the leader's responsibility to inform the remaining replicas about its exi
 Therefore, the leader periodically publishes heartbeat messages onto the \texttt{AppendEntries} topic.
 When a replica does not receive a message from a leader for a specific period of time, called the \textit{election timeout}, it promotes to become the new leader.
 A high-level overview of a voting process is depicted in~\autoref{fig:SeqLeaderElection}.
-Replica \textbf{1} notices the crashed leader first and promotes to become the new leader by switching into candidate mode and sending a vote request to each remaining replica.
+Replica \textbf{1} notices the crashed leader first and promotes to become the new leader by switching into candidate mode, voting for itself, and sending a vote request to each remaining replica.
 In the exemplary case in~\autoref{fig:SeqLeaderElection}, replica \textbf{2} accepts the vote request and replica \textbf{1} becomes the new leader.
 It immediately starts sending heartbeat messages afterward.
 \\
@@ -215,7 +215,7 @@ The number of necessary voted depends on the total number of replicas in the sys
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.75\linewidth]{images/RaftServerStates}
-	\caption{Replicas in \texttt{Raft} can be in one of three states. When a follower receives no heartbeat messages from a leader, it starts an election and tries to become the new leader. A replica remains in the candidate state either until it becomes the new leader or until it receives a heartbeat from another leader with a higher term. Leaders operate until they fail or until they discover that their term is outdated. This diagram was taken from~\cite{RaftConsensusPaper}}
+	\caption{Replicas in \texttt{Raft} can be in one of three states, namely \texttt{Follower}, \texttt{Candidate}, and \texttt{Leader}. When a follower receives no heartbeat messages from a leader, it starts an election and tries to become the new leader. A replica remains in the candidate state either until it becomes the new leader or until it receives a heartbeat from another leader with a higher term. Leaders operate until they fail or until they discover that their term is outdated. This diagram was taken from~\cite{RaftConsensusPaper}.}
 	\label{fig:RaftServerStates}
 \end{figure}
 
@@ -336,7 +336,7 @@ Altogether, when enough replicas are present in the system and communication is 
 Whether a replica writes data onto a topic or reads data from a topic depends on its \texttt{Raft} role.
 For example, the leader publishes heartbeat messages while a follower receives the heartbeat messages to detect a missing leader.
 Because a replica can become the leader or a follower at any point in time, it cannot be predicted when it transitions from publisher to subscriber or from subscriber to publisher.
-This can be a safety hazard because registering a publisher or subscriber can fail and it takes time to register an \abr{DDS} entity to a topic.
+This can be a safety hazard because registering a publisher or subscriber can fail and it takes time to register a \abr{DDS} entity to a topic.
 Therefore, every replica is set up to simultaneously act as a publisher and subscriber to every topic, with an exception to the \texttt{Input} topic.
 
 However, this also means that each replica receives its own messages.
@@ -350,7 +350,7 @@ Even though this results in a consistent computational overhead, it increases th
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/sequence/CollectResults}
-	\caption{The leader records input messages from track-side components. Afterward, the leader sends a message with an input reference to each follower in order to request a decision. Then, the leader and each follower process the input and generate a decision based on the input and the global system state. The decisions are collected by the leader that performs a voting when enough decisions are present. Meanwhile, the leader ensures that time constraints are met using timeouts. If there are not enough decisions for voting after the timeout expires, the train must be slowed down.}
+	\caption{The leader records input messages from track-side components. Afterward, the leader sends a message with an input reference to each follower in order to request a decision. Then, the leader and each follower process the input and generate a decision based on the input and the global system state. The decisions are collected by the leader that performs a voting when enough decisions are present. Meanwhile, the leader ensures that time constraints are met using timeouts. If there are not enough decisions for voting after the timeout expires, the train must be stopped.}
 	\label{fig:SeqCollectResults}
 \end{figure}
 
@@ -463,20 +463,18 @@ Afterward, it is explained how the hardware watchdog of the \textit{Revolutions 
 \subsection{Hot Standby}
 \label{sec:HotStandby}
 
-\begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.75\linewidth]{images/sequence/ActivateSpare}
-	\caption{When the leader, after reading an input message and instructing its followers to process the input, receives too few decisions after a certain time, it activates the spare replica. When the leader receives more decisions than necessary, the spare component is deactivated again.}
-	\label{fig:SeqActivateSpare}
-\end{figure}
-
-\noindent
 Active hardware redundancy facilitates systems to recover from individual component failures.
 An algorithm for adding a spare component as a hot standby is depicted in~\autoref{fig:SeqActivateSpare}.
 If the leader receives too few decisions when processing an input, it assumes that any non-responsive replica has crashed.
 Thereupon, the leader activates the spare by publishing a message to a \abr{DDS} event topic called \texttt{ActivateSpare}.
 If the replica that was presumed crashed responds again, the spare could be deactivated again by publishing a corresponding message to the \texttt{ActivateSpare} topic.
-\\
+
+\begin{figure}[!hb]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/sequence/ActivateSpare}
+	\caption{When the leader, after reading an input message and instructing its followers to process the input, receives too few decisions after a certain time, it activates the spare replica. When the leader receives more decisions than necessary, the spare component is deactivated again.}
+	\label{fig:SeqActivateSpare}
+\end{figure}
 
 \noindent
 For creating a hot standby, a component must be initialized in spare mode.
@@ -487,11 +485,7 @@ Further, a spare utilizes a \texttt{WaitSet} to wait for any activate message.
 \noindent
 Unlike the other replicas, a spare component can only be in \texttt{spare} or \texttt{follower} mode and is excluded from becoming the leader, as well as from voting for other leaders in the leader election process.
 This is because a spare component can be activated or deactivated at any time.
-Upon being activated, a spare component participates in the input processing process by responding to leader requests.
-\\
-
-\noindent
-Although only a single spare component is currently supported, multiple spares can be added by introducing a \texttt{spareID} field to \texttt{ActivateSpare}.
+Upon being activated, a spare component participates in the input processing process by responding to leader requests. Although only a single spare component is currently supported, multiple spares can be added by introducing a \texttt{spareID} field to \texttt{ActivateSpare}.
 
 \subsection{Watchdog}
 

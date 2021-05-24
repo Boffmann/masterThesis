@@ -8,7 +8,7 @@ Furthermore, possible security risks and catastrophic failures must be known in 
 
 \noindent
 In the first section of this chapter, an \abr{ETCS} on-board system's demands are described.
-For this purpose, an \abr{ETCS} scenario - which is derived from the \abr{ETCS} specification - is described.
+For this purpose, an \abr{ETCS} scenario - which is derived from the \abr{ETCS} specification - is presented.
 Based on this scenario, further investigations are made.
 Afterward, a fault model is established and \abr{DDS} building blocks are introduced that lay the foundation for the following comparison of redundant architectures.
 Then, based on \abr{TMR}, different redundancy architectures are developed and evaluated.
@@ -56,7 +56,7 @@ dbr = \frac{{v_1}^2}{2*dec} - \frac{{v_2}^2}{2*dec}
 \end{equation}
 
 \noindent
-The train's speed is measured in $m/2$ and its deceleration ability is measured in $m/s^2$.
+The train's speed is measured in $m/s$ and its deceleration ability is measured in $m/s^2$.
 For the considered scenario, it is assumed that the track is flat so that the braking curve solely depends on the train's speed and deceleration abilities.
 \\
 
@@ -189,7 +189,7 @@ In this section, different redundancy techniques are selected, combined, and eva
 \end{itemize}
 
 \noindent
-In order to evaluate the redundant system's reliability, it is mathematically evaluated using Marcov Chains, which were described in~\autoref{sec:techniquesSafetyReliability}.
+In order to evaluate the redundant system's reliability, it is mathematically evaluated using Markov Chains, which were described in~\autoref{sec:techniquesSafetyReliability}.
 To assess the system's safety, situations where faults can lead to catastrophic failures are assessed. 
 For investigating the technique's implementability with \gls*{DDS}, possible \abr{DDS} building blocks for communication and state are examined.
 \\
@@ -214,7 +214,7 @@ Specialized hardware that implements the \abr{DCPS} standard would be too expens
 \\
 
 \noindent
-\Gls*{TMR} was already been briefly discussed in~\autoref{sec:redundancyPatterns} and is depicted in~\autoref{fig:Classical2OO3}.
+\Gls*{TMR} has already been briefly discussed in~\autoref{sec:redundancyPatterns} and is depicted in~\autoref{fig:Classical2OO3}.
 The reliability and safety characteristics of \gls*{TMR} have been studied in depth, for example by Arifeen \etal~\cite{ArifeenFaultTolerantTMR}.
 Their findings show that the reliability of \gls*{TMR}-systems ($R_{TMR}(t)$) is given by the sum of the probability of all three components functioning and two components functioning as specified.
 
@@ -268,11 +268,11 @@ In order to overcome the \ChallengeWR challenge, additional replicas can be adde
 It can be shown via induction that adding more replicas increases a system's reliability.
 
 \begin{itemize}
-\item \emph{Proof by Induction}: Let $M$ be constant and $M \leq N$, let $R_{c}$ the reliability of the system's components.
+\item \emph{Proof by Induction}: Let $M$ be constant and $M \leq N$, let $R_{c}$ be the reliability of the system's components.
 \begin{itemize}[label=$\lozenge$, itemsep=2ex]
 \item \emph{Base Case:}
 \begin{align*}
-&Let N = 1 \Rightarrow M = 1.\\
+&\text{Let}~N = 1 \Rightarrow M = 1.\\
 &R_{1oo1} = {1 \choose 1} * R_{c}^1 * (1 - R_{c})^0 = R_{c}
 \end{align*}
 
@@ -316,7 +316,7 @@ R_{TMR\_S}(t) = 2 * {3 \choose 3} e^{-\lambda t} + {3 \choose 2} e^{-\lambda t}
 One way of implementing \abr{TMR} with a spare using \abr{DDS} is depicted in~\autoref{fig:TMRWithSparesDDS}.
 The input, as well as the replica's results and an activate event, are modeled as \abr{DDS} event topics.
 In an exemplary case where one replica crashes, the voter receives only two replica results and thereupon sends an \textit{activate} event via the corresponding topic.
-When the spare replica \textbf{(S)} receives the activate event, is subscribes to the \texttt{Input} topic and registers to the \texttt{Replica Results} topic to publish data to it.
+When the spare replica \textbf{(S)} receives the activate event, it subscribes to the \texttt{Input} topic and registers to the \texttt{Replica Results} topic to publish data to it.
 If the failed replica comes back to life and the voter recognizes this, the voter can reject the result from \textbf{(S)} and send a \textit{deactivate} event.
 After that, the spare replica ends its subscription to the input topic and stops publishing results.
 A precondition for this approach is that a replica's result can be unambiguously assigned to a replica, for example by using IDs or by using an individual result topic for each replica.
@@ -332,7 +332,7 @@ Hence, a pipelined \abr{TMR} approach is considered in the following.
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.9\linewidth]{images/InterconnectedVoterPipeline}
-	\caption{Interconnected pipelines with on-component intermediate voting can reduce provisional result's effect on the final output. It can further increase the system's throughput. However, it increases costs and communication overhead.}
+	\caption{A \abr{TMR} architecture with interconnected pipelines can increase the system's throughput and facilitate intermediate voting to reduce provisional result's effect on the final output. In this example, replicas of type \textbf{B} perform voting on the results of type \textbf{A} replicas before further processing. Thus, type \textbf{B} replicas mask a failure of a type \textbf{A} replica before it can affect the final output.}
 	\label{fig:PipelineIntermediateVoters}
 \end{figure}
 
@@ -342,7 +342,7 @@ A redundant and pipelined system with intermediate voting on replicas is depicte
 Based on the intermediate voter, replicas \textbf{(2)}, \textbf{(4)}, and \textbf{(6)} can perform their dedicated calculations and produce individual outputs, which are later processed by the voter \textbf{(4)}.
 Thereby, any failure from replicas \textbf{(1)}, \textbf{(3)}, or \textbf{(5)} can be masked before they are further processed and handled to the final voter \textbf{(4)}.
 However, this approach is still a two-out-of-three approach and therefore has the same challenges that \abr{TMR} has.
-Further, the pipelined approach's reliability can be calculated in the same way as for \abr{TMR}, because in the worst case, two replicas of type A or type B could fail.
+Further, the pipelined approach's reliability can be calculated in the same way as for \abr{TMR}, because in the worst case, two replicas of type \textbf{A} or type \textbf{B} could fail.
 \\
 
 \noindent
@@ -401,21 +401,19 @@ The implementation is described in~\autoref{cpt:Implementation}.
 \subsection{System Architecture}
 \label{subsec:SystemArchitecture}
 
-\begin{figure}[!hb]
-	\centering
-	\includegraphics[width=0.9\linewidth]{images/ThreeEUConsensusDDS}
-	\caption{An approach for building a hybrid consensus- and voting-based \abr{TMR} system using \abr{DDS} event topics. The approach follows concepts of \texttt{Raft}. In \texttt{Raft}, replicas communicate via \abrpl{RPC}. At least two \abrpl{RPC} are required, namely \texttt{RequestVote} and \texttt{AppendEntries}. \texttt{RequestVote} is used for electing a system leader and is accessed by the consensus component. \texttt{AppendEntries} is used to send heartbeat messages and exchange logs, such as inputs and decisions, between the input processing and the consensus component. The consensus component has an integrated voter for voting on decisions. The \abr{EU} with \textbf{(1)} and \textbf{(4)} took over the leader role and thereby read inputs and controls the output.}
-	\label{fig:ThreeRepConsensusDDS}
-\end{figure}
-
-\noindent
 The redundant architecture, which meets all the requirements in terms of reliability and safety, is a combination of the architectures described above and depicted in~\autoref{fig:ThreeRepConsensusDDS}.
 The basic architecture is similar to a pipelined \abr{TMR} with a spare and an elected voter.
 On the one hand, an input processing unit is responsible for reading inputs, making decisions, and communicating the decisions to the consensus component.
 On the other hand, a consensus component implements the leader election logic, exchanges votes with other replicas, requests decisions from input processing units, performs votes on decisions, and controls the system's output.
 Further, a spare unit is used that can be activated or deactivated by the system's leader.
 \texttt{Raft} lays the foundation for the applied consensus algorithm.
-\\
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.9\linewidth]{images/ThreeEUConsensusDDS}
+	\caption{An approach for building a hybrid consensus- and voting-based \abr{TMR} system using \abr{DDS} event topics. The approach follows concepts of \texttt{Raft}. In \texttt{Raft}, replicas communicate via \abrpl{RPC}. At least two \abrpl{RPC} are required, namely \texttt{RequestVote} and \texttt{AppendEntries}. \texttt{RequestVote} is used for electing a system leader and is accessed by the consensus component. \texttt{AppendEntries} is used to send heartbeat messages and exchange logs, such as inputs and decisions, between the input processing and the consensus component. The consensus component has an integrated voter for voting on decisions. In this example, \abr{EU} with \textbf{(3)} and \textbf{(6)} took over the leader role and thereby reads inputs and controls the output.}
+	\label{fig:ThreeRepConsensusDDS}
+\end{figure}
 
 \noindent
 In \texttt{Raft}, it is the leader's responsibility to send periodic heartbeat messages to notify followers about its existence.
@@ -428,20 +426,20 @@ Since \abr{DDS} will be used for communication, the \abrpl{RPC}, as well as the 
 \noindent
 In the example depicted in~\autoref{fig:ThreeRepConsensusDDS}, the \abr{EU} with input processing component \textbf{(3)} and consensus component \textbf{(6)} took over the leader role.
 Hence, \textbf{(3)} reads the input data and requests a decision from \textbf{(1)} and \textbf{(2)} via the \texttt{AppendEntries} topic.
-After \textbf{(1)} and \textbf{(2)} have published their decision, \textbf{(4)} can perform the voting and output the voted result.
+After \textbf{(1)} and \textbf{(2)} have published their decision, \textbf{(6)} can perform the voting and output the voted result.
 \\
 
 \noindent
 \texttt{AppendEntries} is further used for heartbeat messages.
 When a heartbeat message stays out for a period, the remaining replicas assume that the leader has crashed and the followers initiate a new leader election using the \texttt{RequestVote} topic.
 When a new leader is elected, it gains complete control over the output, reads input data, and starts sending heartbeat messages.
-In the event of the previous leader coming back online again, it receives heartbeat messages from \texttt{AppendEntries} and thereby takes over a follower role.
+In the event of the previous leader coming back online again, it receives heartbeat messages from \texttt{AppendEntries} and hence takes over a follower role.
 Thereby, crash faults (\textbf{F1}) for voters can be caught by the heartbeat mechanism.
 
 Nevertheless, it is not possible to catch omission, timing, and computation faults for voters with the considered consensus-inspired architecture.
 This is because the voter, which acts as the system's leader, has sole responsibility and control over the system's output.
 When the voter fails to perform voting on incoming decisions, the system's output remains unchanged and thus the system's safety is affected.
-However, a majority voting algorithm is quite simple and the applied fault model is based on the correct transmission of data, omission, timing, and computation faults are unlikely to happen for the voter.
+However, a majority voting algorithm is quite simple and the applied fault model presupposes the correct transmission of data. Thus, omission, timing, and computation faults are unlikely to happen for the voter.
 Further, additional hardware could be applied to catch omission and timing faults for voters.
 For example, a hardware timer could be started as soon as input data is recognized and stopped when the system produced an output.
 When the hardware timer is not stopped after a timeout is expired, the train can be stopped.

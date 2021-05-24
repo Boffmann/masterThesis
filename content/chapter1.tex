@@ -198,7 +198,8 @@ An exemplary Markov chain for a system using three replicas is proposed by NASA 
 At state \textbf{(1)}, assuming that the system is homogeneous redundant, the probability that one of the replicas fails is $3\lambda$.
 In state \textbf{(2)}, the system applies failure detection and mitigation procedures and has a chance of $F(t)$ for successful reconfiguration, which allows the system to continue its work.
 However, there is still a change of $2\lambda$ that another component fails before the system detects and mitigates the first failure, which would lead to a system fault and render the entire system unsafe.
-In state \textbf{(4)}, there is again a $2\lambda$ change for one of the remaining components to fail, which would lead to a system failure.
+In state \textbf{(4)}, there is again a $2\lambda$ change for one of the remaining components to fail.
+This would not result in a system failure, though, because failure detection allows the voter to distinguish a good result from a bad one.
 
 As experiments have shown, a system's recovery time is not necessarily exponential~\cite{TheoryAndPracticeReliableSystem}.
 Thus, it is expressed by $F(t)$, which is the probability that the system recovers within a time-span less than $t$.
@@ -317,14 +318,6 @@ The concept of diverse software programs is summarized under the term N-version 
 
 \subsection{Information and Time Redundancy}
 
-\begin{figure}[!hb]
-	\centering
-	\includegraphics[width=0.8\linewidth]{images/ECC}
-	\caption{\glsentryfull{ECC} applies both time and information redundancy. An encoder is used to encode both the input and output of a system (time redundancy). This encoded information is used in addition to the actual data (information redundancy). The encoder function needs to be chosen so that errors can be located and corrected~\cite{Su2005ECC}. An exemplary encoding that fulfills these characteristics are Hamming codes~\cite{HammingCodes}.}
-	\label{fig:ECC}
-\end{figure}
-
-\noindent
 The addition of redundant information can allow the detection, masking, and recovery from faults~\cite{BarryFaultToleranceAnalysis}.
 Examples for information redundancy include Hamming codes~\cite{HammingCodes}, checksums, or information duplication.
 In Hamming codes, one or multiple parity bits are attached to the data bits to detect defects in the transmitted information.
@@ -333,7 +326,13 @@ Information- and time redundancy can be either implemented in software or in har
 John F. Wakerly argues that, when a system is non-transforming, the applied circuit is automatically self-checking~\cite{SelfCheckingProcessorDesign}.
 He further compares different error-detection codes and provides self-checking hardware designs.
 All information redundancy concepts share that they somehow encode redundancy into the transmitted data that can later be decoded.
-\\
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.8\linewidth]{images/ECC}
+	\caption{\glsentryfull{ECC} applies both time and information redundancy. An encoder is used to encode both the input and output of a system (time redundancy). This encoded information is used in addition to the actual data (information redundancy). The encoder function needs to be chosen so that errors can be located and corrected~\cite{Su2005ECC}. An exemplary encoding that fulfills these characteristics are Hamming codes~\cite{HammingCodes}.}
+	\label{fig:ECC}
+\end{figure}gg
 
 \noindent
 Another way of adding redundancy is to perform the same operation multiple times at different points in time.
@@ -421,7 +420,7 @@ Song \etal proposed a system architecture that integrates the \abr{DDS} middlewa
 Thereby, they achieved a stable communication time~\cite{SongDDSInRealTimeSystems}.
 Their approach has been verified by an \abr{UAV} combat scenario that operates in highly safety-critical situations.
 Results have shown that the worst-case communication time for a one-kilobyte payload and a reliable communication \abr{QOS} is around 280 microseconds.
-Since Song \etal exerted a topology that is similar to the one used in this work - namely a network switch with a 100~Mpbs Ethernet link for communication and external nodes - their findings can be seen as an affirmation for the approach used in this work.
+Since Song \etal exerted a topology that is similar to the one used in this work - namely a network switch with a 100~Mbit/s Ethernet link for communication and external nodes - their findings can be seen as an affirmation for the approach used in this work.
 However, they utilized a different \abr{DDS} implementation, so that their experiments need to be repeated to deduce their findings to this thesis' work. 
 \\
 
