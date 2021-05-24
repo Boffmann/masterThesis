@@ -33,6 +33,7 @@ Based on this, other test scenarios can be added to the simulator.
 Further, advanced checks not related to incoming messages - such as detecting missed balises - can be implemented.
 \\
 
+\noindent
 The results of this work are based on assumptions regarding the communication's reliability as well as the hardware's fault-tolerance.
 For example, it is assumed that messages are processed correctly by the middleware, and no data is lost or corrupted during transmission.
 Since this is not always guaranteed, other redundancy concepts, such as information and time redundancies, could be applied.
@@ -45,12 +46,12 @@ The exact characteristics of such a related system are to be investigated.
 This applies equally for the utilized DDS application's \abr{SIL} level.
 \\
 
+\noindent
 This work's fault model omits Byzantine faults.
 Reliable decision-making, despite one manipulative component, requires at least four voters and two rounds of communication~\cite{GamerIncreasingMOON}.
 Thereby, the network's delay and load increase.
 For use in highly safety-critical applications, Byzantine faults should also be covered, and the resulting impact on the system must be investigated.
 Further, diverse hardware redundancy can be applied to reduce the chance of having multiple manipulative components and common core faults.
-
 In addition, the system is intended as an \abr{ETCS} on-board unit.
 As such, it interacts with the train's hardware, which has not yet been covered within this work.
 

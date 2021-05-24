@@ -108,16 +108,6 @@ author = {Marisol García-Valls and Jorge Domínguez-Poblete and Imad Eddine Tou
 abstract = {Avionics systems are complex and time-critical systems that are progressively adopting more flexible (though equally robust) architectural designs. Although a number of current avionics systems follow federated architectures, the Integrated Modular Avionics (IMA) paradign is becoming the dominant style in the more modern developments. The reason is that the IMA concept promotes modular designs where applications with different levels of criticality can execute in an isolated manner in the same hardware. This approach complies with the requirements of cost, safety, and weight of the avionics systems. FACE standard (Future Airborne Capability Environment) defines the architectural baseline for easing integration in avionics systems, including the communication functions across distributed components. As specified in FACE, middleware will be integrated into avionics systems to ease development of portable components that can interoperate effectively. This paper describes the usage of publish-subscribe middleware (precisely, DDS – Data Distribution Service for real-time systems) into a fully distributed partitioned system. We describe, from a practical point of view, the integration of the middleware communication overhead into the hierarchical scheduling (as compliant with ARINC 653) to allow the usage of middleware in the partitions. We explain the design of a realiable communication setting, exemplified on a distributed monitoring application in a partitioned environment. The obtained implementation results show that, given the stable communication overhead of the middleware, it can be integrated in the time windows of partitions.}
 }
 
-@article{ChakrabortyFaultTolerantRailway,
-author = {Alapan, Chakraborty},
-year = {2009},
-month = {10},
-pages = {},
-title = {Fault Tolerant Fail Safe System for Railway Signalling},
-volume = {2179},
-journal = {Lecture Notes in Engineering and Computer Science}
-}
-
 @article{FLPProblemConsensus,
 author = {Fischer, Michael J. and Lynch, Nancy A. and Paterson, Michael S.},
 title = {Impossibility of Distributed Consensus with One Faulty Process},
@@ -413,11 +403,12 @@ url="https://doi.org/10.1007/978-1-4757-3472-0_2"
 
 
 @book{TanenbaumSteen07,
-  author={M. {van Steen} and A.S. {Tanenbaum}},
-  title="Distributed Systems",
-  note="3rd ed., distributed-systems.net",
-  url="distributed-systems.net",
-  year=2017
+  author    = {Andrew S. Tanenbaum and
+               Maarten van Steen},
+  title     = {Distributed systems - principles and paradigms, 2nd Edition},
+  publisher = {Pearson Education},
+  year      = {2007},
+  isbn      = {978-0-13-239227-3},
 }
 
 @book{GeffroyMotetDependableComputing,
@@ -454,6 +445,16 @@ author={Jean-Claude {Geffroy} and Gilles {Motet}},
   institution="Pepperl+Fuchs",
   year=2009,
 }
+
+@inproceedings{ChakrabortyFaultTolerantRailway,
+  title={Fault Tolerant Fail Safe System for Railway Signalling},
+  author={Chakraborty, Alapan},
+  booktitle={Proceedings of the world congress on engineering and computer science},
+  volume={2},
+  pages={20--22},
+  year={2009}
+}
+
 
 @inproceedings{Cotroneo2009DDSFailureAnalysis,
 author = {Cotroneo, Domenico and Pecchia, Antonio and Pietrantuono, Roberto and Russo, Stefano},

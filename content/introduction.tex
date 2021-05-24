@@ -24,17 +24,19 @@ Moreover, the approval process needs to be repeated every time the system gets u
 Increasing costs for \abr{ETCS} systems could lead to a situation where it is not profitable to equip certain regions, connections, or train models with \abr{ETCS}.
 \\
 
-Distributed computation is a way to reduce the costs of repeated approval processes and increase scalability.
+\noindent
+Distributed computation is a way to reduce the costs of repeated approval processes and can increase a system's scalability.
 For this purpose, autonomous computing elements - that each performs a subset of the system's requirements - are interconnected~\cite{DistributedSafety2020}.
 However, distributed systems also introduce new challenges such as coping with the communication overhead and dealing with node-, network-, and computation faults.
 
 A fundamental technique for coping with faults in a computing system is redundancy~\cite{TanenbaumSteen07}.
-In redundant computation, safety-critical calculations are performed in parallel in a distributed manner and combined afterwards.
+In redundant computation, safety-critical calculations are performed in parallel in a distributed manner and combined afterward.
 Generally speaking, redundancy entails additional resources that are not required for a system's functional operation but add specific characteristics such as fault detection and fault tolerance~\cite{BarryFaultToleranceAnalysis}.
 Various well-established redundancy patterns have been proven in practice, including hardware-, software-, information-, and time redundancy.
 In contrast to non-redundant systems, redundancy allows building safe systems out of less safe and cheaper parts.
 \\
 
+\noindent
 For handling communication in distributed systems, different concepts, standards, and frameworks exist.
 One of them is \abr{DDS}, a \abr{DCPS} standard for machine-to-machine communication that is specified by the \abr{OMG}~\cite{omgDDSspec}.
 \abr{DDS} is designed for facilitating safe and real-time communication among distributed and autonomous execution units and is therefore applicable for building safety-critical systems~\cite{DistributedSafety2020}.
@@ -45,6 +47,7 @@ However, \abr{DDS} has been designed to be a generic standard for distributed ap
 Hence, every feature from the applied middleware implementation needs to be approved when applied in a safety-critical application.
 \\
 
+\noindent
 This thesis investigates whether the \abr{DDS} standard is applicable for building redundant, distributed, real-time, and safety-critical systems in the \abr{ETCS} domain.
 One of the main requirements is that the application should run on general-purpose \abrpl{PLC} with limited resources without violating safety and reliability requirements.
 This work makes the following \textit{contributions}:
@@ -62,6 +65,7 @@ Afterward, mathematical concepts for evaluating the safety and reliability of th
 A selection of related work that uses \abr{DDS} in safety-critical applications is presented and set in relation to this work at the end of chapter 2.
 \\
 
+\noindent 
 In~\autoref{chptr:redundantSystemsCompare}, key building blocks for designing distributed systems with the \abr{DDS} standard are described.
 The redundancy concepts and patterns previously presented are opposed and evaluated based on the characteristics from chapter 2.
 Further, each pattern's exemplary concepts and architectures are described and assessed based on their safety and realizability with \abr{DDS} concepts.
@@ -69,6 +73,7 @@ Therefore, not only voting-based concepts but also a way of building consensus-d
 A combination of a consensus- and voting-based approach is identified as the most suitable concept for satisfying the desired system's requirements.
 \\
 
+\noindent 
 In~\autoref{cpt:Implementation}, an exemplary implementation is presented that follows the concepts of \texttt{Raft}~\cite{RaftConsensusPaper}.
 Thereby, the significance of a safe consensus- and voting-based redundant system, which utilizes \abr{DDS} for communication, is shown.
 The system is comprised of four homogeneous and interconnected \textit{Revolution Pi} from Kunbus~\cite{Kunbus} and utilizes \textit{OpenSplice DDS} from ADLINK~\cite{VortexOpenSplice} as a \abr{DDS} framework.
@@ -76,6 +81,7 @@ A \textit{Revolution Pi} is a robust \abr{PLC} that builds upon a \textit{Raspbe
 The \textit{OpenSplice DDS} framework's applicability for safety-critical railway applications has been proven in practice~\cite{SchmidtMissionCriticalChallenges}.
 \\
 
+\noindent 
 Afterward, the implemented system's safety and functional correctness are proven based on a simulated \abr{ETCS} scenario in~\autoref{cpt:evaluation}.
 In addition, the system's time performances and hardware resource utilization is examined.
 Results show the system runs the simulated scenarios successfully and all requirements are met, even when an entire component fails.

@@ -11,11 +11,12 @@ A promising approach to cope with the communication overhead is \gls*{DDS}, a \g
 However, while hardware redundancy enhances a system's fault-tolerance, it also increases its costs and complexity.
 \\
 
+\noindent 
 In the first section of this chapter, an introduction to \abr{ETCS} and its three levels is provided.
 Afterward, an overview about the \abr{DDS} standard and its concepts is exposed.
 In the third section, terms, criteria, and concepts for evaluating the safety and reliability of redundant systems are described.
 Then, different redundancy concepts are explained and weighted against each other regarding reliability, safety, and performance.
-Finally, standards for building and designing safe and fault-tolerant systems are given, and related works that successfully applied \gls*{DCPS}-middleware in the railway context are shown.
+Finally, standards for building and designing safe and fault-tolerant systems are given and related works that successfully applied \gls*{DCPS}-middleware in the railway context are shown.
 
 \section{\glsentryfull{ETCS}}
 In order to facilitate interoperability between national railway systems throughout Europe, the signaling and speed control system has been standardized by the European Union under the term of \abr{ERTMS}.
@@ -25,7 +26,7 @@ Any train requires a \abr{MA} to be allowed to drive from one location to anothe
 Besides encoding a train's permission to move, a \abr{MA} also encodes information about the track's conditions, such as gradient profiles and speed limitation profiles.
 Any \abr{MA} is supplied by an external entity - called \abr{RBC} - via radio frequencies.
 A system that is located on the operating train - called on-board unit or \abr{EVC} - monitors compliance with the current \abr{MA}.
-The track-side components, as well as the on-board unit, are standardized.
+The track-side components, as well as the on-board unit, are standardized in \abr{ETCS}.
 \abr{ETCS} defines three different levels:
 
 \paragraph{\abr{ETCS} level one}
@@ -52,7 +53,7 @@ Further, moving-block operations are enabled.
 
 \section{\glsentryfull{DDS}}
 
-\begin{figure}[!hb]
+\begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/DDSStructure}
 	\caption{The \glsentryfull{DDS} is a data-centric communication model and follows the publish/subscribe pattern. The publishing and subscribing components do not communicate directly with each other but use topics to read and write data objects.}
@@ -78,6 +79,7 @@ The \texttt{ReadCondition} object allows to name specific data samples and is me
 A \texttt{QueryCondition} is a specified \texttt{ReadCondition} that further provides capabilities of filtering the data that is read through a \texttt{DataReader}.
 \\
 
+\noindent 
 The usefulness of \gls*{DDS} for containerization technologies in automotive architectures has been studied by Kugele \etal~\cite{KugeleDataCentricForAuto}.
 Although their findings are based on containerization technologies and are therefore not resilient for this work, Kugele \etal showed that the applicability of \gls*{DDS} with regards to safety, certification, and security depends on the actual implementation's characteristics.
 Therefore, Vortex OpenSplice DDS is used throughout this thesis, which is developed and maintained by ADLINK.
@@ -91,6 +93,7 @@ Further, their work provides an overview of Vortex OpenSplice's \gls*{QOS} polic
 In order to profoundly express and analyze redundancy techniques towards their safety, reliability, and fault-tolerance, the meaning of these characteristics needs to be defined.
 \\
 
+\noindent 
 Reliability is, by IEEE 610.12-1990, defined as the ability of a system or component to perform its required function under stated conditions for a specified period of time~\cite{ieee610.12}.
 A circumstance where a system deviates from its requirement is called a system failure.
 A failure is preceded by a fault, which describes a static defect of a system~\cite{AmmannOffutt2016}.
@@ -101,6 +104,7 @@ A failure occurs as soon as the error affects the system's environment.
 A system or a system component failure is a state where its actual behavior deviates from its specified behavior.
 \end{definition}
 
+\noindent
 The definition of reliability used in this work is the following:
 
 \begin{definition}
@@ -108,6 +112,7 @@ The definition of reliability used in this work is the following:
 A system's reliability is a function of time that expresses the probability for the system to operate as specified at a time $t_1$, given that it was operating as specified at time $t | t \leq t_1$.
 \end{definition}
 
+\noindent
 In other words, reliability is a system's ability not to have any failure for a specific period of time.
 
 A system's safety is associated with its reliability since it constitutes an extension of reliability~\cite{AvizienisDependability2001}.
@@ -126,6 +131,7 @@ In the railway context, a complete stoppage is generally the safest state.
 \label{def:intrinsic_safety}
 \end{definition}
 
+\noindent
 This definition requires that measures are taken to assure the system's safety even in the presence of failures.
 A system that provides the functionality to behave as specified even in the case of faults is said to be fault tolerant~\cite{AvizienisDependability2001}.
 Fault tolerance is generally obtained through error detection, which allows the system to determine errors and enables it to mitigate resulting failures.
@@ -136,6 +142,7 @@ A system is said to be safe when the fault of the system or any of its component
 \label{def:safety}
 \end{definition}
 
+\noindent
 Thus, to be considered secure, a distributed system must tolerate possible faults that could occur in distributed systems.
 Flaviu Cristian has established the following five fault classes for distributed systems~\cite{CristianFaultModel}:
 
@@ -147,10 +154,12 @@ Flaviu Cristian has established the following five fault classes for distributed
 \item \textbf{F5:} One or multiple components produce arbitrary responses at arbitrary times (\textbf{byzantine fault}).
 \end{enumerate}
 
+\noindent
 It applies, that all fault classes \textbf{Fx} are included in \textbf{Fy}, given that $y \geq x$.
 In this thesis, the fault classes \textbf{F1} to \textbf{F4} are analyzed and byzantine faults are not covered.
 \\
 
+\noindent
 A necessary condition for a system to be safe is that the system is reliable.
 One method of analyzing a system's reliability is through mathematical functions of time, for example the \textit{exponential failure law}~\cite{GeffroyMotetDependableComputing}.
 It describes a component's reliability as an exponential function on time.
@@ -164,10 +173,10 @@ The independence of components might not always be the case in practice, as comm
 However, the probability of failures affecting multiple components at once can be reduced by various techniques, such as using independent power supplies or diverse redundancy, the latter of which being discussed below.
 \\
 
+\noindent
 Among various theoretical techniques for evaluating a system's reliability, \textit{Markov chains} are one of the most commonly used~\cite{BarryFaultToleranceAnalysis}.
 \textit{Markov chains} are a stochastic process that models the alterations of a system's state and probabilities for the system to transition into a specific state given that it was in a certain state~\cite{KemenyMarkovChains}.
 Thereby, the next state only depends on the current state and is independent of all previous system modifications.
-
 For safety analysis, each state models the system in one out of three conditions:
 \begin{enumerate}
 \item The system functions without having an error.
@@ -175,9 +184,10 @@ For safety analysis, each state models the system in one out of three conditions
 \item The system either not detects an error or does not recover from it, leading to a failure
 \end{enumerate}
 
+\noindent
 For the state transition probabilities, the exponential failure law~\autoref{eq:expFailureLaw}, with a constant failure rate $\lambda$, holds.
 
-\begin{figure}[!hb]
+\begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/TriplexSystemNASA}
 	\caption{A reliability model for \glsentryfull{TMR} using Markov chains~\cite{NASAMarkovChains}. In state \textbf{(1)}, all three replicas are working. The transition from \textbf{(1)} to \textbf{(2)} shows the failure of any of the replicas. Because homogeneous components are used, they all have a failure rate of $\lambda$. The transition from \textbf{(2)} to \textbf{(4)} represents the identification of the faulty component, which succeeds which a probability of $F(t)$. The system is still operational in \textbf{(4)} because the fault identification allows the voter can distinguish a good result from a bad one. Therefore, the system would still be functional when another component fails \textbf{(5)} but not when another component fails without identifying faulty components \textbf{(3)}.}
@@ -185,10 +195,10 @@ For the state transition probabilities, the exponential failure law~\autoref{eq:
 \end{figure}
 
 An exemplary Markov chain for a system using three replicas is proposed by NASA and depicted in~\autoref{fig:NASATMR}~\cite{NASAMarkovChains}.
-At state (1), assuming that the system is homogeneous redundant, the probability that one of the replicas fails is $3\lambda$.
-In state (2), the system applies failure detection and mitigation procedures and has a chance of $F(t)$ for successful reconfiguration, which allows the system to continue its work.
+At state \textbf{(1)}, assuming that the system is homogeneous redundant, the probability that one of the replicas fails is $3\lambda$.
+In state \textbf{(2)}, the system applies failure detection and mitigation procedures and has a chance of $F(t)$ for successful reconfiguration, which allows the system to continue its work.
 However, there is still a change of $2\lambda$ that another component fails before the system detects and mitigates the first failure, which would lead to a system fault and render the entire system unsafe.
-In state (4), there is again a $2\lambda$ change for one of the remaining components to fail, which would lead to a system failure.
+In state \textbf{(4)}, there is again a $2\lambda$ change for one of the remaining components to fail, which would lead to a system failure.
 
 As experiments have shown, a system's recovery time is not necessarily exponential~\cite{TheoryAndPracticeReliableSystem}.
 Thus, it is expressed by $F(t)$, which is the probability that the system recovers within a time-span less than $t$.
@@ -205,6 +215,7 @@ Redundancy implies the addition of information, resources, or time beyond what i
 It can take one of several forms, including hardware, software, information, and time redundancy.
 \end{definition}
 
+\noindent
 Each form of redundancy has its unique characteristics and patterns, which are presented in the following.
 
 \subsection{Hardware Redundancy}
@@ -234,11 +245,18 @@ This can be, for example, achieved by starting a timer after a first replica sen
 In addition, an expired timeout can indicate crashed replicas or network partitions.
 
 \paragraph{M-out-of-N Systems}
-\begin{figure}[!hb]
+\begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/Classical2OO3}
 	\caption{Classical 2-out-of-3 redundancy - also known as \glsentryfull{TMR}. Three replicas are simultaneously reading and redundantly processing an input. A voter collects these redundant results and performs a majority voting to produce a final output.}
 	\label{fig:Classical2OO3}
+\end{figure}
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.9\linewidth]{images/IntermediateVoting}
+	\caption{Intermediate voting mitigates the effect of individual computations on the final output. Therefore, voting is performed on provisional results before further processing. Another benefit of this approach is its pipelined fashion, which improves the overall system throughput. However, it also increases costs and communication overhead. }
+	\label{fig:IntermediateVoting}
 \end{figure}
 
 One of the most common versions of \gls*{MOON} systems is \gls*{TMR} as shown in~\autoref{fig:Classical2OO3}.
@@ -253,18 +271,12 @@ Intermediate voting would have the benefit of masking intermediate faults and no
 An example of how this could be achieved is depicted in~\autoref{fig:IntermediateVoting}.
 \\
 
+\noindent
 The biggest weakness of \gls*{TMR} is the voter because it marks a single point of failure.
 Therefore, the voter's reliability in the system has to be high compared to the remaining replicas because the entire system's reliability cannot be higher than the voter's reliability.
 Arifeen \etal propose a highly reliable hardware voter for making the voting process more reliable~\cite{ArifeenFaultTolerantTMR}.
 An alternative to voters is a consensus algorithm, where all components, not only a single voter, are involved in deciding about the system's output value~\cite{lamport2001paxos}.
 While not having a single point of failure anymore, consensus approaches typically introduce a communication overhead and lead to rigid configurations~\cite{GamerIncreasingMOON}.
-
-\begin{figure}[!hb]
-	\centering
-	\includegraphics[width=0.9\linewidth]{images/IntermediateVoting}
-	\caption{Intermediate voting mitigates the effect of individual computations on the final output. Therefore, voting is performed on provisional results before further processing. Another benefit of this approach is its pipelined fashion, which improves the overall system throughput. However, it also increases costs and communication overhead. }
-	\label{fig:IntermediateVoting}
-\end{figure}
 
 \paragraph{Standby Redundancy}
 \begin{figure}[!hb]
@@ -296,6 +308,7 @@ A system or a component is said to be internally consistent, when any failure of
 Component checking mechanisms can determine a system's or component's internal consistency.
 \end{definition}
 
+\noindent
 By implication, when a system is internally consistent, any system failures can only be introduced by external causes - such as network delays, errors during data transmission, or defects in the inputs.
 
 Further, voting or consensus algorithms can be implemented in software.
@@ -311,6 +324,7 @@ The concept of diverse software programs is summarized under the term N-version 
 	\label{fig:ECC}
 \end{figure}
 
+\noindent
 The addition of redundant information can allow the detection, masking, and recovery from faults~\cite{BarryFaultToleranceAnalysis}.
 Examples for information redundancy include Hamming codes~\cite{HammingCodes}, checksums, or information duplication.
 In Hamming codes, one or multiple parity bits are attached to the data bits to detect defects in the transmitted information.
@@ -321,6 +335,7 @@ He further compares different error-detection codes and provides self-checking h
 All information redundancy concepts share that they somehow encode redundancy into the transmitted data that can later be decoded.
 \\
 
+\noindent
 Another way of adding redundancy is to perform the same operation multiple times at different points in time.
 This concept is called \texttt{Time Redundancy} and has the benefit that it does not necessarily require additional physical components.
 Thereby, permanent faults in a system can be detected.
@@ -351,15 +366,18 @@ Voting, as Chakraborty claims, requires the \glspl*{FCR} to be in identical stat
 Finally, Chakraborty demonstrates the method by developing a railway signaling system.
 \\
 
+\noindent
 Bemment \etal evaluate redundancy concepts for railway track switching~\cite{BemmentEvaluationOfRedundancy}.
 For this, they analyze and rate different hardware redundancy concepts and their combinations for railway networks.
 Both reliability and cost estimations are made using mean time to failure calculations and physical layouts.
 \\
 
+\noindent
 An overview of possible hardware- and software redundancy concepts is provided by Barry W. Johnson~\cite{BarryFaultToleranceAnalysis}.
 He further conducts a cost, benefit, and performance analysis for each presented concept.
 \\
 
+\noindent
 In this work, the concepts proposed by Johnson are extended based on the model by Chakraborty and by using and evaluating the feasibility of \gls*{DDS} for redundancy in the railway context.
 While Chakroborty formulated demands and considerations for hardware- and software redundancy, Bemment \etal focussed on the design and evaluation of hardware redundant systems.
 However, the evaluation approach of hardware according to the mean time to failure principle - used by Bemment \etal - can also be applied to software.
@@ -378,6 +396,7 @@ Then the development of the software can be started.
 The software's correctness must be shown in subsequent tests.
 \\
 
+\noindent
 In this work, the system is developed based on an \abr{ETCS} subset.
 The software is designed as a distributed and redundant system following the V-model.
 Further, automatic integration and acceptance tests will be made to evaluate and approve the system's decisions.
@@ -391,11 +410,13 @@ One example is given by Bijlsma \etal~\cite{DistributedSafety2020}, who extended
 Their results can be used for automatic component checking mechanisms in a redundant system.
 \\
 
+\noindent
 Hadiwardoyo and Gao propose the use of \gls*{DDS} in security cameras for subways~\cite{DDSInSubways}.
 They used \glspl*{QOS} to meet safety- and reliability requirements.
 Results show that \abr{DDS} is suitable for scaling safety-critical systems where data is continuously transmitted in a dynamic and disruptive environment.
 \\
 
+\noindent
 Song \etal proposed a system architecture that integrates the \abr{DDS} middleware into real-time embedded and safety-critical systems.
 Thereby, they achieved a stable communication time~\cite{SongDDSInRealTimeSystems}.
 Their approach has been verified by an \abr{UAV} combat scenario that operates in highly safety-critical situations.
@@ -430,6 +451,7 @@ However, they utilized a different \abr{DDS} implementation, so that their exper
 	\end{center}
 \end{table}
 
+\noindent
 A more general approach of how \gls*{DDS} can be used for enabling communication in distributed as well as time- and safety-critical environments is given by García-Valls \etal~\cite{GarciaVallsDDSInDistributed}.
 They used a design of reading and monitoring sensor data to benchmark the middleware's communication performance with different \glspl*{QOS}.
 One of their findings is a summary of \gls*{QOS}-policies that affect the system's communication overhead and communication time.
@@ -449,5 +471,6 @@ Only around 20\% of the systems respond a result after one second when more than
 In order to address this problem, Sakic and Kellerer propose a watchdog mechanism, which drastically increased the response probabilities in their experiments.
 \\
 
+\noindent
 Based on Sakic and Kellerer, the availability and response time for an actual system need to be evaluated in this work.
 Further, the watchdog concept should be kept in mind as it has a high impact on the system's response time in case of individual component failures.

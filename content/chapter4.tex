@@ -7,6 +7,7 @@ Chakroborty further states that redundancy can only support reliability and safe
 Therefore, the developed system is analyzed and assessed to evaluate the applied redundancies' correctness.
 \\
 
+\noindent
 In the first section of this chapter, a program - called \textit{simulator} - for simulating train movement and journeys is presented.
 Based on the simulated journeys, the developed system can be automatically tested in different situations.
 In the second section, the system's functionality, reliability, and safety are evaluated regarding four criteria.
@@ -37,6 +38,7 @@ Further, the simulator sends balise telegrams when the simulated train reaches a
 The workflow of how the simulator executes a scenario is depicted in~\autoref{fig:SimulatorWorkflow}.
 \\
 
+\noindent
 In a first step, a new scenario is created from a \textit{json} file.
 An exemplary scenario in \textit{json} format is shown in~\autoref{code:scenarioJSON}.
 In the depicted case, three track-side balises are simulated at three different positions.
@@ -93,7 +95,6 @@ Because the scenarios are simulated, a reproducible test environment is created.
 This enables automated integration testing and facilitates the measurement of system characteristics under comparable circumstances.
 Further, data reproducibility allows to make changes to the system and to evaluate its performance compared to other versions.
 With the help of the simulator, the system can be continuously tested under different conditions and in different situations without using or jeopardizing real railway components.
-\\
 
 \begin{table}[h!]
 	\begin{center}
@@ -113,7 +114,7 @@ With the help of the simulator, the system can be continuously tested under diff
 	\end{center}
 \end{table}
 
-
+\noindent
 The functional fault model envisages three situations that must lead to the train being stopped under all circumstances (ref.~\autoref{subsec:faultModel}).
 For ensuring that these situations are always handled correctly, they are simulated in scenarios, which are - together with their expected behavior - shown in~\autoref{tab:simulatedScenarios}.
 These three scenarios are called \textit{test scenarios}.
@@ -161,11 +162,13 @@ In idle mode, the train is at a standstill, no input messages need to be evaluat
 	\end{center}
 \end{table}
 
+\noindent
 Components in the distributed system synchronize each other by exchanging messages via \abr{DDS} topics.
 Each topic has a characteristic data structure that determines the message's content and size.
 The size for each message sent via a given topic is listed in~\autoref{tab:topicMessageSize}.
 \\
 
+\noindent
 First in this section, the applied network's data transmission times and latencies are analyzed before its resource utilization is assessed.
 Afterward, the consensus algorithm's leader election time is measured to analyze the worst-case time that the system can be without a leader.
 Finally, the test scenarios are run one after the other.
@@ -197,12 +200,14 @@ Because the network has the same diameter between every node, the number of tran
 	\label{fig:PlotDataThroughput}
 \end{figure}
 
+\noindent
 The network's sample transfer rate is depicted in~\autoref{fig:PlotTransferRate}.
 While collecting the data, 60 exchanged messages were evaluated.
 As the size of sent messages increases, the sample transfer rate decreases.
 Whereas an average of 3427~samples per second was transmitted with a payload size of 8 bytes, the average was 1772~samples per second with~4096 bytes.
 \\
 
+\noindent
 In another experiment, the network's average data throughput for varying payload sizes was measured.
 The results are presented in~\autoref{fig:PlotDataThroughput}.
 With a payload size of 1024~bytes, an average data throughput of 24~Mbit/s is reached.
@@ -211,18 +216,19 @@ Above this payload size, the throughput increases less steeply and approaches a 
 This value is not far from the 100~MBit/s supported by the \textit{Revolution Pis}' hardware.
 \\
 
+\noindent
 Consequently, for payload sized below 4096~bytes, the application and middleware's processing overhead limits the data transmission rate.
 For messages with a payload size of 4096~bytes and above, the data transmission is limited by the network's throughput rate.
 Because the messages exchanged by replicas in the system are small, results show that the applied resources used are sufficient and the system's safety is not affected by network latency.
 \\
 
+\noindent
 As the results show, the communication is stable with only a few outliers.
 This work's \abr{QOS}-policies are based on Song \etal~\cite{SongDDSInRealTimeSystems}.
 Although Song \etal utilized a different \abr{DDS} implementation and used a different processing hardware, their network characteristics are the same.
 Compared to Song \etal the communication of this work's system is a little slower.
 While they reached a latency of around 280 microseconds for one kilobyte of data, the proposed architecture reached about 330 microseconds for a one-kilobyte payload.
 However, the values are similar so that the real-time capability of \abr{DDS} - shown by Song \etal - can be transferred to the architecture studied here.
-
 
 \subsection{Resource Utilization}
 
@@ -269,6 +275,7 @@ The beginning of \texttt{Unlinked Balise} is marked with \textbf{S2} and the beg
 	\label{fig:PlotTotalCPUUsage}
 \end{figure}
 
+\noindent
 An overview of the total \abr{CPU} utilization while processing the scenarios is presented in~\autoref{fig:PlotTotalCPUUsage}.
 The total \abr{CPU} utilization reflects different situations that happen during the journey.
 At the beginning of each scenario, both the leader and the follower show a peak (\textbf{S1}, \textbf{S2}, and \textbf{S3}).
@@ -314,6 +321,7 @@ When the system notices the absence of a leader, a new one gets elected.
 In the following, the maximum time the system can be without a leader is determined.
 \\
 
+\noindent
 A leader communicates its existence to the remaining replicas via heartbeat messages.
 The lower limit of the time that the system is without a leader after the previous leader failed is regulated by the \textit{election timeout}.
 In addition, time is required for the election process itself.
@@ -324,6 +332,7 @@ The average time for an election process is depicted in~\autoref{fig:PlotTimeWit
 Results show that the election process takes 5.5~ms on average and at worst 7.1~ms.
 \\
 
+\noindent
 Under special circumstances, it may be impossible for the system to elect a leader.
 This can, for example, be the case when there are not enough replicas in the system to reach a majority.
 For this case, another timeout is used, called \textit{leader ready timeout}.
@@ -331,6 +340,7 @@ This timeout determines the maximum time that a candidate waits for incoming vot
 After a selectable number of failed elections, the election process gets aborted and a braking process is initiated.
 \\
 
+\noindent
 Recapped, the maximum time that the system can typically be without a leader is determined by the \textit{election timeout} plus the election time.
 When a leader election is impossible, the maximum time is determined by the \textit{election timeout} plus the \textit{leader ready timeout} times the number of allowed failed elections.
 
@@ -353,6 +363,7 @@ Later, the active hardware redundancy features are reactivated to show their ben
 For each measurement, the heartbeat timer has been set to 100~ms so that ten messages per second can be attributed to heartbeat messages.
 \\
 
+\noindent
 At first, the number of received input messages is presented and the processing time for each input is measured to show that no input is lost.
 Then, the total number of sent messages by all replicas are examined and put into a ratio between leader and follower.
 Afterward, the sent and received messages are analyzed for event-, as well as state topics.
@@ -378,6 +389,7 @@ This is due to the previously crashed leader.
 However, it further shows that the input messages are buffered and no input message is lost, even if the leader crashed right before input is received.
 \\
 
+\noindent
 Response times and availability for \texttt{Raft}-based consensus systems have been studied by Sakic and Kellerer~\cite{SakicTimeInConsensus}.
 Their results show that in a cluster with three components, each event can be handled in at least 1000~ms.
 The event processing time for this work's application depends on two factors; the presence of a leader and the input processing time.
@@ -386,7 +398,6 @@ Since leader election and input processing times are small, the \textit{election
 With an \textit{election timeout} of 500~ms, the system guarantees a result after around 600~ms.
 The result is suitable for \abr{ETCS} applications whose demands for on-board units include a maximal reaction time of 1000~ms~\cite{ETCS26}.
 
-
 \begin{figure}[!hb]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/inputProcessingTimes}
@@ -394,6 +405,7 @@ The result is suitable for \abr{ETCS} applications whose demands for on-board un
 	\label{fig:PlotInputProcessingTimes}
 \end{figure}
 
+\noindent
 The inputs are processed differently by the system depending on the information they contain.
 An overview about processing times for different input message types is shown in~\autoref{fig:PlotInputProcessingTimes}.
 \abr{MA} and balise linking telegrams are read by the leader and published to the systems' global data space.
@@ -403,11 +415,18 @@ Therefore, network latency, message processing, and voting add to the overall ba
 
 \paragraph{Total Messages}
 
-\begin{figure}[!hb]
+\begin{figure}[!t]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/TotalMessagesSent}
 	\caption{All messages that were published by replicas over a period of three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. After 25 seconds, the system's leader was manually stopped (\textbf{LC}). The number of messages sent after the first leader stopped does not differ from those sent before, showing the system's robustness.}
 	\label{fig:PlotTotalMessagesSent}
+\end{figure}
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=0.8\linewidth]{images/plots/StateMessagesSent}
+	\caption{Messages that were published to state topics over a period of three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. For the first and third scenario, three balises were linked. The second balise includes an unlinked balise and therefore, only two are linked. Further, a crashed leader (at point \textbf{LC}) does not affect the system state's up-to-dateness.}
+	\label{fig:PlotStateMessagesSent}
 \end{figure}
 
 The total number of messages sent per second by the replicas is shown in~\autoref{fig:PlotTotalMessagesSent}.
@@ -421,11 +440,11 @@ The robustness of the system is shown by the fact that the number of messages se
 
 \paragraph{State Messages Sent}
 
-\begin{figure}[!htb]
+\begin{figure}[!ht]
 	\centering
-	\includegraphics[width=0.8\linewidth]{images/plots/StateMessagesSent}
-	\caption{Messages that were published to state topics over a period of three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. For the first and third scenario, three balises were linked. The second balise includes an unlinked balise and therefore, only two are linked. Further, a crashed leader (at point \textbf{LC}) does not affect the system state's up-to-dateness.}
-	\label{fig:PlotStateMessagesSent}
+	\includegraphics[width=0.8\linewidth]{images/plots/ConsensusMessagesSent}
+	\caption{The number of messages that were published to behavioral topics throughout three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. As soon as the first leader stopped (at point \textbf{LC}), the number of heartbeat messages on the \texttt{AppendEntries} topic decreases. The leader crash is followed by a leader election - a message being sent on \texttt{RequestVote} and \texttt{RequestVoteReply}. Afterward, the number of heartbeat messages goes back to the previous value showing that a new leader got elected.}
+	\label{fig:PlotConsensusMessagesSent}
 \end{figure}
 
 State topics include \texttt{TrainState}, \texttt{MovementAuthority}, and \texttt{LinkedBalises}.
@@ -440,24 +459,7 @@ Hence, a new leader has been elected.
 
 \paragraph{Behavioral Messages}
 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.8\linewidth]{images/plots/ConsensusMessagesSent}
-	\caption{The number of messages that were published to behavioral topics throughout three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. As soon as the first leader stopped (at point \textbf{LC}), the number of heartbeat messages on the \texttt{AppendEntries} topic decreases. The leader crash is followed by a leader election - a message being sent on \texttt{RequestVote} and \texttt{RequestVoteReply}. Afterward, the number of heartbeat messages goes back to the previous value showing that a new leader got elected.}
-	\label{fig:PlotConsensusMessagesSent}
-\end{figure}
-
-Behavioral topics include \texttt{AppendEntries}, \texttt{AppendEntriesReply}, \texttt{RequestVote}, and \texttt{RequestVoteReply}.
-The majority of messages are published to the \texttt{AppendEntries} topic due to the leader periodically publishing heartbeat messages.
-Before the first scenario is executed, a leader election takes place which is indicated by traffic on \texttt{RequestVote} and \texttt{RequestVoteReply}.
-Another leader election happens after the previous leader crashed (\textbf{LC}).
-The fact that the previous leader crashed is reflected in the collapse of heartbeat messages on the \texttt{AppendEntries} topic.
-Again, a vote request is published to the corresponding topic by the first replica that notices the absent leader.
-This time, only one vote reply is published because only one other replica remains in the system.
-The fact that the amount of heartbeat messages increases back to the number before the first leader crashed indicates that a new leader has been established.
-
-
-\begin{figure}[!hb]
+\begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.8\linewidth]{images/plots/ConsensusMessagesReceive}
 	\caption{The number of messages that were received by any replica from behavioral topics throughout three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. After the previous leader crashed at point \textbf{LC}, the number of received messages via the \texttt{AppendEntries} topic decreased by half. This is because heartbeat messages are sent via this topic and the number of followers decreased from two to one after the leader's crash.
@@ -465,6 +467,24 @@ The fact that the amount of heartbeat messages increases back to the number befo
 	\label{fig:PlotConsensusMessagesReceive}
 \end{figure}
 
+Behavioral topics include \texttt{AppendEntries}, \texttt{AppendEntriesReply}, \texttt{RequestVote}, and \texttt{RequestVoteReply}.
+The majority of messages are published to the \texttt{AppendEntries} topic due to the leader periodically publishing heartbeat messages.
+This circumstance is depicted in~\autoref{fig:PlotConsensusMessagesSent}.
+Before the first scenario is executed, a leader election takes place which is indicated by traffic on \texttt{RequestVote} and \texttt{RequestVoteReply}.
+Another leader election happens after the previous leader crashed (\textbf{LC}).
+The fact that the previous leader crashed is reflected in the collapse of heartbeat messages on the \texttt{AppendEntries} topic.
+Again, a vote request is published to the corresponding topic by the first replica that notices the absent leader.
+This time, only one vote reply is published because only one other replica remains in the system.
+The fact that the amount of heartbeat messages increases back to the number before the first leader crashed indicates that a new leader has been established.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{images/plots/ConsensusMessagesReceiveAHR}
+	\caption{The number of messages that were received by any replica from behavioral topics throughout three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. A hot standby was utilized that takes over after the first leader crashed at point \textbf{LC}. After the leader crashed, the number of received messages via the \texttt{AppendEntries} topic dropped. Afterward, a new leader got elected and the spare unit got activated. This is reflected by the fact that the total number of received messages on the \texttt{AppendEntries} topic got back to the amount before \textbf{LC}.}
+	\label{fig:PlotConsensusMessagesReceiveAHR}
+\end{figure}
+
+\noindent
 The effect that a crashed leader - and a crashed replica in general - has on the system is shown in~\autoref{fig:PlotConsensusMessagesReceive}.
 After the leader crashed (\textbf{LC}), the number of messages that are received via the \texttt{AppendEntries} topic is reduced by half.
 This is due to the fact that only one follower instead of two remains to receive heartbeat messages and requests by the leader.
@@ -473,18 +493,12 @@ A difference, on the other hand, can be seen when active hardware redundancy is 
 
 \paragraph{Active Hardware Redundancy}
 
-\begin{figure}[!hb]
-	\centering
-	\includegraphics[width=0.8\linewidth]{images/plots/ConsensusMessagesReceiveAHR}
-	\caption{The number of messages that were received by any replica from behavioral topics throughout three scenarios that start at \textbf{S1}, \textbf{S2}, and \textbf{S3}. A hot standby was utilized that takes over after the first leader crashed at point \textbf{LC}. After the leader crashed, the number of received messages via the \texttt{AppendEntries} topic dropped. Afterward, a new leader got elected and the spare unit got activated. This is reflected by the fact that the total number of received messages on the \texttt{AppendEntries} topic got back to the amount before \textbf{LC}.}
-	\label{fig:PlotConsensusMessagesReceiveAHR}
-\end{figure}
-
 In a separate simulation, active hardware redundancy is applied in the form of a hot standby.
 Therefore, a fourth replica was added in spare mode.
 After the second scenario ended and the third starts, the previous leader was manually stopped (\textbf{LC}).
 \\
 
+\noindent
 The total number of messages that are received via behavioral topics is depicted in~\autoref{fig:PlotConsensusMessagesReceiveAHR}.
 The crashed leader is evident from the collapse of received heartbeat messages in the system.
 Shortly after, a new leader election takes place and the number of received messages on the \texttt{AppendEntries} topic stabilizes.
@@ -498,12 +512,14 @@ Unlike in~\autoref{fig:PlotConsensusMessagesReceive}, the number goes back to th
 Therefore, \abr{DDS} was chosen as the basis for the redundant \abr{EVC}.
 \\
 
+\noindent
 One challenge of this work, in addition to the suitability of \abr{DDS} for secure and redundant systems, was to find a minimal subset for an implementation.
 This is because the system, which is designed to function as an \abr{EVC}, requires a \abr{SIL} 4 level~\cite{ChakrabortyFaultTolerantRailway}.
 With \abr{DDS} being a significant part in the implementation, the \abr{SIL} of the applied \abr{DDS} application needs to be high enough to facilitate a \abr{SIL} 4 system.
 A minimal sufficient \abr{DDS} subset reduces the costs for approving the \abr{DDS} application and determining its \abr{SIL} level.
 \\
 
+\noindent
 At first in this section, the utilized \abr{DDS} subset is described and justified.
 Finally, the opportunities and challenges of \abr{DCPS} systems for consensus-based redundant systems are discussed.
 
@@ -517,10 +533,12 @@ In this way, the \abrpl{RPC} proposed by \texttt{Raft} can be emulated.
 Additionally, a global system state should be managed by \abr{DDS}.
 \\
 
+\noindent
 The \abr{DCPS} part of \abr{DDS} is divided into five modules that each fulfills a different task.
 Throughout this section, the used subset for each of the five modules is described.
 \\
 
+\noindent
 The overview of used functionality only contains methods that are directly used by the application.
 However, the middleware might transitively utilize additional functionalities to implement the features mentioned in this system.
 
@@ -555,7 +573,6 @@ However, besides \texttt{Subscribers} and \texttt{DataReaders}, it also contains
 \texttt{Subscribers} and \texttt{DataReaders} are required for receiving data, which is represented by a \texttt{DataSample}.
 The \texttt{SampleInfo} data structure contains additional information for each \texttt{DataSample}, such as its instance handle or state, which makes it mandatory for the implementation as well.
 \texttt{ReadConditions} are used in combination with \texttt{WaitSets}, so that the application can react to certain middleware states.
-
 Further, the following functionalities from the subscription module were used:
 
 \begin{itemize}
@@ -618,7 +635,7 @@ The following \abr{QOS} policies are used in the application:
 \item DDS\_ResourceLimitsQosPolicy: Controls the maximum amount of resources used by \texttt{DataReaders} and \texttt{DataWriters}. Required because the application is supposed to run in a resource-constrained environment.
 \end{itemize}
 
-
+\noindent
 The \abr{ETCS} subset studied in this paper serves as a model for \abr{ETCS} in general.
 Therefore, the elaborated \abr{DDS} subset is pertinent for the overall \abr{ETCS} specification.
 However, for a \abr{SIL} 4 system, the \abr{SIL} level of the applied \abr{DDS} application must be sufficient. Furthermore, for a \abr{SIL} 4-compliant system, the used components must also fulfill a certain \abr{SIL} level.
@@ -651,11 +668,13 @@ However, this can lead to a sudden allocation and deallocation of dynamic memory
 Thus, every replica allocates the required objects to publish and subscribe to every topic at program start, which leads to other challenges.
 \\
 
+\noindent
 When each replica is subscribed to a topic that applies a \texttt{History}- and \texttt{ResourceLimit} \abr{QOS}, the messages that are received by \texttt{DataReader} objects must be taken by the application.
 Hence, a leader that is subscribed to the \texttt{AppendEntries} topic in preparation of becoming a follower must take all heartbeat messages from the topic published by itself.
 This introduces a computational overhead, though a small one as the system's resource utilization in~\autoref{fig:PlotCPUUsageIdleTime} show.
 \\
 
+\noindent
 Lastly, a system that utilizes \abr{DDS} for communication needs to support concurrent computations when more than one message should be processable at any time.
 This introduces potential race conditions or deadlocks and can complicate the development and approval process.
 Since the developed system, for example, needs to react to vote requests and log replication messages at any time, a concurrent system design is unavoidable.
