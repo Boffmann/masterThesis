@@ -1,4 +1,4 @@
-\documentclass{scrreprt} % <= Druckversion: "scrbook" / Bildschirmversion: "scrreprt"
+\documentclass{scrbook} % <= Druckversion: "scrbook" / Bildschirmversion: "scrreprt"
 \usepackage[english, bibtex]{osm-thesis} % <= Sprache der Arbeit ("ngerman"/"english"), Biblatex-Backend ("bibtex"/"biber")
 
 \usepackage{amssymb}
@@ -7,7 +7,7 @@
 \usepackage[all]{nowidow}
 
 % ABOUT
-\newcommand{\hpitype}{Master Thesis}
+\newcommand{\hpitype}{Master's Thesis}
 \newcommand{\hpiauthor}{Hendrik Tjabben}
 \newcommand{\hpititle}{Design and Evaluation of a DDS-based Distributed Application by the Example of an European Vital Computer}
 \newcommand{\hpititleother}{Entwurf und Bewertung einer DDS-basierten verteilten Anwendung am Beispiel eines ETCS-Fahrzeugsystems} % <= das Studienreferat verlangt einen deutschen UND englischen Titel
@@ -61,9 +61,9 @@
 	% \appendix\include{content/appendix} % example
 
 	% ggf. bei englischen Arbeiten den deutschen Abstract nach hinten verschieben
-	% \ifisbook\pagestyle{plain}\cleardoubleemptypage\include{content/abstract_deu}\fi
+	%\ifisbook\pagestyle{plain}\cleardoubleemptypage\include{content/abstract_deu}\fi
 
 	% Eigenständigkeitserklärung
-	%\ifisbook\pagestyle{plain}\cleardoubleemptypage\include{content/disclaimer}\fi
+	\ifisbook\pagestyle{plain}\cleardoubleemptypage\include{content/disclaimer}\fi
 
 \end{document}
